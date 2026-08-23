@@ -10,44 +10,44 @@ export type ActiveProject = {
   slug?: string;
 };
 
-/** Projects currently in progress (client / contract work). */
+/** Ongoing client / contract engagements (kept private by request). */
 export const currentClientWork: ActiveProject[] = [
   {
-    name: "ParcelFly — Courier & Merchant Apps",
+    name: "ParcelFly — Delivery Ecosystem",
     context:
-      "Hardening live-tracking flows and courier assignment on Flutter + Laravel.",
-    slug: "parcelfly-delivery-platform",
+      "Ongoing Flutter and Laravel work across the courier, merchant, and customer apps.",
   },
   {
-    name: "JobNect — Employer & Applicant Apps",
+    name: "JobNect — Recruitment Suite",
     context:
-      "Expanding matching and application workflows across both Flutter clients.",
-    slug: "jobnect-recruitment-suite",
+      "Continued development of the employer and applicant Flutter clients.",
   },
   {
-    name: "Sellino — Storefront Iteration",
-    context:
-      "Checkout and catalog improvements across the web storefront and mobile app.",
-    slug: "sellino-ecommerce",
+    name: "Sellino — E-commerce Platform",
+    context: "Storefront and mobile app iteration on the Laravel commerce API.",
   },
 ];
 
-/** Personal and studio projects currently active. */
+/** Personal projects currently active. */
 export const personalProjects: ActiveProject[] = [
   {
-    name: "Shiki UI — Flutter Component Kit",
-    context:
-      "Growing the in-house widget library that backs every studio project.",
-    slug: "shiki-ui-flutter-kit",
+    name: "Orimono",
+    context: "Personal Flutter app — current release polish and new features.",
+    slug: "orimono-app",
   },
   {
-    name: "Lan Party — Open Source",
-    context: "Public experiments and released tooling on GitHub.",
-    slug: "lan-party",
+    name: "Watch Store",
+    context: "E-commerce Flutter app — checkout flow refinements.",
+    slug: "watch-store-app",
   },
   {
-    name: "Subsify — Polish Pass",
-    context: "Refining subscription insights, reminders, and background sync.",
-    slug: "subsify-subscriptions",
+    name: "FreeShop",
+    context: "Marketplace-style shopping app — feed performance improvements.",
+    slug: "freeshop-app",
+  },
+  {
+    name: "Job App",
+    context: "Job-listing client — application tracker enhancements.",
+    slug: "job-app",
   },
 ];

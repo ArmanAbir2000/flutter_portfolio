@@ -3,19 +3,19 @@ import { mutation, query } from "./_generated/server";
 
 const seedProjects = [
   {
-    slug: "parcelfly-delivery-platform",
-    title: "ParcelFly — Delivery Management Platform",
+    slug: "orimono-app",
+    title: "Orimono",
     summary:
-      "A delivery ecosystem of Flutter apps for customers, merchants, and couriers, running on a Laravel REST API with live shipment tracking.",
+      "A personal Flutter application designed and built end to end, with Riverpod state management and a Firebase backend.",
     description:
-      "ParcelFly connects three sides of last-mile delivery through dedicated mobile apps sharing one Dart codebase foundation. Customers place and track deliveries, merchants manage pickups and pricing, and couriers work a task-focused queue. A Laravel RESTful API handles orders, assignment, and status transitions, while Firebase Cloud Messaging keeps every role updated in real time.",
-    category: "Logistics",
-    tags: ["Flutter", "Laravel", "Realtime Tracking"],
-    stack: ["Flutter", "Dart", "Laravel", "MySQL", "Firebase", "FCM"],
+      "Orimono is one of my own products — a full Flutter build covering everything from first wireframe to store release. The codebase follows a clean, feature-first structure with Riverpod for state management, Firebase handling authentication, data storage, and push messaging, and a reusable theming layer shared across screens.",
+    category: "Personal Project",
+    tags: ["Flutter", "Firebase", "Riverpod"],
+    stack: ["Flutter", "Dart", "Riverpod", "Firebase", "FCM"],
     highlights: [
-      "Three role-based apps delivered from one shared Flutter codebase",
-      "Live courier tracking with map-based status updates end to end",
-      "Push notification pipelines via Firebase Cloud Messaging",
+      "Single Dart codebase shipping to both Android and iOS",
+      "Feature-first architecture with Riverpod providers per domain",
+      "Firebase auth, Firestore data layer, and FCM notifications",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -23,39 +23,39 @@ const seedProjects = [
     featured: true,
   },
   {
-    slug: "jobnect-recruitment-suite",
-    title: "JobNect — Recruitment Suite",
+    slug: "watch-store-app",
+    title: "Watch Store",
     summary:
-      "Paired job-listing apps for employers and applicants, backed by a Laravel API handling listings, applications, and matching.",
+      "An e-commerce Flutter app for browsing and buying watches, with catalog search, cart, wishlist, and order tracking.",
     description:
-      "JobNect splits recruitment into two focused Flutter experiences: employers post openings and screen applicants, while candidates browse, filter, and apply. Both apps talk to the same Laravel RESTful backend, which owns listing lifecycles, application states, and notifications — keeping business rules out of the clients entirely.",
-    category: "HR Tech",
-    tags: ["Flutter", "Laravel", "REST API"],
-    stack: ["Flutter", "Dart", "Laravel", "MySQL", "GetX"],
-    highlights: [
-      "Employer and applicant apps sharing one consistent API contract",
-      "Full listing-to-hire workflow mirrored across both clients",
-      "State management split deliberately between GetX modules",
-    ],
-    liveUrl: undefined,
-    repoUrl: undefined,
-    year: 2025,
-    featured: true,
-  },
-  {
-    slug: "sellino-ecommerce",
-    title: "Sellino — E-commerce Platform",
-    summary:
-      "An e-commerce build pairing a web storefront with Flutter customer apps on top of a Laravel commerce API.",
-    description:
-      "Sellino covers catalogs, carts, checkout, and order tracking across web and mobile. The Laravel backend exposes a versioned RESTful commerce API consumed by both the storefront and the Flutter app, so inventory and promotions stay consistent no matter where customers shop.",
+      "Watch Store is a complete mobile shopping experience built in Flutter. Product listings load through a RESTful API into a BLoC-managed catalog with search and category filters, while the cart, wishlist, and checkout flows run through dedicated blocs. Order status updates arrive as push notifications so customers never wonder where their purchase is.",
     category: "E-commerce",
-    tags: ["E-commerce", "Flutter", "Laravel"],
-    stack: ["Flutter", "Laravel", "MySQL", "REST API", "Firebase"],
+    tags: ["Flutter", "E-commerce", "BLoC"],
+    stack: ["Flutter", "Dart", "BLoC", "REST API", "Firebase"],
     highlights: [
-      "One commerce API serving both web storefront and mobile apps",
-      "Cart and catalog state kept consistent across platforms",
-      "Order tracking pushed to customers through FCM",
+      "Catalog with search, filters, and product detail flows",
+      "Cart, wishlist, and checkout orchestrated with BLoC",
+      "Order tracking delivered through push notifications",
+    ],
+    liveUrl: undefined,
+    repoUrl: undefined,
+    year: 2025,
+    featured: true,
+  },
+  {
+    slug: "freeshop-app",
+    title: "FreeShop",
+    summary:
+      "A lightweight marketplace-style shopping app in Flutter — listing feeds, categories, and saved items with snappy GetX state management.",
+    description:
+      "FreeShop focuses on speed and simplicity: an instantly scannable listing feed, clear category navigation, and saved-item functionality, all wired together with small, focused GetX controllers. The app talks to a RESTful backend and keeps local caching light so browsing feels immediate even on slow connections.",
+    category: "Marketplace",
+    tags: ["Flutter", "GetX", "Marketplace"],
+    stack: ["Flutter", "Dart", "GetX", "REST API", "Firebase"],
+    highlights: [
+      "Listing feed and categories powered by focused GetX controllers",
+      "Saved items and lightweight local caching for instant browsing",
+      "Clean separation between UI, controllers, and API services",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -63,24 +63,24 @@ const seedProjects = [
     featured: true,
   },
   {
-    slug: "subsify-subscriptions",
-    title: "Subsify — Subscription Manager",
+    slug: "job-app",
+    title: "Job App",
     summary:
-      "A Flutter app for tracking recurring subscriptions, with reminders and spend insights synced through a Laravel backend.",
+      "A Flutter client for finding and applying to jobs — filtered search, application tracking, and profile management.",
     description:
-      "Subsify helps users see every recurring charge in one place. The Flutter client handles local-first entry with background sync to a Laravel API, schedules renewal reminders through Firebase, and surfaces simple monthly spend breakdowns without drowning users in settings.",
-    category: "Personal Finance",
-    tags: ["Flutter", "Firebase", "Subscriptions"],
-    stack: ["Flutter", "Dart", "Laravel", "Firebase", "Riverpod"],
+      "Job App puts a whole job hunt in one place. Candidates search listings with filters, apply directly from their phone, and follow every application's status from a simple tracker. Authentication and profile data are handled through Firebase, with listings served from a RESTful API and screen state managed cleanly in BLoC.",
+    category: "HR Tech",
+    tags: ["Flutter", "REST API", "BLoC"],
+    stack: ["Flutter", "Dart", "BLoC", "REST API", "Firebase Auth"],
     highlights: [
-      "Local-first data model with background Laravel sync",
-      "Renewal reminders driven by scheduled Firebase functions",
-      "Spend summaries computed on-device for instant response",
+      "Filtered job search with detailed listing views",
+      "Application tracker showing status for every submission",
+      "Profile and resume management backed by Firebase Auth",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
     year: 2024,
-    featured: false,
+    featured: true,
   },
   {
     slug: "shiki-ui-flutter-kit",
@@ -90,7 +90,7 @@ const seedProjects = [
     description:
       "Every studio project used to re-solve the same problems: themed inputs, list skeletons, empty states, API-bound dropdowns. Shiki UI packages those answers into one internal Flutter package with a shared design-token system, so new projects start consistent and stay maintainable as it evolves.",
     category: "In-house Tooling",
-    tags: ["Flutter", "Design System", "Open Source Soon"],
+    tags: ["Flutter", "Design System"],
     stack: ["Flutter", "Dart", "Riverpod"],
     highlights: [
       "Shared design tokens keeping studio apps visually consistent",
@@ -99,25 +99,6 @@ const seedProjects = [
     ],
     liveUrl: undefined,
     repoUrl: undefined,
-    year: 2025,
-    featured: false,
-  },
-  {
-    slug: "lan-party",
-    title: "Lan Party — Open Source",
-    summary:
-      "Arman Abir's public open-source repository on GitHub — the studio's home for experiments and released tooling.",
-    description:
-      "This is the studio's public GitHub repository. It's where experiments, utilities, and tooling get released when they're ready for others to use. Browse the source directly on GitHub to see current work in the open.",
-    category: "Open Source",
-    tags: ["Open Source", "GitHub"],
-    stack: ["Dart", "Flutter"],
-    highlights: [
-      "Public source available under github.com/ArmanAbir2000/lan-party",
-      "Release surface for studio experiments and utilities",
-    ],
-    liveUrl: undefined,
-    repoUrl: "https://github.com/ArmanAbir2000/lan-party",
     year: 2025,
     featured: false,
   },
