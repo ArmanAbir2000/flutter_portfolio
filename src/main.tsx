@@ -13,6 +13,10 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Projects = lazy(() => import("./pages/Projects.tsx"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail.tsx"));
+const Book = lazy(() => import("./pages/Book.tsx"));
+const Contact = lazy(() => import("./pages/Contact.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -82,6 +86,9 @@ class RootErrorBoundary extends React.Component<
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
+// Portfolio is a dark-first product; apply the dark theme globally.
+document.documentElement.classList.add("dark");
+
 
 
 function RouteSyncer() {
@@ -120,6 +127,10 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:slug" element={<ProjectDetail />} />
+              <Route path="/book" element={<Book />} />
+              <Route path="/contact" element={<Contact />} />
               <Route
                 path="/auth"
                 element={<AuthPage redirectAfterAuth="/dashboard" />}

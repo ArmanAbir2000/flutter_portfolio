@@ -34,13 +34,41 @@ const schema = defineSchema(
 
     // add other tables here
 
-    projects: defineTable({
-      userId: v.id("users"),
-      name: v.string(),
+    portfolioProjects: defineTable({
+      slug: v.string(),
+      title: v.string(),
       summary: v.string(),
-      audience: v.string(),
-      scope: v.array(v.object({ text: v.string(), done: v.boolean() })),
-    }).index("by_user", ["userId"]),
+      description: v.string(),
+      category: v.string(),
+      tags: v.array(v.string()),
+      stack: v.array(v.string()),
+      highlights: v.array(v.string()),
+      liveUrl: v.optional(v.string()),
+      repoUrl: v.optional(v.string()),
+      year: v.number(),
+      featured: v.boolean(),
+    }).index("by_slug", ["slug"]),
+
+    appointments: defineTable({
+      name: v.string(),
+      email: v.string(),
+      topic: v.string(),
+      date: v.string(), // YYYY-MM-DD
+      time: v.string(), // HH:mm
+      status: v.union(
+        v.literal("pending"),
+        v.literal("confirmed"),
+        v.literal("done"),
+      ),
+    }),
+
+    messages: defineTable({
+      name: v.string(),
+      email: v.string(),
+      subject: v.string(),
+      body: v.string(),
+      handled: v.boolean(),
+    }),
 
     // tableName: defineTable({
     //   ...

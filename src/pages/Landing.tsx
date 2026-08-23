@@ -1,9 +1,12 @@
+import { useEffect } from "react";
+import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/hooks/use-auth";
+import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 
 const fadeUp = {
   initial: { opacity: 0, y: 12 },
@@ -12,78 +15,61 @@ const fadeUp = {
   transition: { duration: 0.5, ease: "easeOut" as const },
 };
 
-const principles = [
+const capabilities = [
   {
     n: "01",
-    title: "One summary, written down",
-    body: "Your project's purpose lives in a single, editable brief — not in your head or a forgotten doc.",
+    title: "Production systems",
+    body: "End-to-end web platforms: typed APIs, deliberate data models, and interfaces that stay fast under real traffic. Every project here ran in production and carried real users.",
   },
   {
     n: "02",
-    title: "Scope, made explicit",
-    body: "Version 1 states what it does first and what it deliberately leaves out. Check items off as they ship.",
+    title: "Open-source contributions",
+    body: "Maintainer of developer tooling used by teams beyond my own, and a regular contributor across the React and TypeScript ecosystems — merged work, documented decisions.",
   },
   {
     n: "03",
-    title: "Private by default",
-    body: "Built for an audience of one. Sign in and it's yours — no teams, no sharing, no noise.",
+    title: "Scoped engagements",
+    body: "Clear deliverables, honest estimates, and code you can hand to your own engineers. I take on builds where the requirements are serious and the standard is high.",
   },
 ];
 
-const stack = [
-  "React 19",
-  "TypeScript",
-  "Convex",
-  "Tailwind",
-  "shadcn/ui",
-  "Framer Motion",
+const stats = [
+  { value: "140+", label: "Merged pull requests" },
+  { value: "6", label: "Maintained repositories" },
+  { value: "8 yrs", label: "Shipping software" },
 ];
 
 export default function Landing() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const projects = useQuery(api.portfolio.listProjects, {});
+  const ensureSeeded = useMutation(api.portfolio.ensureSeeded);
+
+  useEffect(() => {
+    void ensureSeeded().catch((err) => console.error(err));
+  }, [ensureSeeded]);
+
+  const featured = (projects ?? []).filter((p) => p.featured).slice(0, 4);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-background text-foreground"
-    >
-      {/* Navbar */}
-      <header className="border-b border-border/60">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-foreground" />
-            <span className="text-sm font-semibold tracking-tight">
-              Brief
-            </span>
-          </Link>
-          <Button asChild variant="outline" size="sm" className="cursor-pointer">
-            <Link to={isLoading ? "/auth" : isAuthenticated ? "/dashboard" : "/auth"}>
-              {isAuthenticated ? "Dashboard" : "Sign in"}
-              <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background text-foreground">
+      <SiteHeader />
 
       {/* Hero */}
-      <section className="mx-auto w-full max-w-5xl px-6 pt-28 pb-24 sm:pt-40 sm:pb-32">
+      <section className="mx-auto w-full max-w-6xl px-6 pt-28 pb-24 sm:pt-40 sm:pb-32">
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground"
+          className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground"
         >
-          A private project brief
+          Full-stack engineer · Available for engagements
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="mt-6 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl"
+          className="mt-6 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl"
         >
-          Know exactly what your project is about.
+          Software, shipped and documented.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -91,9 +77,9 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
           className="mt-6 max-w-xl text-base leading-7 text-muted-foreground"
         >
-          Brief holds one living summary of your project — its purpose, stack,
-          scope, and audience — in a quiet space built for a single reader:
-          you.
+          A working record of production systems, client engagements, and
+          open-source contributions. Browse the catalog, read how each piece
+          was built, then book time directly on my calendar.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -102,55 +88,103 @@ export default function Landing() {
           className="mt-10 flex flex-wrap items-center gap-3"
         >
           <Button asChild size="lg" className="cursor-pointer">
-            <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
-              {isAuthenticated ? "Open your brief" : "Start your brief"}
+            <Link to="/projects">
+              View selected work
               <ArrowRight className="size-4" />
             </Link>
           </Button>
-          <p className="text-xs text-muted-foreground">
-            Version 1 · Just for you
-          </p>
+          <Button asChild size="lg" variant="outline" className="cursor-pointer">
+            <Link to="/book">
+              Book an appointment
+              <ArrowUpRight className="size-4" />
+            </Link>
+          </Button>
         </motion.div>
       </section>
 
-      {/* Principles */}
+      {/* Featured work */}
       <section className="border-t border-border/60">
-        <div className="mx-auto w-full max-w-5xl px-6 py-20 sm:py-28">
-          <motion.p {...fadeUp} className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            What version 1 does
-          </motion.p>
-          <div className="mt-10">
-            {principles.map((p, i) => (
-              <motion.div key={p.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
-                <div className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 py-10 sm:grid-cols-[4rem_16rem_1fr] sm:items-baseline">
-                  <span className="text-sm font-medium text-muted-foreground tabular-nums">
-                    {p.n}
-                  </span>
-                  <h2 className="text-lg font-semibold tracking-tight">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <motion.div {...fadeUp} className="flex items-baseline justify-between">
+            <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Selected work
+            </h2>
+            <Link
+              to="/projects"
+              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
+            >
+              All projects →
+            </Link>
+          </motion.div>
+          <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-2">
+            {featured.map((p, i) => (
+              <motion.div key={p._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
+                <Link
+                  to={"/projects/" + p.slug}
+                  className="group flex h-full cursor-pointer flex-col bg-background p-8 transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                      {p.year}
+                    </span>
+                    <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+                  </div>
+                  <h3 className="mt-6 text-lg font-semibold tracking-tight">
                     {p.title}
-                  </h2>
-                  <p className="col-span-2 max-w-lg text-sm leading-6 text-muted-foreground sm:col-span-1">
-                    {p.body}
+                  </h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                    {p.summary}
                   </p>
-                </div>
-                {i < principles.length - 1 && <Separator />}
+                  <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-6">
+                    {p.tags.slice(0, 3).map((t) => (
+                      <span key={t} className="font-mono text-xs text-muted-foreground">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stack */}
+      {/* Capabilities */}
       <section className="border-t border-border/60">
-        <div className="mx-auto w-full max-w-5xl px-6 py-16">
-          <motion.div {...fadeUp} className="flex flex-wrap items-center gap-x-8 gap-y-3">
-            <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              Built with
-            </span>
-            {stack.map((s) => (
-              <span key={s} className="text-sm text-muted-foreground">
-                {s}
-              </span>
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <motion.p {...fadeUp} className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            What I do
+          </motion.p>
+          <div className="mt-10">
+            {capabilities.map((c, i) => (
+              <motion.div key={c.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
+                <div className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 py-10 sm:grid-cols-[4rem_16rem_1fr] sm:items-baseline">
+                  <span className="font-mono text-sm tabular-nums text-muted-foreground">
+                    {c.n}
+                  </span>
+                  <h2 className="text-lg font-semibold tracking-tight">{c.title}</h2>
+                  <p className="col-span-2 max-w-xl text-sm leading-6 text-muted-foreground sm:col-span-1">
+                    {c.body}
+                  </p>
+                </div>
+                {i < capabilities.length - 1 && <Separator />}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Open source stats */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-16">
+          <motion.div {...fadeUp} className="grid gap-10 sm:grid-cols-3">
+            {stats.map((s) => (
+              <div key={s.label}>
+                <p className="font-mono text-3xl font-bold tabular-nums tracking-tight">
+                  {s.value}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
+              </div>
             ))}
           </motion.div>
         </div>
@@ -158,14 +192,18 @@ export default function Landing() {
 
       {/* CTA */}
       <section className="border-t border-border/60">
-        <div className="mx-auto flex w-full max-w-5xl flex-col items-start gap-6 px-6 py-24 sm:py-32">
+        <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-6 py-24 sm:py-32">
           <motion.h2 {...fadeUp} className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Write it down once. Always know the answer.
+            Have a project in mind? Let's talk it through.
           </motion.h2>
+          <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="max-w-xl text-sm leading-6 text-muted-foreground">
+            Pick a slot on my calendar or send a short brief. I reply within one
+            business day.
+          </motion.p>
           <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
-            <Button asChild size="lg" variant="outline" className="cursor-pointer">
-              <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
-                {isAuthenticated ? "Go to dashboard" : "Get started"}
+            <Button asChild size="lg" className="cursor-pointer">
+              <Link to="/book">
+                Book an appointment
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -173,15 +211,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border/60">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-          <span className="text-xs text-muted-foreground">
-            Brief — version 1
-          </span>
-          <span className="text-xs text-muted-foreground">For an audience of one</span>
-        </div>
-      </footer>
-    </motion.div>
+      <SiteFooter />
+    </div>
   );
 }
