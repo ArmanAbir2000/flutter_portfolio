@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        env:
+          # The Convex deployment this portfolio talks to. Override with a
+          # repo secret of the same name if you use a production deployment.
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL || 'https://academic-parakeet-798.convex.cloud' }}
+          # GitHub Pages project sites are served from a subdirectory.
+          VITE_BASE_PATH: /flutter_portfolio/
+        run: bun run build
+
+      - name: SPA fallback for client-side routes
+        run: node -e "require('fs').copyFileSync('dist/index.html','dist/404.html')"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

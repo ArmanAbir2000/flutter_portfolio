@@ -84,10 +84,29 @@ class RootErrorBoundary extends React.Component<
   }
 }
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+const basePath = import.meta.env.VITE_BASE_PATH || "/";
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
 // Portfolio is a dark-first product; apply the dark theme globally.
 document.documentElement.classList.add("dark");
+
+const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
+
+/** Visible notice instead of a blank screen when the app is built without a
+ *  Convex URL (e.g. a static GitHub Pages build missing VITE_CONVEX_URL). */
+function MissingConvexConfig() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
+      <div className="max-w-md text-center">
+        <p className="text-sm font-semibold">Deployment configuration missing</p>
+        <p className="mt-2 text-xs leading-5 text-muted-foreground">
+          This build has no <code>VITE_CONVEX_URL</code>. Set it at build time
+          (e.g. in the GitHub Pages workflow) and redeploy.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 
 
@@ -115,40 +134,47 @@ function RouteSyncer() {
 }
 
 
+function App() {
+  if (!convex) return <MissingConvexConfig />;
+  return (
+    <ConvexAuthProvider client={convex}>
+      <RouteSyncer />
+      <Suspense fallback={<RouteLoading />}>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/projects/:slug" element={<ProjectDetail />} />
+          <Route path="/book" element={<Book />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/auth"
+            element={<AuthPage redirectAfterAuth="/dashboard" />}
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <Dashboard />
+              </RequireAuth>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+      <Toaster />
+    </ConvexAuthProvider>
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
       <ToolbarErrorBoundary>
         <VlyToolbar />
       </ToolbarErrorBoundary>
-      <ConvexAuthProvider client={convex}>
-        <BrowserRouter>
-          <RouteSyncer />
-          <Suspense fallback={<RouteLoading />}>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:slug" element={<ProjectDetail />} />
-              <Route path="/book" element={<Book />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route
-                path="/auth"
-                element={<AuthPage redirectAfterAuth="/dashboard" />}
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <RequireAuth>
-                    <Dashboard />
-                  </RequireAuth>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-        <Toaster />
-      </ConvexAuthProvider>
+      <BrowserRouter basename={basePath}>
+        <App />
+      </BrowserRouter>
     </RootErrorBoundary>
   </StrictMode>,
 );

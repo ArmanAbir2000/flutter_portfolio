@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Base path is configurable so static hosts like GitHub Pages
+  // can serve the app from a subdirectory (e.g. /flutter_portfolio/).
+  base: process.env.VITE_BASE_PATH || "/",
   plugins: [react(), vlyPlugin(), tailwindcss()],
   resolve: {
     alias: {
