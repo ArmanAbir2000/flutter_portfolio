@@ -70,6 +70,16 @@ const schema = defineSchema(
       handled: v.boolean(),
     }),
 
+    // Cached GitHub data safe for public display (public repos only).
+    githubCache: defineTable({
+      username: v.string(),
+      totalContributions: v.number(),
+      days: v.array(v.object({ date: v.string(), count: v.number() })),
+      contributedTo: v.array(v.string()),
+      topRepos: v.array(v.string()),
+      fetchedAt: v.number(),
+    }),
+
     // tableName: defineTable({
     //   ...
     //   // table fields

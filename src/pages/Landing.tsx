@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useEffect, useRef } from "react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router";
@@ -77,10 +77,27 @@ const stats = [
 export default function Landing() {
   const projects = useQuery(api.portfolio.listProjects, {});
   const ensureSeeded = useMutation(api.portfolio.ensureSeeded);
+  const githubCache = useQuery(api.githubStore.getCache, {});
+  const refreshGithub = useAction(api.github.refresh);
+  const refreshingGithub = useRef(false);
 
   useEffect(() => {
     void ensureSeeded().catch((err) => console.error(err));
   }, [ensureSeeded]);
+
+  // Fetch real GitHub data when missing or older than six hours.
+  useEffect(() => {
+    if (githubCache === undefined) return; // still loading
+    const stale =
+      !githubCache || Date.now() - githubCache.fetchedAt > 6 * 60 * 60 * 1000;
+    if (!stale || refreshingGithub.current) return;
+    refreshingGithub.current = true;
+    refreshGithub()
+      .catch((err) => console.error(err))
+      .finally(() => {
+        refreshingGithub.current = false;
+      });
+  }, [githubCache, refreshGithub]);
 
   const featured = (projects ?? []).filter((p) => p.featured).slice(0, 4);
 
@@ -248,8 +265,37 @@ export default function Landing() {
             <span className="font-mono text-xs text-muted-foreground">last 52 weeks</span>
           </motion.div>
           <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-8 rounded-lg border border-border/60 p-4 sm:p-6">
-            <ContributionMap />
+            <ContributionMap
+              data={
+                githubCache
+                  ? {
+                      total: githubCache.totalContributions,
+                      days: githubCache.days,
+                    }
+                  : undefined
+              }
+            />
           </motion.div>
+          {githubCache && githubCache.contributedTo.length > 0 && (
+            <motion.div {...fadeUp} className="mt-10">
+              <h3 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Public repositories recently contributed to
+              </h3>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+                {githubCache.contributedTo.map((repo) => (
+                  <a
+                    key={repo}
+                    href={"https://github.com/" + repo}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="cursor-pointer font-mono text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  >
+                    {repo}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          )}
           <motion.div {...fadeUp} className="mt-14 grid gap-10 sm:grid-cols-3">
             {stats.map((s) => (
               <div key={s.label}>
