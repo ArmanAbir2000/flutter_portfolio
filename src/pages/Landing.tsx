@@ -7,6 +7,12 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { ContributionMap } from "@/components/contribution-map";
+import {
+  currentClientWork,
+  personalProjects,
+  type ActiveProject,
+} from "@/lib/profile";
 
 const fadeUp = {
   initial: { opacity: 0, y: 12 },
@@ -32,6 +38,35 @@ const capabilities = [
     body: "Clear deliverables, honest estimates, and code you can hand to your own engineers. I take on builds where the requirements are serious and the standard is high.",
   },
 ];
+
+function ActiveProjectRow({ project }: { project: ActiveProject }) {
+  const body = (
+    <>
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="text-sm font-medium tracking-tight">{project.name}</p>
+        <ArrowUpRight
+          className={
+            "size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 " +
+            (project.slug ? "group-hover:text-foreground" : "opacity-0")
+          }
+        />
+      </div>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+        {project.context}
+      </p>
+    </>
+  );
+  return project.slug ? (
+    <Link
+      to={"/projects/" + project.slug}
+      className="group block cursor-pointer py-4"
+    >
+      {body}
+    </Link>
+  ) : (
+    <div className="py-4">{body}</div>
+  );
+}
 
 const stats = [
   { value: "140+", label: "Merged pull requests" },
@@ -174,10 +209,48 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Open source stats */}
+      {/* Currently building */}
       <section className="border-t border-border/60">
-        <div className="mx-auto w-full max-w-6xl px-6 py-16">
-          <motion.div {...fadeUp} className="grid gap-10 sm:grid-cols-3">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <motion.p {...fadeUp} className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            In progress right now
+          </motion.p>
+          <div className="mt-10 grid gap-x-20 gap-y-12 lg:grid-cols-2">
+            <motion.div {...fadeUp}>
+              <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">
+                Client &amp; contract work
+              </h2>
+              <Separator className="mt-4" />
+              {currentClientWork.map((p) => (
+                <ActiveProjectRow key={p.name} project={p} />
+              ))}
+            </motion.div>
+            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.08 }}>
+              <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">
+                Personal &amp; open source
+              </h2>
+              <Separator className="mt-4" />
+              {personalProjects.map((p) => (
+                <ActiveProjectRow key={p.name} project={p} />
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contributions */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20">
+          <motion.div {...fadeUp} className="flex items-baseline justify-between">
+            <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Contribution activity
+            </h2>
+            <span className="font-mono text-xs text-muted-foreground">last 52 weeks</span>
+          </motion.div>
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-8 rounded-lg border border-border/60 p-4 sm:p-6">
+            <ContributionMap />
+          </motion.div>
+          <motion.div {...fadeUp} className="mt-14 grid gap-10 sm:grid-cols-3">
             {stats.map((s) => (
               <div key={s.label}>
                 <p className="font-mono text-3xl font-bold tabular-nums tracking-tight">
