@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 
 const WEEKS = 52;
 
+/** GitHub-style green ramp, tuned for the dark background. */
 const LEVEL_CLASSES = [
   "bg-muted/30",
-  "bg-foreground/20",
-  "bg-foreground/35",
-  "bg-foreground/55",
-  "bg-foreground/85",
+  "bg-emerald-800/70",
+  "bg-emerald-600",
+  "bg-emerald-400",
+  "bg-emerald-300",
 ] as const;
 
 type DayCell = {
