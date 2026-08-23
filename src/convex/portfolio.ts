@@ -83,6 +83,66 @@ const seedProjects = [
     featured: true,
   },
   {
+    slug: "parcelfly-delivery-platform",
+    title: "ParcelFly — Delivery Management Platform",
+    summary:
+      "Client work: a delivery ecosystem of Flutter apps for customers, merchants, and couriers, running on a Laravel REST API with live shipment tracking.",
+    description:
+      "ParcelFly connects three sides of last-mile delivery through dedicated mobile apps sharing one Dart codebase foundation. Customers place and track deliveries, merchants manage pickups and pricing, and couriers work a task-focused queue. A Laravel RESTful API handles orders, assignment, and status transitions, while Firebase Cloud Messaging keeps every role updated in real time.",
+    category: "Client Project",
+    tags: ["Flutter", "Laravel", "Realtime Tracking"],
+    stack: ["Flutter", "Dart", "Laravel", "MySQL", "Firebase", "FCM"],
+    highlights: [
+      "Three role-based apps delivered from one shared Flutter codebase",
+      "Live courier tracking with map-based status updates end to end",
+      "Push notification pipelines via Firebase Cloud Messaging",
+    ],
+    liveUrl: undefined,
+    repoUrl: undefined,
+    year: 2025,
+    featured: false,
+  },
+  {
+    slug: "jobnect-recruitment-suite",
+    title: "JobNect — Recruitment Suite",
+    summary:
+      "Client work: paired job-listing apps for employers and applicants, backed by a Laravel API handling listings, applications, and matching.",
+    description:
+      "JobNect splits recruitment into two focused Flutter experiences: employers post openings and screen applicants, while candidates browse, filter, and apply. Both apps talk to the same Laravel RESTful backend, which owns listing lifecycles, application states, and notifications — keeping business rules out of the clients entirely.",
+    category: "Client Project",
+    tags: ["Flutter", "Laravel", "REST API"],
+    stack: ["Flutter", "Dart", "Laravel", "MySQL", "GetX"],
+    highlights: [
+      "Employer and applicant apps sharing one consistent API contract",
+      "Full listing-to-hire workflow mirrored across both clients",
+      "State management split deliberately between GetX modules",
+    ],
+    liveUrl: undefined,
+    repoUrl: undefined,
+    year: 2025,
+    featured: false,
+  },
+  {
+    slug: "sellino-ecommerce",
+    title: "Sellino — E-commerce Platform",
+    summary:
+      "Client work: an e-commerce build pairing a web storefront with Flutter customer apps on top of a Laravel commerce API.",
+    description:
+      "Sellino covers catalogs, carts, checkout, and order tracking across web and mobile. The Laravel backend exposes a versioned RESTful commerce API consumed by both the storefront and the Flutter app, so inventory and promotions stay consistent no matter where customers shop.",
+    category: "Client Project",
+    tags: ["E-commerce", "Flutter", "Laravel"],
+    stack: ["Flutter", "Laravel", "MySQL", "REST API", "Firebase"],
+    highlights: [
+      "One commerce API serving both web storefront and mobile apps",
+      "Cart and catalog state kept consistent across platforms",
+      "Order tracking pushed to customers through FCM",
+    ],
+    liveUrl: undefined,
+    repoUrl: undefined,
+    year: 2024,
+    featured: false,
+  },
+  {
     slug: "shiki-ui-flutter-kit",
     title: "Shiki UI — Flutter Component Kit",
     summary:
