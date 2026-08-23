@@ -44,7 +44,7 @@ function Sidebar({ onSignOut }: { onSignOut: () => void }) {
     <aside className="flex w-full shrink-0 flex-row items-center justify-between border-b border-border/60 px-6 py-4 sm:h-screen sm:w-60 sm:flex-col sm:justify-start sm:border-b-0 sm:border-r sm:py-8">
       <Link to="/" className="flex items-center gap-2">
         <span className="size-2 rounded-full bg-foreground" />
-        <span className="text-sm font-semibold tracking-tight">Portfolio</span>
+        <span className="text-sm font-semibold tracking-tight">Shiki Code Studio</span>
       </Link>
 
       <nav className="flex flex-row gap-1 sm:mt-10 sm:w-full sm:flex-col">

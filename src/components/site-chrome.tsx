@@ -14,7 +14,9 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
           <span className="size-2 rounded-full bg-foreground" />
-          <span className="text-sm font-semibold tracking-tight">Portfolio</span>
+          <span className="text-sm font-semibold tracking-tight">
+            Shiki Code Studio
+          </span>
         </Link>
         <nav className="flex items-center gap-1">
           <div className="hidden items-center sm:flex">
@@ -60,8 +62,8 @@ export function SiteFooter() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Portfolio · Built with React,
-          TypeScript, and Convex
+          © {new Date().getFullYear()} Shiki Code Studio · Arman Abir · Built
+          with React, TypeScript, and Convex
         </p>
       </div>
     </footer>

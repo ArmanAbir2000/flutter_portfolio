@@ -76,7 +76,10 @@ const schema = defineSchema(
       totalContributions: v.number(),
       days: v.array(v.object({ date: v.string(), count: v.number() })),
       contributedTo: v.array(v.string()),
+      contributedToTotal: v.number(),
       topRepos: v.array(v.string()),
+      publicRepos: v.number(),
+      memberSince: v.string(),
       fetchedAt: v.number(),
     }),
 

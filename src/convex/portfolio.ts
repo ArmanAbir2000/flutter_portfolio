@@ -3,19 +3,19 @@ import { mutation, query } from "./_generated/server";
 
 const seedProjects = [
   {
-    slug: "realtime-analytics-dashboard",
-    title: "Realtime Analytics Dashboard",
+    slug: "parcelfly-delivery-platform",
+    title: "ParcelFly — Delivery Management Platform",
     summary:
-      "A streaming analytics platform that ingests millions of events per day and renders live dashboards with sub-second latency.",
+      "A delivery ecosystem of Flutter apps for customers, merchants, and couriers, running on a Laravel REST API with live shipment tracking.",
     description:
-      "Built for a B2B SaaS client that had outgrown nightly batch reporting. The system consumes product events over a websocket pipeline, aggregates them into rolling windows, and pushes deltas straight to a React dashboard. I designed the ingestion layer, the windowed aggregation model, and the charting frontend, then led the migration from the legacy batch reports with zero downtime.",
-    category: "Web Platform",
-    tags: ["Realtime", "Data Viz", "B2B"],
-    stack: ["TypeScript", "React", "Node.js", "WebSockets", "ClickHouse", "Redis"],
+      "ParcelFly connects three sides of last-mile delivery through dedicated mobile apps sharing one Dart codebase foundation. Customers place and track deliveries, merchants manage pickups and pricing, and couriers work a task-focused queue. A Laravel RESTful API handles orders, assignment, and status transitions, while Firebase Cloud Messaging keeps every role updated in real time.",
+    category: "Logistics",
+    tags: ["Flutter", "Laravel", "Realtime Tracking"],
+    stack: ["Flutter", "Dart", "Laravel", "MySQL", "Firebase", "FCM"],
     highlights: [
-      "Ingests 30M+ events daily with p99 ingest latency under 80 ms",
-      "Cut customer-facing report lag from 24 hours to under one second",
-      "Migrated 40+ enterprise tenants off the legacy batch pipeline",
+      "Three role-based apps delivered from one shared Flutter codebase",
+      "Live courier tracking with map-based status updates end to end",
+      "Push notification pipelines via Firebase Cloud Messaging",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -23,39 +23,39 @@ const seedProjects = [
     featured: true,
   },
   {
-    slug: "payments-integration-platform",
-    title: "Payments Integration Platform",
+    slug: "jobnect-recruitment-suite",
+    title: "JobNect — Recruitment Suite",
     summary:
-      "A unified payments layer that lets merchants accept cards, wallets, and bank transfers through a single typed API.",
+      "Paired job-listing apps for employers and applicants, backed by a Laravel API handling listings, applications, and matching.",
     description:
-      "Merchants were integrating each payment provider separately and duplicating reconciliation logic every time. This platform abstracts providers behind one interface with idempotent checkout sessions, webhook normalization, and automatic retries. I owned the API design, the provider adapter architecture, and the reconciliation tooling used by the finance team.",
-    category: "Fintech",
-    tags: ["Payments", "APIs", "Infrastructure"],
-    stack: ["TypeScript", "Node.js", "PostgreSQL", "Stripe", "Adyen", "Docker"],
+      "JobNect splits recruitment into two focused Flutter experiences: employers post openings and screen applicants, while candidates browse, filter, and apply. Both apps talk to the same Laravel RESTful backend, which owns listing lifecycles, application states, and notifications — keeping business rules out of the clients entirely.",
+    category: "HR Tech",
+    tags: ["Flutter", "Laravel", "REST API"],
+    stack: ["Flutter", "Dart", "Laravel", "MySQL", "GetX"],
     highlights: [
-      "Reduced new-provider integration time from six weeks to five days",
-      "Processes eight figures in annual volume with zero double-charges",
-      "Normalized webhooks from four providers into one event schema",
+      "Employer and applicant apps sharing one consistent API contract",
+      "Full listing-to-hire workflow mirrored across both clients",
+      "State management split deliberately between GetX modules",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
-    year: 2024,
+    year: 2025,
     featured: true,
   },
   {
-    slug: "headless-commerce-storefront",
-    title: "Headless Commerce Storefront",
+    slug: "sellino-ecommerce",
+    title: "Sellino — E-commerce Platform",
     summary:
-      "A content-driven storefront that pairs a headless commerce backend with a fully custom Next.js front end.",
+      "An e-commerce build pairing a web storefront with Flutter customer apps on top of a Laravel commerce API.",
     description:
-      "A design-led retail brand needed a storefront their in-house designers could control without filing engineering tickets. I built the storefront on a headless commerce API with edge-cached pages, optimistic cart updates, and a CMS-driven page builder so merchandising can compose landing pages themselves.",
+      "Sellino covers catalogs, carts, checkout, and order tracking across web and mobile. The Laravel backend exposes a versioned RESTful commerce API consumed by both the storefront and the Flutter app, so inventory and promotions stay consistent no matter where customers shop.",
     category: "E-commerce",
-    tags: ["Storefront", "Performance", "CMS"],
-    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "GraphQL"],
+    tags: ["E-commerce", "Flutter", "Laravel"],
+    stack: ["Flutter", "Laravel", "MySQL", "REST API", "Firebase"],
     highlights: [
-      "Lighthouse performance scores of 95+ across key templates",
-      "Checkout conversion improved 18% after the relaunch",
-      "Merchandisers ship campaign pages without engineering support",
+      "One commerce API serving both web storefront and mobile apps",
+      "Cart and catalog state kept consistent across platforms",
+      "Order tracking pushed to customers through FCM",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -63,39 +63,39 @@ const seedProjects = [
     featured: true,
   },
   {
-    slug: "devops-cli-toolkit",
-    title: "DevOps CLI Toolkit",
+    slug: "subsify-subscriptions",
+    title: "Subsify — Subscription Manager",
     summary:
-      "An open-source command-line toolkit that wraps environment management, deployments, and secrets rotation into one workflow.",
+      "A Flutter app for tracking recurring subscriptions, with reminders and spend insights synced through a Laravel backend.",
     description:
-      "Internal teams kept writing one-off shell scripts for the same operational chores, so I consolidated them into a single, testable CLI. It manages environment promotion, rotates cloud secrets, and runs pre-deploy checks. The project is open source and is now used by several teams outside the original company.",
-    category: "Developer Tools",
-    tags: ["Open Source", "CLI", "Automation"],
-    stack: ["Go", "GitHub Actions", "AWS", "Terraform"],
+      "Subsify helps users see every recurring charge in one place. The Flutter client handles local-first entry with background sync to a Laravel API, schedules renewal reminders through Firebase, and surfaces simple monthly spend breakdowns without drowning users in settings.",
+    category: "Personal Finance",
+    tags: ["Flutter", "Firebase", "Subscriptions"],
+    stack: ["Flutter", "Dart", "Laravel", "Firebase", "Riverpod"],
     highlights: [
-      "1.2k+ GitHub stars and adopted by three external teams",
-      "Replaced an estimated 200+ ad-hoc deployment scripts",
-      "Fully tested core with cross-platform release automation",
+      "Local-first data model with background Laravel sync",
+      "Renewal reminders driven by scheduled Firebase functions",
+      "Spend summaries computed on-device for instant response",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
-    year: 2023,
-    featured: true,
+    year: 2024,
+    featured: false,
   },
   {
-    slug: "ai-support-assistant",
-    title: "AI Support Assistant",
+    slug: "shiki-ui-flutter-kit",
+    title: "Shiki UI — Flutter Component Kit",
     summary:
-      "A retrieval-based support assistant that answers customer questions from product documentation and hands off gracefully to humans.",
+      "The studio's in-house Flutter widget library: themed, form-ready components reused across every Shiki Code Studio project.",
     description:
-      "The support team was drowning in repetitive questions. I built an assistant that embeds the documentation corpus, answers with citations, and escalates to a human agent whenever confidence drops below threshold. Every conversation is logged with feedback signals so the team can audit and improve answers over time.",
-    category: "AI / ML",
-    tags: ["AI", "Support", "RAG"],
-    stack: ["Python", "FastAPI", "pgvector", "React", "OpenAI"],
+      "Every studio project used to re-solve the same problems: themed inputs, list skeletons, empty states, API-bound dropdowns. Shiki UI packages those answers into one internal Flutter package with a shared design-token system, so new projects start consistent and stay maintainable as it evolves.",
+    category: "In-house Tooling",
+    tags: ["Flutter", "Design System", "Open Source Soon"],
+    stack: ["Flutter", "Dart", "Riverpod"],
     highlights: [
-      "Deflected 46% of inbound support tickets within two months",
-      "Every answer includes source citations for easy verification",
-      "Confidence-based escalation keeps satisfaction ratings stable",
+      "Shared design tokens keeping studio apps visually consistent",
+      "Form and list components battle-tested across shipped apps",
+      "Planned public extraction once APIs stabilize",
     ],
     liveUrl: undefined,
     repoUrl: undefined,
@@ -103,23 +103,22 @@ const seedProjects = [
     featured: false,
   },
   {
-    slug: "open-source-ui-library",
-    title: "Open-Source UI Library",
+    slug: "lan-party",
+    title: "Lan Party — Open Source",
     summary:
-      "A headless, accessible React component library focused on keyboard navigation and theming without style lock-in.",
+      "Arman Abir's public open-source repository on GitHub — the studio's home for experiments and released tooling.",
     description:
-      "Most component libraries force a visual identity on teams that already have one. This library ships unstyled, behavior-complete primitives — comboboxes, dialogs, date pickers — with full ARIA coverage and a token-based theming contract. It powers production apps at several companies and accepts external contributions through a documented RFC process.",
-    category: "Developer Tools",
-    tags: ["Open Source", "Accessibility", "React"],
-    stack: ["TypeScript", "React", "Vitest", "Storybook"],
+      "This is the studio's public GitHub repository. It's where experiments, utilities, and tooling get released when they're ready for others to use. Browse the source directly on GitHub to see current work in the open.",
+    category: "Open Source",
+    tags: ["Open Source", "GitHub"],
+    stack: ["Dart", "Flutter"],
     highlights: [
-      "WCAG 2.1 AA compliant across all components",
-      "Weekly downloads in the tens of thousands",
-      "Maintained with an open RFC contribution process",
+      "Public source available under github.com/ArmanAbir2000/lan-party",
+      "Release surface for studio experiments and utilities",
     ],
     liveUrl: undefined,
-    repoUrl: undefined,
-    year: 2022,
+    repoUrl: "https://github.com/ArmanAbir2000/lan-party",
+    year: 2025,
     featured: false,
   },
 ];
@@ -149,11 +148,27 @@ export const getProject = query({
 export const ensureSeeded = mutation({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db.query("portfolioProjects").first();
-    if (existing) return;
+    const existing = await ctx.db.query("portfolioProjects").collect();
+    const bySlug = new Map(existing.map((p) => [p.slug, p]));
+    const slugs = new Set(seedProjects.map((s) => s.slug));
 
-    for (const project of seedProjects) {
-      await ctx.db.insert("portfolioProjects", project);
+    // Remove entries no longer part of the showcase.
+    for (const project of existing) {
+      if (!slugs.has(project.slug)) await ctx.db.delete(project._id);
+    }
+
+    // Insert missing entries and refresh ones whose content changed.
+    for (const seed of seedProjects) {
+      const current = bySlug.get(seed.slug);
+      if (!current) {
+        await ctx.db.insert("portfolioProjects", seed);
+      } else if (
+        current.title !== seed.title ||
+        current.summary !== seed.summary ||
+        current.description !== seed.description
+      ) {
+        await ctx.db.replace(current._id, seed);
+      }
     }
   },
 });

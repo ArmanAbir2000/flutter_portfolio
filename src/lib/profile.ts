@@ -1,6 +1,6 @@
 /**
  * Editable profile data — update these lists as your work changes.
- * They render in the "Now" section of the landing page.
+ * They render in the "In progress right now" section of the landing page.
  */
 
 export type ActiveProject = {
@@ -13,37 +13,41 @@ export type ActiveProject = {
 /** Projects currently in progress (client / contract work). */
 export const currentClientWork: ActiveProject[] = [
   {
-    name: "Realtime Analytics Dashboard — Phase 2",
-    context: "Adding anomaly alerts and saved views for enterprise tenants.",
-    slug: "realtime-analytics-dashboard",
+    name: "ParcelFly — Courier & Merchant Apps",
+    context:
+      "Hardening live-tracking flows and courier assignment on Flutter + Laravel.",
+    slug: "parcelfly-delivery-platform",
   },
   {
-    name: "Payments Integration Platform — New Provider",
-    context: "Onboarding a regional bank-transfer provider behind the unified API.",
-    slug: "payments-integration-platform",
+    name: "JobNect — Employer & Applicant Apps",
+    context:
+      "Expanding matching and application workflows across both Flutter clients.",
+    slug: "jobnect-recruitment-suite",
   },
   {
-    name: "Headless Commerce Storefront — Replatform",
-    context: "Migrating the remaining templates to edge rendering.",
-    slug: "headless-commerce-storefront",
+    name: "Sellino — Storefront Iteration",
+    context:
+      "Checkout and catalog improvements across the web storefront and mobile app.",
+    slug: "sellino-ecommerce",
   },
 ];
 
-/** Personal and open-source projects currently maintained. */
+/** Personal and studio projects currently active. */
 export const personalProjects: ActiveProject[] = [
   {
-    name: "DevOps CLI Toolkit",
-    context: "v2 in development: plugin system and multi-cloud secrets rotation.",
-    slug: "devops-cli-toolkit",
+    name: "Shiki UI — Flutter Component Kit",
+    context:
+      "Growing the in-house widget library that backs every studio project.",
+    slug: "shiki-ui-flutter-kit",
   },
   {
-    name: "Open-Source UI Library",
-    context: "Working toward full WCAG 2.2 coverage and a headless date-range picker.",
-    slug: "open-source-ui-library",
+    name: "Lan Party — Open Source",
+    context: "Public experiments and released tooling on GitHub.",
+    slug: "lan-party",
   },
   {
-    name: "AI Support Assistant",
-    context: "Fine-tuning escalation thresholds from live feedback data.",
-    slug: "ai-support-assistant",
+    name: "Subsify — Polish Pass",
+    context: "Refining subscription insights, reminders, and background sync.",
+    slug: "subsify-subscriptions",
   },
 ];

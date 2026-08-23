@@ -1,5 +1,6 @@
 "use node";
 
+import { v } from "convex/values";
 import { action } from "./_generated/server";
 import { api } from "./_generated/api";
 
@@ -23,14 +24,14 @@ async function ghRest<T>(token: string, path: string): Promise<T> {
 }
 
 export const refresh = action({
-  args: {},
-  handler: async (ctx) => {
+  args: { force: v.optional(v.boolean()) },
+  handler: async (ctx, args) => {
     const token = process.env.GITHUB_TOKEN;
     if (!token) throw new Error("GITHUB_TOKEN is not configured on the deployment.");
 
-    // Skip work when we already have fresh data.
+    // Skip work when we already have fresh data (unless forced).
     const cached = await ctx.runQuery(api.githubStore.getCache, {});
-    if (cached && Date.now() - cached.fetchedAt < STALE_MS) return;
+    if (!args.force && cached && Date.now() - cached.fetchedAt < STALE_MS) return;
 
     // 1. Identify the account behind the token.
     const me = await ghRest<{ login: string }>(token, "/user");
@@ -47,6 +48,7 @@ export const refresh = action({
         query: `
           query($login: String!) {
             user(login: $login) {
+              createdAt
               contributionsCollection {
                 contributionCalendar {
                   totalContributions
@@ -59,6 +61,7 @@ export const refresh = action({
                 }
               }
               repositoriesContributedTo(first: 30, includeUserRepositories: false) {
+                totalCount
                 nodes {
                   nameWithOwner
                   isPrivate
@@ -80,7 +83,9 @@ export const refresh = action({
               weeks: { contributionDays: CalendarDay[] }[];
             };
           };
+          createdAt?: string;
           repositoriesContributedTo?: {
+            totalCount: number;
             nodes: { nameWithOwner: string; isPrivate: boolean }[] | null;
           };
         };
@@ -103,8 +108,11 @@ export const refresh = action({
       }
     }
 
+    const user = gqlJson.data?.user;
+    const contributed = user?.repositoriesContributedTo;
+
     const contributedNodes: { nameWithOwner: string; isPrivate: boolean }[] =
-      gqlJson.data?.user?.repositoriesContributedTo?.nodes ?? [];
+      contributed?.nodes ?? [];
     const contributedTo: string[] = Array.from(
       new Set(
         contributedNodes
@@ -122,12 +130,20 @@ export const refresh = action({
       .slice(0, 12)
       .map((repo) => repo.name);
 
+    const meFull = await ghRest<{ login: string; public_repos: number }>(
+      token,
+      "/user",
+    );
+
     await ctx.runMutation(api.githubStore.saveCache, {
       username: login,
       totalContributions: collection.contributionCalendar.totalContributions,
       days,
       contributedTo,
+      contributedToTotal: contributed?.totalCount ?? contributedTo.length,
       topRepos,
+      publicRepos: meFull.public_repos,
+      memberSince: user?.createdAt ?? new Date().toISOString(),
     });
   },
 });

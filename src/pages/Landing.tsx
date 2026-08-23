@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -24,18 +24,18 @@ const fadeUp = {
 const capabilities = [
   {
     n: "01",
-    title: "Production systems",
-    body: "End-to-end web platforms: typed APIs, deliberate data models, and interfaces that stay fast under real traffic. Every project here ran in production and carried real users.",
+    title: "Cross-platform apps",
+    body: "Production Flutter apps for Android and iOS from a single Dart codebase — state managed with GetX, BLoC, or Riverpod as the project demands, never one-size-fits-all.",
   },
   {
     n: "02",
-    title: "Open-source contributions",
-    body: "Maintainer of developer tooling used by teams beyond my own, and a regular contributor across the React and TypeScript ecosystems — merged work, documented decisions.",
+    title: "Backends & APIs",
+    body: "RESTful APIs built on Laravel with clean resource architecture, plus Firebase for authentication, Cloud Messaging, and realtime features that keep clients in sync.",
   },
   {
     n: "03",
-    title: "Scoped engagements",
-    body: "Clear deliverables, honest estimates, and code you can hand to your own engineers. I take on builds where the requirements are serious and the standard is high.",
+    title: "Studio-grade delivery",
+    body: "Shiki Code Studio takes products from design to store release: clean architecture, honest estimates, and handover documentation your own team can own.",
   },
 ];
 
@@ -68,11 +68,45 @@ function ActiveProjectRow({ project }: { project: ActiveProject }) {
   );
 }
 
-const stats = [
-  { value: "140+", label: "Merged pull requests" },
-  { value: "6", label: "Maintained repositories" },
-  { value: "8 yrs", label: "Shipping software" },
-];
+// Stats are computed from live GitHub data when the cache has loaded.
+function buildStats(
+  gh:
+    | {
+        totalContributions: number;
+        contributedToTotal: number;
+        memberSince: string;
+      }
+    | null
+    | undefined,
+) {
+  if (
+    !gh ||
+    typeof gh.totalContributions !== "number" ||
+    typeof gh.contributedToTotal !== "number" ||
+    typeof gh.memberSince !== "string"
+  ) {
+    return [];
+  }
+  const sinceYear = new Date(gh.memberSince).getFullYear();
+  return [
+    {
+      value:
+        Math.round(gh.totalContributions / 100) * 100 + "+",
+      label: "Contributions · last 12 months",
+    },
+    {
+      value:
+        gh.contributedToTotal > 0 ? gh.contributedToTotal + "+" : "—",
+      label: "Client & team repositories",
+    },
+    {
+      value:
+        Math.max(1, new Date().getFullYear() - sinceYear) + " yr" +
+        (Math.max(1, new Date().getFullYear() - sinceYear) === 1 ? "" : "s"),
+      label: "Shipping on GitHub since " + sinceYear,
+    },
+  ];
+}
 
 export default function Landing() {
   const projects = useQuery(api.portfolio.listProjects, {});
@@ -92,7 +126,7 @@ export default function Landing() {
       !githubCache || Date.now() - githubCache.fetchedAt > 6 * 60 * 60 * 1000;
     if (!stale || refreshingGithub.current) return;
     refreshingGithub.current = true;
-    refreshGithub()
+    refreshGithub({})
       .catch((err) => console.error(err))
       .finally(() => {
         refreshingGithub.current = false;
@@ -113,7 +147,7 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground"
         >
-          Full-stack engineer · Available for engagements
+          Shiki Code Studio · Flutter development · Available for projects
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -121,7 +155,7 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           className="mt-6 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl"
         >
-          Software, shipped and documented.
+          Flutter apps with serious backbones.
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 16 }}
@@ -129,9 +163,11 @@ export default function Landing() {
           transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
           className="mt-6 max-w-xl text-base leading-7 text-muted-foreground"
         >
-          A working record of production systems, client engagements, and
-          open-source contributions. Browse the catalog, read how each piece
-          was built, then book time directly on my calendar.
+          I&apos;m Arman Abir, founder of Shiki Code Studio. I build
+          cross-platform apps in Flutter, backed by Laravel RESTful APIs and
+          Firebase — with state management done right using GetX, BLoC, or
+          Riverpod. Browse the work below, then book time directly on my
+          calendar.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -297,7 +333,7 @@ export default function Landing() {
             </motion.div>
           )}
           <motion.div {...fadeUp} className="mt-14 grid gap-10 sm:grid-cols-3">
-            {stats.map((s) => (
+            {buildStats(githubCache).map((s) => (
               <div key={s.label}>
                 <p className="font-mono text-3xl font-bold tabular-nums tracking-tight">
                   {s.value}
@@ -305,6 +341,9 @@ export default function Landing() {
                 <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
               </div>
             ))}
+            {!githubCache && (
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+            )}
           </motion.div>
         </div>
       </section>
