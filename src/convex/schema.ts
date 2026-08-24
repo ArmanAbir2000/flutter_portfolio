@@ -47,6 +47,9 @@ const schema = defineSchema(
       repoUrl: v.optional(v.string()),
       year: v.number(),
       featured: v.boolean(),
+      // App UI showcase. Stored as public file URLs from Convex storage.
+      cover: v.optional(v.string()),
+      shots: v.optional(v.array(v.string())),
     }).index("by_slug", ["slug"]),
 
     appointments: defineTable({

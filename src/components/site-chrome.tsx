@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "convex/react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import {
   ArrowUpRight,
@@ -7,7 +8,9 @@ import {
   Mail,
 } from "lucide-react";
 import { Link, NavLink } from "react-router";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
+import { CONTENT_KEYS, asSocials, defaultSocials } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 
 const links = [
@@ -16,20 +19,22 @@ const links = [
   { to: "/contact", label: "Contact" },
 ];
 
-/** Public profiles shown in the footer. Edit URLs here. */
-const socials = [
-  { label: "GitHub", href: "https://github.com/ArmanAbir2000", Icon: Github },
+const socialIcons = [
+  { key: "github", label: "GitHub", build: (url: string) => url, Icon: Github },
   {
+    key: "facebook",
     label: "Facebook",
-    href: "https://www.facebook.com/armanabir0124",
+    build: (url: string) => url,
     Icon: Facebook,
   },
   {
+    key: "email",
     label: "Email",
-    href: "mailto:armanabir0124@gmail.com",
+    build: (url: string) =>
+      url.startsWith("mailto:") ? url : "mailto:" + url,
     Icon: Mail,
   },
-];
+] as const;
 
 /** Thin reading-progress bar that tracks page scroll. */
 function ScrollProgress() {
@@ -122,6 +127,12 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const rows = useQuery(api.siteContent.list, {});
+  const socials = useMemo(() => {
+    const stored = rows?.find((r) => r.key === CONTENT_KEYS.socials)?.data;
+    return asSocials(stored) ?? defaultSocials;
+  }, [rows]);
+
   return (
     <footer className="border-t border-border/60">
       <div className="mx-auto flex h-auto w-full max-w-6xl flex-col gap-2 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -138,19 +149,26 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-col gap-2 sm:items-end">
           <div className="flex items-center gap-3">
-            {socials.map(({ label, href, Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("mailto:") ? undefined : "_blank"}
-                rel={href.startsWith("mailto:") ? undefined : "noreferrer noopener"}
-                aria-label={label}
-                title={label}
-                className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Icon className="size-4" />
-              </a>
-            ))}
+            {socialIcons.map(({ key, label, build, Icon }) => {
+              const raw = socials[key];
+              if (!raw) return null; // blank field in the dashboard hides the icon
+              const href = build(raw);
+              return (
+                <a
+                  key={key}
+                  href={href}
+                  target={href.startsWith("mailto:") ? undefined : "_blank"}
+                  rel={
+                    href.startsWith("mailto:") ? undefined : "noreferrer noopener"
+                  }
+                  aria-label={label}
+                  title={label}
+                  className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Icon className="size-4" />
+                </a>
+              );
+            })}
           </div>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Shiki Code Studio · Arman Abir · Built

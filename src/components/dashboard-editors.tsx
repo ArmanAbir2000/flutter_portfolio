@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import {
   Download,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
-import type { Doc } from "@/convex/_generated/dataModel";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +27,16 @@ import {
   asHero,
   asInProgress,
   asSkills,
+  asSocials,
   defaultCapabilities,
   defaultHero,
   defaultInProgress,
   defaultSkills,
+  defaultSocials,
   type Capability,
   type HeroContent,
   type InProgressContent,
+  type SocialsContent,
 } from "@/lib/content";
 
 type ContentRow = { key: string; data: unknown };
@@ -517,6 +520,43 @@ export function ProjectsManager() {
   const [form, setForm] = useState<FormState | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Image uploads (available once the project exists, i.e. edit mode).
+  const generateUploadUrl = useMutation(api.portfolio.generateUploadUrl);
+  const setCover = useMutation(api.portfolio.setCover);
+  const addShot = useMutation(api.portfolio.addShot);
+  const removeShotM = useMutation(api.portfolio.removeShot);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const shotInputRef = useRef<HTMLInputElement>(null);
+
+  const editing = form?.id ? projects?.find((p) => p._id === form.id) : undefined;
+
+  const uploadImage = async (file: File, kind: "cover" | "shot") => {
+    if (!form?.id) return;
+    setUploading(kind);
+    try {
+      const postUrl = await generateUploadUrl({});
+      const res = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!res.ok) throw new Error("Upload failed (" + res.status + ")");
+      const { storageId } = (await res.json()) as { storageId: string };
+      if (kind === "cover") {
+        await setCover({ id: form.id, storageId: storageId as Id<"_storage"> });
+        toast.success("Cover updated.");
+      } else {
+        await addShot({ id: form.id, storageId: storageId as Id<"_storage"> });
+        toast.success("Screenshot added.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(null);
+    }
+  };
+
   // GitHub import panel state.
   const [showGh, setShowGh] = useState(false);
   const [ghRepos, setGhRepos] = useState<GhRepo[] | null>(null);
@@ -837,6 +877,137 @@ export function ProjectsManager() {
             />
           </div>
 
+          {form.id && (
+            <div className="space-y-3 rounded-md border border-border/60 p-4">
+              <div>
+                <p className="text-sm font-semibold">App UI showcase</p>
+                <p className="text-xs text-muted-foreground">
+                  Uploads save immediately — no need to press Save project.
+                </p>
+              </div>
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void uploadImage(f, "cover");
+                  e.target.value = "";
+                }}
+              />
+              <input
+                ref={shotInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void uploadImage(f, "shot");
+                  e.target.value = "";
+                }}
+              />
+              <div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
+                {/* Cover */}
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Cover (cards)</p>
+                  {editing?.cover ? (
+                    <img
+                      src={editing.cover}
+                      alt="Project cover"
+                      className="aspect-video w-full rounded-md border border-border/60 object-cover"
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploading !== null}
+                      className="grid aspect-video w-full cursor-pointer place-items-center rounded-md border border-dashed border-border/60 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      {uploading === "cover" ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        "+ Upload cover"
+                      )}
+                    </button>
+                  )}
+                  {editing?.cover && (
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 w-fit cursor-pointer text-xs"
+                        disabled={uploading !== null}
+                        onClick={() => coverInputRef.current?.click()}
+                      >
+                        Replace
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-fit cursor-pointer text-xs text-red-400 hover:text-red-300"
+                        disabled={uploading !== null}
+                        onClick={async () => {
+                          if (!form.id) return;
+                          setUploading("cover");
+                          try {
+                            await setCover({ id: form.id });
+                            toast.success("Cover removed.");
+                          } finally {
+                            setUploading(null);
+                          }
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                {/* Screenshots gallery */}
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Screenshots ({editing?.shots?.length ?? 0}/12)
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {(editing?.shots ?? []).map((url) => (
+                      <div key={url} className="relative">
+                        <img
+                          src={url}
+                          alt="Screenshot"
+                          className="h-24 w-auto rounded-md border border-border/60 object-cover"
+                        />
+                        <button
+                          type="button"
+                          aria-label="Remove screenshot"
+                          disabled={uploading !== null}
+                          onClick={async () => {
+                            if (!form.id) return;
+                            await removeShotM({ id: form.id, url });
+                          }}
+                          className="absolute -right-1.5 -top-1.5 grid size-5 cursor-pointer place-items-center rounded-full border border-border bg-background text-muted-foreground hover:text-red-400"
+                        >
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => shotInputRef.current?.click()}
+                      disabled={uploading !== null || (editing?.shots?.length ?? 0) >= 12}
+                      className="grid h-24 w-16 cursor-pointer place-items-center rounded-md border border-dashed border-border/60 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    >
+                      {uploading === "shot" ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        "+ Add"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <Button
               size="sm"
@@ -916,6 +1087,55 @@ export function ProjectsManager() {
   );
 }
 
+/* ------------------------------ Socials ------------------------------ */
+
+export function SocialsEditor({ rows }: { rows?: ContentRow[] }) {
+  const save = useSectionSaver(CONTENT_KEYS.socials);
+  const { draft, update, dirty, resetDirty } = useDraft<SocialsContent>(
+    rows,
+    CONTENT_KEYS.socials,
+    defaultSocials,
+    asSocials,
+  );
+
+  const fields = [
+    { key: "github" as const, label: "GitHub profile URL", ph: "https://github.com/username" },
+    { key: "facebook" as const, label: "Facebook profile / page URL", ph: "https://facebook.com/yourname" },
+    {
+      key: "email" as const,
+      label: "Email address",
+      ph: "you@example.com",
+    },
+  ];
+
+  return (
+    <SectionCard
+      title="Footer social links"
+      description="Shown as icons on every page footer. Leave a field empty to hide that icon."
+    >
+      {fields.map(({ key, label, ph }) => (
+        <div className="grid gap-2" key={key}>
+          <Label htmlFor={"socials-" + key}>{label}</Label>
+          <Input
+            id={"socials-" + key}
+            value={draft[key]}
+            placeholder={ph}
+            maxLength={300}
+            onChange={(e) => update({ ...draft, [key]: e.target.value })}
+            className={inputCls}
+          />
+        </div>
+      ))}
+      <SaveButton
+        dirty={dirty}
+        onSave={async () => {
+          if (await save(draft)) resetDirty();
+        }}
+      />
+    </SectionCard>
+  );
+}
+
 export function ContentPanels() {
   const rows = useQuery(api.siteContent.list, {}) as
     | ContentRow[]
@@ -926,6 +1146,7 @@ export function ContentPanels() {
       <SkillsEditor rows={rows} />
       <CapabilitiesEditor rows={rows} />
       <InProgressEditor rows={rows} />
+      <SocialsEditor rows={rows} />
     </div>
   );
 }

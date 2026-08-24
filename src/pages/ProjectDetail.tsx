@@ -125,6 +125,49 @@ export default function ProjectDetail() {
             </motion.div>
           </section>
 
+          {/* App UI showcase — cover hero + phone-height screenshot strip */}
+          {(project.cover || (project.shots?.length ?? 0) > 0) && (
+            <section className="mx-auto w-full max-w-6xl px-6 pt-14">
+              {project.cover && (
+                <motion.img
+                  src={project.cover}
+                  alt={project.title + " — app UI cover"}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, ease: EASE }}
+                  className="max-h-[480px] w-full rounded-xl border border-border/60 object-cover"
+                  loading="lazy"
+                />
+              )}
+              {(project.shots?.length ?? 0) > 0 && (
+                <>
+                  <h2 className="mt-14 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                    Screenshots
+                  </h2>
+                  <div className="-mx-6 mt-5 flex snap-x gap-4 overflow-x-auto px-6 pb-4">
+                    {project.shots!.map((url, i) => (
+                      <motion.img
+                        key={url}
+                        src={url}
+                        alt={project.title + " screenshot " + (i + 1)}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{
+                          duration: 0.5,
+                          delay: Math.min(i * 0.06, 0.3),
+                          ease: EASE,
+                        }}
+                        className="h-[420px] w-auto shrink-0 snap-start rounded-xl border border-border/60 object-cover transition-transform duration-300 hover:scale-[1.02]"
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </section>
+          )}
+
           {/* Body */}
           <section className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
             <motion.div

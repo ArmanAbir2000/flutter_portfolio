@@ -269,10 +269,68 @@ export const saveProject = mutation({
     };
 
     if (a.id) {
-      await ctx.db.replace(a.id, doc);
+      // Carry over uploaded media — the form doesn't touch cover/shots and
+      // replace() would otherwise wipe them on every text edit.
+      const existing = await ctx.db.get(a.id);
+      await ctx.db.replace(a.id, {
+        ...doc,
+        ...(existing?.cover ? { cover: existing.cover } : {}),
+        ...(existing?.shots?.length ? { shots: existing.shots } : {}),
+      });
     } else {
       await ctx.db.insert("portfolioProjects", doc);
     }
+  },
+});
+
+/** Short-lived upload URL for owner file uploads (cover / screenshots). */
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    await requireOwner(ctx);
+    return ctx.storage.generateUploadUrl();
+  },
+});
+
+/** Set (or clear with storageId omitted) a project's cover image. */
+export const setCover = mutation({
+  args: { id: v.id("portfolioProjects"), storageId: v.optional(v.id("_storage")) },
+  handler: async (ctx, { id, storageId }) => {
+    await requireOwner(ctx);
+    if (!storageId) {
+      await ctx.db.patch(id, { cover: undefined });
+      return;
+    }
+    const url = await ctx.storage.getUrl(storageId);
+    if (!url) throw new Error("Upload not found.");
+    await ctx.db.patch(id, { cover: url });
+  },
+});
+
+/** Append an uploaded screenshot to a project's gallery. */
+export const addShot = mutation({
+  args: { id: v.id("portfolioProjects"), storageId: v.id("_storage") },
+  handler: async (ctx, { id, storageId }) => {
+    await requireOwner(ctx);
+    const url = await ctx.storage.getUrl(storageId);
+    if (!url) throw new Error("Upload not found.");
+    const project = await ctx.db.get(id);
+    if (!project) throw new Error("Project not found.");
+    const shots = [...(project.shots ?? []), url].slice(-12); // cap gallery size
+    await ctx.db.patch(id, { shots });
+  },
+});
+
+/** Remove one screenshot from a project's gallery. */
+export const removeShot = mutation({
+  args: { id: v.id("portfolioProjects"), url: v.string() },
+  handler: async (ctx, { id, url }) => {
+    await requireOwner(ctx);
+    const project = await ctx.db.get(id);
+    if (!project) return;
+    await ctx.db.patch(id, {
+      shots: (project.shots ?? []).filter((s) => s !== url),
+    });
   },
 });
 

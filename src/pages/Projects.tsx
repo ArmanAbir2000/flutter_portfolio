@@ -135,6 +135,14 @@ export default function Projects() {
                       to={"/projects/" + p.slug}
                       className="group flex h-full cursor-pointer flex-col bg-background p-7 transition-colors hover:bg-muted/50"
                     >
+                      {p.cover && (
+                        <img
+                          src={p.cover}
+                          alt=""
+                          loading="lazy"
+                          className="mb-6 aspect-video w-full rounded-lg border border-border/50 object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+                        />
+                      )}
                       <div className="flex items-center justify-between">
                         <span className="font-mono text-xs tabular-nums text-muted-foreground">
                           {p.year}

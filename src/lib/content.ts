@@ -13,12 +13,18 @@ export type InProgressContent = {
   client: ActiveItem[];
   personal: ActiveItem[];
 };
+export type SocialsContent = {
+  github: string;
+  facebook: string;
+  email: string;
+};
 
 export const CONTENT_KEYS = {
   hero: "hero",
   skills: "skills",
   capabilities: "capabilities",
   inProgress: "inProgress",
+  socials: "socials",
 } as const;
 
 export const defaultHero: HeroContent = {
@@ -90,6 +96,12 @@ export const defaultInProgress: InProgressContent = {
   ],
 };
 
+export const defaultSocials: SocialsContent = {
+  github: "https://github.com/ArmanAbir2000",
+  facebook: "https://www.facebook.com/armanabir0124",
+  email: "armanabir0124@gmail.com",
+};
+
 /* ---- Runtime guards (stored data is user-edited; never trust shape) ---- */
 
 const strArray = (d: unknown): string[] | null =>
@@ -120,6 +132,20 @@ export function asCapabilities(d: unknown): Capability[] | null {
       typeof (x as Capability).body === "string",
   );
   return items.length > 0 ? items : null;
+}
+
+const urlOrEmpty = (v: unknown): string =>
+  typeof v === "string" ? v.trim() : "";
+
+export function asSocials(d: unknown): SocialsContent | null {
+  if (!d || typeof d !== "object") return null;
+  const o = d as Record<string, unknown>;
+  // Empty strings are allowed — an empty field simply hides the icon.
+  return {
+    github: urlOrEmpty(o.github),
+    facebook: urlOrEmpty(o.facebook),
+    email: urlOrEmpty(o.email),
+  };
 }
 
 export function asInProgress(d: unknown): InProgressContent | null {
