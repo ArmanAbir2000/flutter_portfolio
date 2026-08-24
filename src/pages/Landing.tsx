@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
@@ -8,18 +8,26 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { ContributionMap } from "@/components/contribution-map";
+import { CountUp, Marquee, MaskText, Reveal } from "@/components/motion-primitives";
 import {
   currentClientWork,
   personalProjects,
   type ActiveProject,
 } from "@/lib/profile";
+import { EASE, fadeUp } from "@/lib/motion";
 
-const fadeUp = {
-  initial: { opacity: 0, y: 12 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-40px" },
-  transition: { duration: 0.5, ease: "easeOut" as const },
-};
+const stack = [
+  "Flutter",
+  "Dart",
+  "Laravel",
+  "Firebase",
+  "GetX",
+  "BLoC",
+  "Riverpod",
+  "REST APIs",
+  "Cloud Messaging",
+  "Clean architecture",
+];
 
 const capabilities = [
   {
@@ -46,7 +54,7 @@ function ActiveProjectRow({ project }: { project: ActiveProject }) {
         <p className="text-sm font-medium tracking-tight">{project.name}</p>
         <ArrowUpRight
           className={
-            "size-3.5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 " +
+            "size-3.5 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 " +
             (project.slug ? "group-hover:text-foreground" : "opacity-0")
           }
         />
@@ -114,6 +122,7 @@ export default function Landing() {
   const githubCache = useQuery(api.githubStore.getCache, {});
   const refreshGithub = useAction(api.github.refresh);
   const refreshingGithub = useRef(false);
+  const [githubFailed, setGithubFailed] = useState(false);
 
   useEffect(() => {
     void ensureSeeded().catch((err) => console.error(err));
@@ -127,7 +136,12 @@ export default function Landing() {
     if (!stale || refreshingGithub.current) return;
     refreshingGithub.current = true;
     refreshGithub({})
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err);
+        // Stop showing a spinner forever when the token/action is unavailable;
+        // the map below already falls back to demo data.
+        setGithubFailed(true);
+      })
       .finally(() => {
         refreshingGithub.current = false;
       });
@@ -140,27 +154,29 @@ export default function Landing() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="mx-auto w-full max-w-6xl px-6 pt-28 pb-24 sm:pt-40 sm:pb-32">
+      <section className="mx-auto w-full max-w-6xl px-6 pt-28 pb-16 sm:pt-40 sm:pb-20">
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.05, ease: EASE }}
+          className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground"
         >
+          <span className="relative flex size-2 shrink-0">
+            <span className="animate-pulse-ring absolute inline-flex size-full rounded-full bg-emerald-500/60" />
+            <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+          </span>
           Shiki Code Studio · Flutter development · Available for projects
         </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="mt-6 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl"
-        >
-          Flutter apps with serious backbones.
-        </motion.h1>
+        <MaskText
+          as="h1"
+          text="Flutter apps with serious backbones."
+          delay={0.15}
+          className="mt-6 block max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl"
+        />
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.7, delay: 0.55, ease: EASE }}
           className="mt-6 max-w-xl text-base leading-7 text-muted-foreground"
         >
           I&apos;m Arman Abir, founder of Shiki Code Studio. I build
@@ -172,50 +188,88 @@ export default function Landing() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+          transition={{ duration: 0.7, delay: 0.7, ease: EASE }}
           className="mt-10 flex flex-wrap items-center gap-3"
         >
-          <Button asChild size="lg" className="cursor-pointer">
+          <Button
+            asChild
+            size="lg"
+            className="group cursor-pointer transition-transform active:scale-[0.97]"
+          >
             <Link to="/projects">
               View selected work
-              <ArrowRight className="size-4" />
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="cursor-pointer">
+          <Button
+            asChild
+            size="lg"
+            variant="outline"
+            className="cursor-pointer transition-transform active:scale-[0.97]"
+          >
             <Link to="/book">
               Book an appointment
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
         </motion.div>
+
+        {/* Stack marquee */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.9, ease: EASE }}
+          className="mt-16 border-y border-border/60 py-4 sm:mt-24"
+        >
+          <Marquee
+            duration={36}
+            items={stack.map((s) => (
+              <span
+                key={s}
+                className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              >
+                {s}
+              </span>
+            ))}
+          />
+        </motion.div>
       </section>
 
       {/* Featured work */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
-          <motion.div {...fadeUp} className="flex items-baseline justify-between">
+          <Reveal className="flex items-baseline justify-between">
             <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
               Selected work
             </h2>
             <Link
               to="/projects"
-              className="cursor-pointer text-sm text-muted-foreground hover:text-foreground"
+              className="link-sweep cursor-pointer text-sm text-muted-foreground hover:text-foreground"
             >
               All projects →
             </Link>
-          </motion.div>
+          </Reveal>
           <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-border/60 bg-border/60 sm:grid-cols-2">
-            {featured.map((p, i) => (
-              <motion.div key={p._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
+            {projects === undefined
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-background p-8">
+                    <div className="h-3 w-10 animate-pulse rounded bg-muted" />
+                    <div className="mt-6 h-5 w-40 animate-pulse rounded bg-muted" />
+                    <div className="mt-3 h-3 w-full animate-pulse rounded bg-muted" />
+                    <div className="mt-2 h-3 w-2/3 animate-pulse rounded bg-muted" />
+                  </div>
+                ))
+              : featured.map((p, i) => (
+              <motion.div key={p._id} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
                 <Link
                   to={"/projects/" + p.slug}
-                  className="group flex h-full cursor-pointer flex-col bg-background p-8 transition-colors hover:bg-muted/50"
+                  className="group flex h-full cursor-pointer flex-col bg-background p-8 transition-all duration-300 hover:bg-muted/50"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-xs tabular-nums text-muted-foreground">
                       {p.year}
                     </span>
-                    <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+                    <ArrowUpRight className="size-4 text-muted-foreground transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
                   </div>
                   <h3 className="mt-6 text-lg font-semibold tracking-tight">
                     {p.title}
@@ -240,9 +294,9 @@ export default function Landing() {
       {/* Capabilities */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
-          <motion.p {...fadeUp} className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             What I do
-          </motion.p>
+          </Reveal>
           <div className="mt-10">
             {capabilities.map((c, i) => (
               <motion.div key={c.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
@@ -265,9 +319,9 @@ export default function Landing() {
       {/* Currently building */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
-          <motion.p {...fadeUp} className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             In progress right now
-          </motion.p>
+          </Reveal>
           <div className="mt-10 grid gap-x-20 gap-y-12 lg:grid-cols-2">
             <motion.div {...fadeUp}>
               <h2 className="text-sm font-semibold tracking-tight text-muted-foreground">
@@ -294,12 +348,12 @@ export default function Landing() {
       {/* Contributions */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20">
-          <motion.div {...fadeUp} className="flex items-baseline justify-between">
+          <Reveal className="flex items-baseline justify-between">
             <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
               Contribution activity
             </h2>
             <span className="font-mono text-xs text-muted-foreground">last 52 weeks</span>
-          </motion.div>
+          </Reveal>
           <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-8 rounded-lg border border-border/60 p-4 sm:p-6">
             <ContributionMap
               data={
@@ -324,7 +378,7 @@ export default function Landing() {
                     href={"https://github.com/" + repo}
                     target="_blank"
                     rel="noreferrer"
-                    className="cursor-pointer font-mono text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                    className="link-sweep cursor-pointer font-mono text-xs text-muted-foreground hover:text-foreground"
                   >
                     {repo}
                   </a>
@@ -335,13 +389,14 @@ export default function Landing() {
           <motion.div {...fadeUp} className="mt-14 grid gap-10 sm:grid-cols-3">
             {buildStats(githubCache).map((s) => (
               <div key={s.label}>
-                <p className="font-mono text-3xl font-bold tabular-nums tracking-tight">
-                  {s.value}
-                </p>
+                <CountUp
+                  value={s.value}
+                  className="block font-mono text-3xl font-bold tabular-nums tracking-tight"
+                />
                 <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
               </div>
             ))}
-            {!githubCache && (
+            {!githubCache && !githubFailed && (
               <Loader2 className="size-4 animate-spin text-muted-foreground" />
             )}
           </motion.div>
@@ -351,18 +406,24 @@ export default function Landing() {
       {/* CTA */}
       <section className="border-t border-border/60">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-start gap-6 px-6 py-24 sm:py-32">
-          <motion.h2 {...fadeUp} className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Have a project in mind? Let's talk it through.
-          </motion.h2>
-          <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="max-w-xl text-sm leading-6 text-muted-foreground">
+          <MaskText
+            as="h2"
+            text="Have a project in mind? Let's talk it through."
+            className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl"
+          />
+          <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.15 }} className="max-w-xl text-sm leading-6 text-muted-foreground">
             Pick a slot on my calendar or send a short brief. I reply within one
             business day.
           </motion.p>
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }}>
-            <Button asChild size="lg" className="cursor-pointer">
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.25 }} className="pt-2">
+            <Button
+              asChild
+              size="lg"
+              className="group cursor-pointer transition-transform active:scale-[0.97]"
+            >
               <Link to="/book">
                 Book an appointment
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </Button>
           </motion.div>

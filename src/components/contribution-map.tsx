@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
+import { EASE } from "@/lib/motion";
 
 const WEEKS = 52;
 
@@ -208,7 +209,14 @@ export function ContributionMap({ data }: { data?: GitHubCalendar | null }) {
             ))}
           </div>
           {columns.map((week, wi) => (
-            <div key={wi} className="flex flex-col gap-[3px]">
+            <motion.div
+              key={wi}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, ease: EASE, delay: Math.min(wi * 0.015, 0.75) }}
+              className="flex flex-col gap-[3px]"
+            >
               {Array.from({ length: 7 }).map((_, di) => {
                 const day: Cell | undefined = week[di];
                 if (!day) return <span key={di} className="h-[10px] w-[10px]" />;
@@ -245,7 +253,7 @@ export function ContributionMap({ data }: { data?: GitHubCalendar | null }) {
                   />
                 );
               })}
-            </div>
+            </motion.div>
           ))}
         </motion.div>
 

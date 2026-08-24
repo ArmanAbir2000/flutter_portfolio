@@ -13,6 +13,8 @@ import { Link, useNavigate } from "react-router";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/hooks/use-auth";
+import { Reveal } from "@/components/motion-primitives";
+import { EASE, fadeUp, viewportOnce } from "@/lib/motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -75,7 +77,11 @@ function AppointmentRow({
   onCycle: () => void;
 }) {
   return (
-    <li>
+    <motion.li
+      {...fadeUp}
+      viewport={viewportOnce}
+      transition={{ duration: 0.45, ease: EASE }}
+    >
       <div className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <p className="truncate text-sm font-medium">{appointment.name}</p>
@@ -98,7 +104,7 @@ function AppointmentRow({
         </Button>
       </div>
       <Separator />
-    </li>
+    </motion.li>
   );
 }
 
@@ -110,7 +116,11 @@ function MessageRow({
   onToggle: () => void;
 }) {
   return (
-    <li>
+    <motion.li
+      {...fadeUp}
+      viewport={viewportOnce}
+      transition={{ duration: 0.45, ease: EASE }}
+    >
       <div className="flex flex-col gap-3 py-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-sm font-medium">
@@ -141,7 +151,7 @@ function MessageRow({
         </Button>
       </div>
       <Separator />
-    </li>
+    </motion.li>
   );
 }
 
@@ -183,9 +193,9 @@ export default function Dashboard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: EASE }}
       className="min-h-screen bg-background text-foreground sm:flex"
     >
       <Sidebar onSignOut={handleSignOut} />
@@ -201,7 +211,7 @@ export default function Dashboard() {
             {user?.email ? " Signed in as " + user.email + "." : ""}
           </p>
 
-          <section className="mt-12">
+          <Reveal as="section" className="mt-12">
             <div className="mb-6 flex items-baseline justify-between">
               <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 Appointment requests
@@ -225,9 +235,9 @@ export default function Dashboard() {
                 ))}
               </ul>
             )}
-          </section>
+          </Reveal>
 
-          <section className="mt-14">
+          <Reveal as="section" delay={0.05} className="mt-14">
             <div className="mb-6 flex items-baseline justify-between">
               <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 Messages
@@ -249,7 +259,7 @@ export default function Dashboard() {
                 ))}
               </ul>
             )}
-          </section>
+          </Reveal>
         </div>
       </main>
     </motion.div>

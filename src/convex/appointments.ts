@@ -1,6 +1,6 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireOwner } from "./owner";
 
 export const createAppointment = mutation({
   args: {
@@ -28,8 +28,7 @@ export const createAppointment = mutation({
 export const listAppointments = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    await requireOwner(ctx);
 
     return ctx.db.query("appointments").order("desc").collect();
   },
@@ -45,8 +44,7 @@ export const setAppointmentStatus = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
+    await requireOwner(ctx);
 
     await ctx.db.patch(args.id, { status: args.status });
   },

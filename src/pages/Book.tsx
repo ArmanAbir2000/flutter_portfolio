@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { MaskText } from "@/components/motion-primitives";
+import { EASE } from "@/lib/motion";
+import { sendViaWeb3Forms } from "@/lib/web3forms";
 
 const TIMES = ["09:00", "10:30", "13:00", "15:00", "16:30"] as const;
 
@@ -58,6 +61,22 @@ export default function Book() {
     setSubmitting(true);
     try {
       await createAppointment({ name, email, topic, date, time });
+
+      // Best-effort instant email of the request; never blocks or fails the booking.
+      void sendViaWeb3Forms({
+        name: name.trim(),
+        email: email.trim(),
+        subject:
+          "Appointment request — " + formatDay(date) + " at " + time,
+        message:
+          "Requested slot: " +
+          formatDay(date) +
+          " at " +
+          time +
+          "\n\nTopic:\n" +
+          (topic.trim() || "(no topic provided)"),
+      });
+
       toast("Appointment requested.", {
         description:
           formatDay(date) + " at " + time + " — I will confirm by email.",
@@ -81,18 +100,25 @@ export default function Book() {
       <main className="flex-1">
         <div className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24 sm:pt-24">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6, ease: EASE }}
           >
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Book an appointment
-            </h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+            <MaskText
+              as="h1"
+              text="Book an appointment"
+              className="block text-3xl font-bold tracking-tight sm:text-4xl"
+            />
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: EASE }}
+              className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground"
+            >
               Pick a slot and tell me what you want to cover — a new build,
               an audit of existing code, or an ongoing engagement. Requests are
               confirmed by email within one business day.
-            </p>
+            </motion.p>
             {projectSlug && (
               <p className="mt-4 inline-block rounded-md border border-border px-3 py-1.5 font-mono text-xs text-muted-foreground">
                 Re: /projects/{projectSlug}
@@ -101,9 +127,9 @@ export default function Book() {
           </motion.div>
 
           <motion.form
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: EASE }}
             onSubmit={handleSubmit}
             className="mt-12 grid gap-14 lg:grid-cols-[20rem_1fr] lg:gap-20"
           >
@@ -124,7 +150,7 @@ export default function Book() {
                         type="button"
                         onClick={() => setDate(iso)}
                         className={
-                          "cursor-pointer rounded-md border px-3 py-2 text-xs transition-colors " +
+                          "cursor-pointer rounded-md border px-3 py-2 text-xs transition-all active:scale-[0.95] " +
                           (date === iso
                             ? "border-foreground bg-foreground text-background"
                             : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground")
@@ -146,7 +172,7 @@ export default function Book() {
                         type="button"
                         onClick={() => setTime(t)}
                         className={
-                          "cursor-pointer rounded-md border px-3 py-1.5 font-mono text-xs tabular-nums transition-colors " +
+                          "cursor-pointer rounded-md border px-3 py-1.5 font-mono text-xs tabular-nums transition-all active:scale-[0.95] " +
                           (time === t
                             ? "border-foreground bg-foreground text-background"
                             : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground")
@@ -206,7 +232,12 @@ export default function Book() {
                   required
                 />
               </div>
-              <Button type="submit" size="lg" disabled={submitting} className="cursor-pointer">
+              <Button
+                type="submit"
+                size="lg"
+                disabled={submitting}
+                className="cursor-pointer transition-transform active:scale-[0.98]"
+              >
                 {submitting && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Request {formatDay(date)} at {time}
               </Button>

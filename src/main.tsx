@@ -4,6 +4,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
+import { MotionConfig } from "framer-motion";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
@@ -138,9 +139,10 @@ function App() {
   if (!convex) return <MissingConvexConfig />;
   return (
     <ConvexAuthProvider client={convex}>
-      <RouteSyncer />
-      <Suspense fallback={<RouteLoading />}>
-        <Routes>
+      <MotionConfig reducedMotion="user">
+        <RouteSyncer />
+        <Suspense fallback={<RouteLoading />}>
+          <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:slug" element={<ProjectDetail />} />
@@ -160,7 +162,8 @@ function App() {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Suspense>
+        </Suspense>
+      </MotionConfig>
       <Toaster />
     </ConvexAuthProvider>
   );

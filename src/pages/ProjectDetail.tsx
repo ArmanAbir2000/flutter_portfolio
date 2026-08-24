@@ -6,6 +6,8 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { MaskText } from "@/components/motion-primitives";
+import { EASE, fadeUp } from "@/lib/motion";
 
 function NotFound() {
   return (
@@ -55,9 +57,9 @@ export default function ProjectDetail() {
           {/* Header */}
           <section className="mx-auto w-full max-w-6xl px-6 pt-16 sm:pt-24">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6, ease: EASE }}
             >
               <Link
                 to="/projects"
@@ -79,12 +81,21 @@ export default function ProjectDetail() {
                   </span>
                 )}
               </div>
-              <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
-                {project.title}
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
+              <MaskText
+                as="h1"
+                text={project.title}
+                delay={0.1}
+                className="mt-4 block max-w-3xl text-3xl font-bold leading-tight tracking-tight sm:text-5xl"
+              />
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
+                className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground"
+              >
                 {project.summary}
-              </p>
+              </motion.p>
 
               {(project.liveUrl || project.repoUrl) && (
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -117,9 +128,8 @@ export default function ProjectDetail() {
           {/* Body */}
           <section className="mx-auto w-full max-w-6xl px-6 pt-16 pb-24">
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.15 }}
               className="grid gap-14 lg:grid-cols-[1fr_20rem] lg:gap-20"
             >
               <div>
@@ -138,12 +148,16 @@ export default function ProjectDetail() {
                 <ul className="mt-4">
                   {project.highlights.map((h, i) => (
                     <li key={i}>
-                      <div className="flex gap-4 py-4">
+                      <motion.div
+                        {...fadeUp}
+                        transition={{ ...fadeUp.transition, delay: Math.min(i * 0.06, 0.3) }}
+                        className="flex gap-4 py-4"
+                      >
                         <span className="font-mono text-xs tabular-nums text-muted-foreground">
                           {String(i + 1).padStart(2, "0")}
                         </span>
                         <p className="text-sm leading-6">{h}</p>
-                      </div>
+                      </motion.div>
                       {i < project.highlights.length - 1 && <Separator />}
                     </li>
                   ))}
