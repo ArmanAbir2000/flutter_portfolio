@@ -35,7 +35,7 @@ jobs:
             echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy"
           else
             # Pin the CLI to the project's convex version so flags stay stable.
-            npx convex@1.42.1 deploy --prod || echo "::warning::Convex backend sync failed - check CONVEX_DEPLOY_KEY; site build continues"
+            npx convex@1.42.1 deploy || echo "::warning::Convex backend sync failed - check CONVEX_DEPLOY_KEY; site build continues"
           fi
 
       - name: Build
