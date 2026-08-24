@@ -57,6 +57,8 @@ export type Testimonial = {
 
 export const CONTENT_KEYS = {
   hero: "hero",
+  /** Site-wide UI theme id (see src/lib/themes.ts). */
+  theme: "theme",
   skills: "skills",
   capabilities: "capabilities",
   inProgress: "inProgress",

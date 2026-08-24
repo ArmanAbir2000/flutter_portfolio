@@ -3,6 +3,36 @@
 
 <head>
   <meta charset="UTF-8" />
+  <!-- Apply the stored site theme before first paint to avoid a flash. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("shiki-site-theme");
+        var valid = ["studio", "brutal", "glass", "terminal", "editorial", "bento"];
+        var light = { brutal: 1, editorial: 1, bento: 1 };
+        var id = valid.indexOf(t) !== -1 ? t : "studio";
+        document.documentElement.dataset.theme = id;
+        if (light[id]) {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.style.colorScheme = "light";
+        } else {
+          document.documentElement.classList.add("dark");
+          document.documentElement.style.colorScheme = "dark";
+        }
+      } catch (e) {
+        document.documentElement.classList.add("dark");
+        document.documentElement.dataset.theme = "studio";
+      }
+    })();
+  </script>
+  <!-- Theme typography: Inter (Studio), Space Grotesk (Brutalist/Glass/Bento),
+       JetBrains Mono (Terminal), Fraunces (Editorial). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&display=swap"
+  />
   <link rel="icon" type="image/svg+xml" href="/logo.svg" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

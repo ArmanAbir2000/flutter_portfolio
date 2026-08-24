@@ -184,3 +184,489 @@
     transition: none;
   }
 }
+
+/* =====================================================================
+   SITE THEMES — complete UI restyles, switchable from the dashboard.
+   Each `html[data-theme="…"]` block changes palette, typography, radii,
+   borders, shadows, textures AND motion personality. The active id is
+   stored on <html data-theme>, `.dark` follows each theme's mode, and
+   the owner's choice persists in Convex (siteContent key "theme") so
+   every visitor sees the same style. See src/lib/themes.ts.
+   ===================================================================== */
+
+/* ---- Shared plumbing ------------------------------------------------- */
+
+:root {
+  --app-font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --app-font-display: var(--app-font-body);
+  --display-tracking: -0.02em;
+  --marquee-speed: 28s;
+  --pulse-speed: 2s;
+}
+
+body {
+  font-family: var(--app-font-body);
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--app-font-display);
+  letter-spacing: var(--display-tracking);
+}
+
+/* Theme tempo for the shared marquee/pulse utilities. */
+.animate-marquee {
+  animation-duration: var(--marquee-speed);
+}
+.animate-pulse-ring {
+  animation-duration: var(--pulse-speed);
+}
+
+/* Aurora drift (glass theme) keyframes. */
+@keyframes theme-aurora-drift {
+  0% {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, 4%, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(-4%, -2%, 0) scale(1);
+  }
+}
+
+/* ---- Studio Dark (default) — quiet confidence ------------------------- */
+
+html[data-theme="studio"] {
+  --app-font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --app-font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --display-tracking: -0.02em;
+  --marquee-speed: 28s;
+  --pulse-speed: 2s;
+}
+
+/* ---- Neo Brutalist — tactile brutalism -------------------------------- */
+
+html[data-theme="brutal"] {
+  color-scheme: light;
+  --radius: 0rem;
+  --background: #f2ede3;
+  --foreground: #14130f;
+  --card: #fffdf6;
+  --card-foreground: #14130f;
+  --popover: #fffdf6;
+  --popover-foreground: #14130f;
+  --primary: #c8f04b;
+  --primary-foreground: #171507;
+  --secondary: #e9e0c9;
+  --secondary-foreground: #14130f;
+  --muted: #eae3d2;
+  --muted-foreground: #57564c;
+  --accent: #ffb02e;
+  --accent-foreground: #171507;
+  --destructive: #e5484d;
+  --border: #14130f;
+  --input: #14130f;
+  --ring: #14130f;
+  --chart-1: #84cc16;
+  --chart-2: #f97316;
+  --chart-3: #2563eb;
+  --chart-4: #ec4899;
+  --chart-5: #8b5cf6;
+  --sidebar: #fffdf6;
+  --sidebar-foreground: #14130f;
+  --sidebar-primary: #c8f04b;
+  --sidebar-primary-foreground: #171507;
+  --sidebar-accent: #eae3d2;
+  --sidebar-accent-foreground: #14130f;
+  --sidebar-border: #14130f;
+  --sidebar-ring: #14130f;
+  --app-font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --app-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --display-tracking: -0.01em;
+  --marquee-speed: 20s;
+  --pulse-speed: 1.6s;
+}
+
+/* Paper grain over everything, like cheap print stock. */
+html[data-theme="brutal"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  background-image: radial-gradient(#14130f14 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Hard offset shadows + press physics on solid buttons. */
+html[data-theme="brutal"] [data-slot="button"][data-variant="default"],
+html[data-theme="brutal"] [data-slot="button"][data-variant="outline"],
+html[data-theme="brutal"] [data-slot="button"][data-variant="secondary"],
+html[data-theme="brutal"] [data-slot="button"][data-variant="destructive"] {
+  border: 2px solid var(--foreground);
+  box-shadow: 3px 3px 0 0 var(--foreground);
+  transition:
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+html[data-theme="brutal"] [data-slot="button"][data-variant="default"]:hover:not(:disabled),
+html[data-theme="brutal"] [data-slot="button"][data-variant="outline"]:hover:not(:disabled),
+html[data-theme="brutal"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled),
+html[data-theme="brutal"] [data-slot="button"][data-variant="destructive"]:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 0 var(--foreground);
+}
+html[data-theme="brutal"] [data-slot="button"]:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 0 var(--foreground);
+}
+
+/* Chunky framed form fields. */
+html[data-theme="brutal"] [data-slot="input"],
+html[data-theme="brutal"] [data-slot="textarea"] {
+  border-width: 2px;
+  border-color: var(--foreground);
+  box-shadow: 2px 2px 0 0 var(--foreground);
+}
+
+html[data-theme="brutal"] ::selection {
+  background: #c8f04b;
+  color: #171507;
+}
+
+html[data-theme="brutal"],
+html[data-theme="brutal"] * {
+  scrollbar-color: #14130f #eae3d2;
+}
+
+/* ---- Aurora Glass — frosted depth -------------------------------------- */
+
+html[data-theme="glass"] {
+  color-scheme: dark;
+  --radius: 1rem;
+  --background: oklch(0.18 0.05 285);
+  --foreground: oklch(0.94 0.02 290);
+  --card: oklch(0.25 0.06 288 / 55%);
+  --card-foreground: oklch(0.94 0.02 290);
+  --popover: oklch(0.23 0.06 288 / 82%);
+  --popover-foreground: oklch(0.94 0.02 290);
+  --primary: oklch(0.68 0.17 293);
+  --primary-foreground: oklch(0.98 0.01 290);
+  --secondary: oklch(0.3 0.07 290 / 60%);
+  --secondary-foreground: oklch(0.92 0.03 290);
+  --muted: oklch(0.27 0.06 288 / 50%);
+  --muted-foreground: oklch(0.72 0.04 288);
+  --accent: oklch(0.33 0.08 292 / 65%);
+  --accent-foreground: oklch(0.95 0.02 290);
+  --destructive: oklch(0.62 0.2 20);
+  --border: oklch(0.85 0.05 290 / 16%);
+  --input: oklch(0.85 0.05 290 / 22%);
+  --ring: oklch(0.68 0.17 293);
+  --chart-1: oklch(0.8 0.11 230);
+  --chart-2: oklch(0.78 0.12 300);
+  --chart-3: oklch(0.82 0.12 330);
+  --chart-4: oklch(0.85 0.12 170);
+  --chart-5: oklch(0.83 0.12 20);
+  --sidebar: oklch(0.21 0.05 286 / 70%);
+  --sidebar-foreground: oklch(0.94 0.02 290);
+  --sidebar-primary: oklch(0.68 0.17 293);
+  --sidebar-primary-foreground: oklch(0.98 0.01 290);
+  --sidebar-accent: oklch(0.3 0.07 290 / 60%);
+  --sidebar-accent-foreground: oklch(0.95 0.02 290);
+  --sidebar-border: oklch(0.85 0.05 290 / 16%);
+  --sidebar-ring: oklch(0.68 0.17 293);
+  --app-font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --app-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --display-tracking: -0.03em;
+  --marquee-speed: 36s;
+  --pulse-speed: 2.6s;
+}
+
+/* Drifting aurora field behind everything. */
+html[data-theme="glass"] body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 42% at 18% 12%, oklch(0.55 0.2 295 / 45%), transparent 70%),
+    radial-gradient(34% 40% at 84% 24%, oklch(0.7 0.13 220 / 32%), transparent 70%),
+    radial-gradient(40% 44% at 62% 88%, oklch(0.62 0.19 340 / 30%), transparent 70%);
+  animation: theme-aurora-drift 26s ease-in-out infinite;
+}
+
+/* Frosted panels: translucent page/card surfaces over the aurora. */
+html[data-theme="glass"] .bg-background {
+  background-color: color-mix(in oklab, var(--background) 58%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+html[data-theme="glass"] [data-slot="card"],
+html[data-theme="glass"] [data-slot="popover-content"],
+html[data-theme="glass"] [data-slot="dialog-content"] {
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* Neon glow on interactive hover; soft glow ring while focused. */
+html[data-theme="glass"] [data-slot="button"]:hover:not(:disabled),
+html[data-theme="glass"] a:hover {
+  box-shadow: 0 0 28px -8px color-mix(in oklab, var(--primary) 75%, transparent);
+}
+html[data-theme="glass"] ::selection {
+  background: oklch(0.68 0.17 293 / 40%);
+}
+html[data-theme="glass"],
+html[data-theme="glass"] * {
+  scrollbar-color: oklch(0.5 0.1 293) transparent;
+}
+
+/* ---- Phosphor Terminal — CRT retro-tech -------------------------------- */
+
+html[data-theme="terminal"] {
+  color-scheme: dark;
+  --radius: 0rem;
+  --background: #050805;
+  --foreground: #b8f5bd;
+  --card: #0a120b;
+  --card-foreground: #b8f5bd;
+  --popover: #0a120b;
+  --popover-foreground: #b8f5bd;
+  --primary: #4ade80;
+  --primary-foreground: #04140a;
+  --secondary: #10200f;
+  --secondary-foreground: #b8f5bd;
+  --muted: #0c160d;
+  --muted-foreground: #5f8f66;
+  --accent: #12301c;
+  --accent-foreground: #d7fbe0;
+  --destructive: #ff5f56;
+  --border: #1d3320;
+  --input: #1d3320;
+  --ring: #4ade80;
+  --chart-1: #4ade80;
+  --chart-2: #22d3ee;
+  --chart-3: #facc15;
+  --chart-4: #a3e635;
+  --chart-5: #2dd4bf;
+  --sidebar: #070c07;
+  --sidebar-foreground: #b8f5bd;
+  --sidebar-primary: #4ade80;
+  --sidebar-primary-foreground: #04140a;
+  --sidebar-accent: #12301c;
+  --sidebar-accent-foreground: #d7fbe0;
+  --sidebar-border: #1d3320;
+  --sidebar-ring: #4ade80;
+  --app-font-body: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --app-font-display: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --display-tracking: 0em;
+  --marquee-speed: 44s;
+  --pulse-speed: 1.2s;
+}
+
+/* CRT dressing: blueprint grid behind, scanlines + vignette in front. */
+html[data-theme="terminal"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(oklch(0.75 0.2 150 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.75 0.2 150 / 4%) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+html[data-theme="terminal"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgb(0 0 0 / 16%) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 100% at 50% 45%, transparent 60%, rgb(0 0 0 / 42%) 100%);
+}
+
+/* Phosphor bloom on display type and links only — keeps body text crisp. */
+html[data-theme="terminal"] h1,
+html[data-theme="terminal"] h2,
+html[data-theme="terminal"] h3,
+html[data-theme="terminal"] h4,
+html[data-theme="terminal"] a {
+  text-shadow: 0 0 10px rgb(74 222 128 / 35%);
+}
+html[data-theme="terminal"] input,
+html[data-theme="terminal"] textarea {
+  caret-color: #4ade80;
+}
+html[data-theme="terminal"] ::selection {
+  background: #4ade80;
+  color: #04140a;
+}
+html[data-theme="terminal"],
+html[data-theme="terminal"] * {
+  scrollbar-color: #1d3320 #050805;
+}
+
+/* ---- Editorial Serif — print magazine ----------------------------------- */
+
+html[data-theme="editorial"] {
+  color-scheme: light;
+  --radius: 0.125rem;
+  --background: #faf7f0;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --primary: #1c1917;
+  --primary-foreground: #faf7f0;
+  --secondary: #f0ead9;
+  --secondary-foreground: #1c1917;
+  --muted: #f1ece0;
+  --muted-foreground: #78716c;
+  --accent: #efe6d2;
+  --accent-foreground: #1c1917;
+  --destructive: #b3261e;
+  --border: #ded7c8;
+  --input: #ded7c8;
+  --ring: #b45309;
+  --chart-1: #b45309;
+  --chart-2: #155e63;
+  --chart-3: #7c2d59;
+  --chart-4: #4d7c0f;
+  --chart-5: #a16207;
+  --sidebar: #f4efe4;
+  --sidebar-foreground: #1c1917;
+  --sidebar-primary: #1c1917;
+  --sidebar-primary-foreground: #faf7f0;
+  --sidebar-accent: #efe6d2;
+  --sidebar-accent-foreground: #1c1917;
+  --sidebar-border: #ded7c8;
+  --sidebar-ring: #b45309;
+  --app-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --app-font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --display-tracking: 0em;
+  --marquee-speed: 46s;
+  --pulse-speed: 3s;
+}
+
+/* Buttons become small-caps editorial labels. */
+html[data-theme="editorial"] [data-slot="button"] {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+html[data-theme="editorial"] h1 em,
+html[data-theme="editorial"] h2 em {
+  font-style: italic;
+}
+html[data-theme="editorial"] ::selection {
+  background: #f3d9a4;
+  color: #1c1917;
+}
+html[data-theme="editorial"],
+html[data-theme="editorial"] * {
+  scrollbar-color: #c9bfa8 #faf7f0;
+}
+
+/* ---- Bento Pop — playful grid ------------------------------------------- */
+
+html[data-theme="bento"] {
+  color-scheme: light;
+  --radius: 1.1rem;
+  --background: #f7f6f3;
+  --foreground: #211f1c;
+  --card: #ffffff;
+  --card-foreground: #211f1c;
+  --popover: #ffffff;
+  --popover-foreground: #211f1c;
+  --primary: #ff6b4a;
+  --primary-foreground: #fff8f5;
+  --secondary: #eef0ff;
+  --secondary-foreground: #211f1c;
+  --muted: #efece6;
+  --muted-foreground: #79756e;
+  --accent: #ffefc2;
+  --accent-foreground: #211f1c;
+  --destructive: #e03131;
+  --border: #e5e1da;
+  --input: #dcd7ce;
+  --ring: #ff6b4a;
+  --chart-1: #ff6b4a;
+  --chart-2: #4dabf7;
+  --chart-3: #ffd43b;
+  --chart-4: #51cf66;
+  --chart-5: #cc5de8;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #211f1c;
+  --sidebar-primary: #ff6b4a;
+  --sidebar-primary-foreground: #fff8f5;
+  --sidebar-accent: #efece6;
+  --sidebar-accent-foreground: #211f1c;
+  --sidebar-border: #e5e1da;
+  --sidebar-ring: #ff6b4a;
+  --app-font-body: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --app-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --display-tracking: -0.02em;
+  --marquee-speed: 22s;
+  --pulse-speed: 1.8s;
+}
+
+/* Soft dotted canvas showing through the gaps between tiles. */
+html[data-theme="bento"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(#211f1c12 1.2px, transparent 1.2px);
+  background-size: 26px 26px;
+}
+
+/* Diffuse soft shadows + gentle lift instead of hard edges. */
+html[data-theme="bento"] [data-slot="card"] {
+  box-shadow: 0 10px 34px -18px rgb(33 31 28 / 22%);
+}
+html[data-theme="bento"] [data-slot="button"][data-variant="default"],
+html[data-theme="bento"] [data-slot="button"][data-variant="outline"],
+html[data-theme="bento"] [data-slot="button"][data-variant="secondary"] {
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease,
+    background-color 0.22s ease;
+}
+html[data-theme="bento"] [data-slot="button"][data-variant="default"],
+html[data-theme="bento"] [data-slot="button"][data-variant="secondary"] {
+  box-shadow: 0 6px 18px -8px color-mix(in oklab, var(--primary) 55%, transparent);
+}
+html[data-theme="bento"] [data-slot="button"][data-variant="default"]:hover:not(:disabled),
+html[data-theme="bento"] [data-slot="button"][data-variant="outline"]:hover:not(:disabled),
+html[data-theme="bento"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+html[data-theme="bento"] ::selection {
+  background: #ffd8cd;
+  color: #211f1c;
+}
+html[data-theme="bento"],
+html[data-theme="bento"] * {
+  scrollbar-color: #d9d4cb #f7f6f3;
+}
+
+/* Theme-driven ambient animations also respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="glass"] body::before {
+    animation: none;
+  }
+  body {
+    transition: none;
+  }
+}

@@ -10,6 +10,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
 import { initAnalytics, trackPageview } from "@/lib/analytics";
+import { SiteThemeProvider } from "@/hooks/use-site-theme";
 
 // Plausible loads only when VITE_PLAUSIBLE_DOMAIN is set at build time.
 initAnalytics();
@@ -94,8 +95,8 @@ class RootErrorBoundary extends React.Component<
 const basePath = import.meta.env.VITE_BASE_PATH || "/";
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
-// Portfolio is a dark-first product; apply the dark theme globally.
-document.documentElement.classList.add("dark");
+// Theme bootstrapping (data-theme + .dark) happens pre-paint in index.html;
+// <SiteThemeProvider> keeps it in sync with the owner's published choice.
 
 const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
 
@@ -150,33 +151,35 @@ function App() {
   if (!convex) return <MissingConvexConfig />;
   return (
     <ConvexAuthProvider client={convex}>
-      <MotionConfig reducedMotion="user">
-        <RouteSyncer />
-        <Suspense fallback={<RouteLoading />}>
-          <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/projects/:slug" element={<ProjectDetail />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/book" element={<Book />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route
-            path="/auth"
-            element={<AuthPage redirectAfterAuth="/dashboard" />}
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <RequireAuth>
-                <Dashboard />
-              </RequireAuth>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        </Suspense>
-      </MotionConfig>
+      <SiteThemeProvider>
+        <MotionConfig reducedMotion="user">
+          <RouteSyncer />
+          <Suspense fallback={<RouteLoading />}>
+            <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:slug" element={<ProjectDetail />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/book" element={<Book />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route
+              path="/auth"
+              element={<AuthPage redirectAfterAuth="/dashboard" />}
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          </Suspense>
+        </MotionConfig>
+      </SiteThemeProvider>
       <Toaster />
     </ConvexAuthProvider>
   );
