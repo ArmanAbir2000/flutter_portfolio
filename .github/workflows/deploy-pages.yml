@@ -34,7 +34,7 @@ jobs:
           if [ -z "$CONVEX_DEPLOY_KEY" ]; then
             echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy"
           else
-            npx convex deploy
+            npx convex deploy || echo "::warning::Convex backend sync failed - check CONVEX_DEPLOY_KEY; site build continues"
           fi
 
       - name: Build
