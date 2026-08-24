@@ -34,7 +34,7 @@ jobs:
           if [ -z "$CONVEX_DEPLOY_KEY" ]; then
             echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy"
           else
-            npx convex deploy --prod
+            npx convex deploy
           fi
 
       - name: Build
