@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import {
+  Download,
+  Github,
   Loader2,
   Pencil,
   Plus,
+  RefreshCw,
   Save,
   Star,
   Trash2,
@@ -491,6 +494,21 @@ const lines = (s: string) =>
     .map((x) => x.trim())
     .filter(Boolean);
 
+/* ---- GitHub repo importer ---- */
+
+const GITHUB_USER = "ArmanAbir2000";
+
+type GhRepo = {
+  name: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  homepage: string | null;
+  html_url: string;
+  pushed_at: string;
+  fork: boolean;
+};
+
 export function ProjectsManager() {
   const projects = useQuery(api.portfolio.listProjects, {});
   const saveProject = useMutation(api.portfolio.saveProject);
@@ -498,6 +516,47 @@ export function ProjectsManager() {
 
   const [form, setForm] = useState<FormState | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // GitHub import panel state.
+  const [showGh, setShowGh] = useState(false);
+  const [ghRepos, setGhRepos] = useState<GhRepo[] | null>(null);
+  const [ghLoading, setGhLoading] = useState(false);
+
+  const loadGhRepos = async () => {
+    setGhLoading(true);
+    try {
+      const res = await fetch(
+        `https://api.github.com/users/${GITHUB_USER}/repos?sort=pushed&per_page=100&type=owner`,
+      );
+      if (!res.ok) throw new Error("GitHub returned " + res.status);
+      const repos = (await res.json()) as GhRepo[];
+      setGhRepos(repos.filter((r) => !r.fork));
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Could not load repositories.",
+      );
+    } finally {
+      setGhLoading(false);
+    }
+  };
+
+  /** Pre-fill the editor with everything GitHub already knows. */
+  const importRepo = (r: GhRepo) => {
+    const year = new Date(r.pushed_at || Date.now()).getFullYear();
+    setForm({
+      ...emptyForm,
+      title: r.name,
+      year: String(Number.isInteger(year) && year >= 2000 && year <= 2100 ? year : new Date().getFullYear()),
+      category: "Personal Project",
+      summary: (r.description ?? "").slice(0, 200),
+      description: r.description ?? "",
+      tagsCsv: r.language ?? "",
+      stackCsv: r.language ?? "",
+      liveUrl: r.homepage ?? "",
+      repoUrl: r.html_url,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const startEdit = (p: Project) =>
     setForm({
@@ -564,13 +623,88 @@ export function ProjectsManager() {
       description="Featured projects appear on the landing page; everything appears on /projects."
     >
       {!form && (
-        <Button
-          size="sm"
-          className="w-fit cursor-pointer"
-          onClick={() => setForm({ ...emptyForm })}
-        >
-          <Plus className="mr-1 size-4" /> New project
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            className="w-fit cursor-pointer"
+            onClick={() => setForm({ ...emptyForm })}
+          >
+            <Plus className="mr-1 size-4" /> New project
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-fit cursor-pointer"
+            onClick={() => {
+              setShowGh((s) => !s);
+              if (!ghRepos && !ghLoading) void loadGhRepos();
+            }}
+          >
+            <Github className="mr-1 size-4" />
+            {showGh ? "Hide GitHub repos" : "Import from GitHub"}
+            {showGh &&
+              (ghLoading ? (
+                <Loader2 className="ml-1 size-3.5 animate-spin" />
+              ) : (
+                <RefreshCw
+                  className="ml-1 size-3.5 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void loadGhRepos();
+                  }}
+                />
+              ))}
+          </Button>
+        </div>
+      )}
+
+      {!form && showGh && (
+        <div className="rounded-md border border-border/60 p-4">
+          <p className="mb-3 text-xs text-muted-foreground">
+            Public non-fork repositories for github.com/{GITHUB_USER}. Import
+            pre-fills the form — review and hit Save to publish.
+          </p>
+          {ghLoading && ghRepos === null ? (
+            <Loader2 className="size-4 animate-spin text-muted-foreground" />
+          ) : ghRepos !== null && ghRepos.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No public repositories found.</p>
+          ) : (
+            <ul className="max-h-72 divide-y divide-border/40 overflow-y-auto rounded-md border border-border/40">
+              {(ghRepos ?? []).map((r) => {
+                const added = projects?.some(
+                  (p) => p.repoUrl === r.html_url || p.title === r.name,
+                );
+                return (
+                  <li
+                    key={r.name}
+                    className="flex items-center justify-between gap-3 px-3 py-2"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{r.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {[r.language, r.stargazers_count + " ★", r.description]
+                          .filter(Boolean)
+                          .join(" · ") || "No description"}
+                      </p>
+                    </div>
+                    {added ? (
+                      <span className="shrink-0 text-xs text-emerald-400">added ✓</span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="shrink-0 cursor-pointer"
+                        onClick={() => importRepo(r)}
+                      >
+                        <Download className="mr-1 size-3.5" /> Import
+                      </Button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       )}
 
       {form && (

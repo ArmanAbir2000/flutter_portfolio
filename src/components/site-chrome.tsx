@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Facebook,
+  Github,
+  Mail,
+} from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { Button } from "@/components/ui/button";
 import { EASE } from "@/lib/motion";
@@ -9,6 +14,21 @@ const links = [
   { to: "/projects", label: "Work" },
   { to: "/book", label: "Book" },
   { to: "/contact", label: "Contact" },
+];
+
+/** Public profiles shown in the footer. Edit URLs here. */
+const socials = [
+  { label: "GitHub", href: "https://github.com/ArmanAbir2000", Icon: Github },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/armanabir0124",
+    Icon: Facebook,
+  },
+  {
+    label: "Email",
+    href: "mailto:armanabir0124@gmail.com",
+    Icon: Mail,
+  },
 ];
 
 /** Thin reading-progress bar that tracks page scroll. */
@@ -116,10 +136,27 @@ export function SiteFooter() {
             </Link>
           ))}
         </div>
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Shiki Code Studio · Arman Abir · Built
-          with React, TypeScript, and Convex
-        </p>
+        <div className="flex flex-col gap-2 sm:items-end">
+          <div className="flex items-center gap-3">
+            {socials.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target={href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={href.startsWith("mailto:") ? undefined : "noreferrer noopener"}
+                aria-label={label}
+                title={label}
+                className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Icon className="size-4" />
+              </a>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Shiki Code Studio · Arman Abir · Built
+            with React, TypeScript, and Convex
+          </p>
+        </div>
       </div>
     </footer>
   );
