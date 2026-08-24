@@ -5,17 +5,18 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# The repo's Pages source is the `gh-pages` branch (legacy mode), so we push
+# the built site there instead of using the artifact-based deploy-pages flow
+# (that flow reported success but never changed what the site serves).
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: github-pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,8 +42,8 @@ jobs:
       - name: Build
         env:
           # The Convex deployment this portfolio talks to — arman-abir's own
-          # project (dev/arman-abir → ceaseless-duck-889). Override with a
-          # repo secret of the same name if you migrate deployments.
+          # project. Override with a repo secret of the same name if you
+          # migrate deployments.
           VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL || 'https://ceaseless-duck-889.convex.cloud' }}
           # GitHub Pages project sites are served from a subdirectory.
           VITE_BASE_PATH: /flutter_portfolio/
@@ -51,16 +52,8 @@ jobs:
       - name: SPA fallback for client-side routes
         run: node -e "require('fs').copyFileSync('dist/index.html','dist/404.html')"
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
