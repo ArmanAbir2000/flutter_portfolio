@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+# Owner-only area stays out of search results.
+Disallow: /dashboard
+Disallow: /auth
+
+Sitemap: https://armanabir2000.github.io/flutter_portfolio/sitemap.xml
