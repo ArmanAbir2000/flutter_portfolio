@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 
 /**
- * Canonical site origin. MUST stay in sync with the static tags in
- * index.html — crawlers read those, this constant keeps browser-side
- * updates consistent. Update both when a custom domain lands.
+ * Canonical site origin + base path. MUST stay in sync with the static
+ * tags in index.html — crawlers read those, this constant keeps
+ * browser-side updates consistent. The repo deploys as a GitHub Pages
+ * PROJECT site, so the /flutter_portfolio/ subpath is part of every URL.
  */
-export const SITE_URL = "https://armanabir2000.github.io";
+export const SITE_URL = "https://armanabir2000.github.io/flutter_portfolio";
 
 export const DEFAULT_OG_IMAGE = "/og/og-default.png";
 export const DEFAULT_TITLE =
@@ -51,10 +52,11 @@ export function useDocumentMeta({ title, description, image }: DocumentMeta) {
     upsertMeta("property", "og:title", title);
     upsertMeta("property", "og:description", desc);
     upsertMeta("property", "og:image", img);
+    // pathname already includes the base path at runtime — no join needed.
     upsertMeta(
       "property",
       "og:url",
-      absolute(window.location.pathname),
+      window.location.origin + window.location.pathname,
     );
     upsertMeta("name", "twitter:title", title);
     upsertMeta("name", "twitter:description", desc);

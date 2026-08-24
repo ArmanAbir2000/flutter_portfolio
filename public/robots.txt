@@ -4,4 +4,4 @@ Allow: /
 Disallow: /dashboard
 Disallow: /auth
 
-Sitemap: https://armanabir2000.github.io/sitemap.xml
+Sitemap: https://armanabir2000.github.io/flutter_portfolio/sitemap.xml
