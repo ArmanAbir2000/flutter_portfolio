@@ -25,26 +25,19 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      # Generates src/convex/_generated so `tsc -b` can typecheck the client.
-      # Also idempotently pushes functions; skipped until the secret exists.
-      - name: Generate Convex types & sync backend
+      # Local-only type generation (no credentials needed) so `tsc -b`
+      # can typecheck the client against src/convex/_generated.
+      - name: Generate Convex client types
+        run: npx convex codegen
+
+      - name: Deploy Convex functions & full typegen
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: |
           if [ -z "$CONVEX_DEPLOY_KEY" ]; then
-            echo "CONVEX_DEPLOY_KEY not set - skipping Convex typegen/backend sync"
+            echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy (types stay stubbed)"
           else
             npx convex dev --once
-          fi
-
-      - name: Deploy Convex functions (backend)
-        env:
-          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
-        run: |
-          if [ -z "$CONVEX_DEPLOY_KEY" ]; then
-            echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy"
-          else
-            npx convex deploy --prod
           fi
 
       - name: Build
