@@ -9,6 +9,10 @@ import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
+import { initAnalytics, trackPageview } from "@/lib/analytics";
+
+// Plausible loads only when VITE_PLAUSIBLE_DOMAIN is set at build time.
+initAnalytics();
 
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
@@ -16,6 +20,8 @@ const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const Projects = lazy(() => import("./pages/Projects.tsx"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail.tsx"));
+const Blog = lazy(() => import("./pages/Blog.tsx"));
+const BlogPost = lazy(() => import("./pages/BlogPost.tsx"));
 const Book = lazy(() => import("./pages/Book.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
@@ -120,6 +126,11 @@ function RouteSyncer() {
     );
   }, [location.pathname]);
 
+  // SPA pageviews for Plausible (no-op unless analytics is configured).
+  useEffect(() => {
+    trackPageview();
+  }, [location.pathname]);
+
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (event.data?.type === "navigate") {
@@ -146,6 +157,8 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/projects/:slug" element={<ProjectDetail />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/book" element={<Book />} />
           <Route path="/contact" element={<Contact />} />
           <Route

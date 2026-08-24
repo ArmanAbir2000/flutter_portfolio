@@ -13,8 +13,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { MaskText } from "@/components/motion-primitives";
 import { EASE } from "@/lib/motion";
+import { useDocumentMeta } from "@/lib/seo";
 
 export default function Contact() {
+  useDocumentMeta({
+    title: "Contact — Shiki Code Studio",
+    description:
+      "Get in touch about a Flutter app, a Laravel API, or a full product build.",
+  });
+
   const sendMessage = useMutation(api.messages.sendMessage);
 
   const [name, setName] = useState("");

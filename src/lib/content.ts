@@ -17,6 +17,42 @@ export type SocialsContent = {
   github: string;
   facebook: string;
   email: string;
+  /** Direct link to a résumé PDF; empty hides the download button. */
+  resume: string;
+};
+export type ExperienceItem = {
+  period: string; // e.g. "2023 — Now"
+  title: string;
+  org: string;
+  summary: string;
+  current?: boolean;
+};
+export type AboutContent = {
+  heading: string;
+  /** Paragraphs separated by blank lines. */
+  body: string;
+  /** Optional portrait; empty renders the section text-only. */
+  photoUrl?: string;
+};
+export type PricingPlan = {
+  name: string;
+  price: string;
+  blurb: string;
+  features: string[];
+  cta?: string;
+};
+export type PricingContent = {
+  plans: PricingPlan[];
+  note?: string;
+};
+export type Testimonial = {
+  quote: string;
+  /** Optional person name; attribution falls back to role + company. */
+  name?: string;
+  role?: string;
+  company: string;
+  /** Optional project slug → links the quote to its case study. */
+  slug?: string;
 };
 
 export const CONTENT_KEYS = {
@@ -25,6 +61,10 @@ export const CONTENT_KEYS = {
   capabilities: "capabilities",
   inProgress: "inProgress",
   socials: "socials",
+  testimonials: "testimonials",
+  experience: "experience",
+  about: "about",
+  pricing: "pricing",
 } as const;
 
 export const defaultHero: HeroContent = {
@@ -96,10 +136,114 @@ export const defaultInProgress: InProgressContent = {
   ],
 };
 
+export const defaultTestimonials: Testimonial[] = [
+  {
+    quote:
+      "Three customer-facing apps, one shared codebase, one Laravel API — delivered on schedule and still easy to iterate on. Arman owns problems end to end, from architecture to store release.",
+    role: "Operations lead",
+    company: "ParcelFly",
+    slug: "parcelfly-delivery-platform",
+  },
+  {
+    quote:
+      "He turned a messy recruitment workflow into two apps that just make sense. Employers and candidates both got faster, cleaner flows — and business rules stayed out of the clients entirely.",
+    role: "Co-founder",
+    company: "JobNect",
+    slug: "jobnect-recruitment-suite",
+  },
+  {
+    quote:
+      "Our storefront and mobile app finally behave like one store. Carts, inventory, and order updates stay in sync because the commerce API was designed properly from day one.",
+    role: "E-commerce lead",
+    company: "Sellino",
+    slug: "sellino-ecommerce",
+  },
+];
+
+export const defaultExperience: ExperienceItem[] = [
+  {
+    period: "2023 — Now",
+    title: "Founder & Flutter Developer",
+    org: "Shiki Code Studio",
+    summary:
+      "Running the studio end to end: architecture, estimates, client communication, and Flutter + Laravel delivery through to store release.",
+    current: true,
+  },
+  {
+    period: "2024 — Now",
+    title: "Mobile engineer on client platforms",
+    org: "ParcelFly · JobNect · Sellino",
+    summary:
+      "Long-term engagements building and iterating the production apps behind three client ecosystems — role-based courier apps, paired recruitment clients, and an omnichannel commerce build.",
+    current: true,
+  },
+  {
+    period: "2024",
+    title: "Independent app releases",
+    org: "Orimono · Watch Store · FreeShop",
+    summary:
+      "Designed, built, and shipped personal Flutter products through review to release — checkout flows, marketplace feeds, and Firebase-backed data layers.",
+  },
+];
+
+export const defaultAbout: AboutContent = {
+  heading: "The developer behind the studio.",
+  body:
+    "I'm Arman Abir — a Flutter developer and the founder of Shiki Code Studio. For the past few years I've been building mobile products the whole way through: architecture, APIs, pixel-level UI, store release, and the iterations that follow real users.\n\nI work best as an embedded partner rather than a ticket queue — you talk to the person writing the code, estimates are honest, and everything I hand over is documented well enough for your own team to own.\n\nWhen I'm not shipping client platforms, I'm polishing my own apps — Orimono, Watch Store, FreeShop — which double as the proving ground for patterns I later bring into client work.",
+  photoUrl: "",
+};
+
+export const defaultPricing: PricingContent = {
+  plans: [
+    {
+      name: "MVP sprint",
+      price: "$4,900+",
+      blurb:
+        "A shippable Flutter app — design to store release — scoped and delivered in weeks, not quarters.",
+      features: [
+        "Flutter app for Android and iOS",
+        "Laravel API or Firebase backend",
+        "Store submission included",
+        "Handover documentation",
+      ],
+      cta: "Scope your MVP",
+    },
+    {
+      name: "Monthly retainer",
+      price: "$2,400/mo",
+      blurb:
+        "Ongoing development for teams that ship continuously — features, fixes, and releases every month.",
+      features: [
+        "Dedicated capacity each month",
+        "Feature work + maintenance",
+        "Direct line to the developer",
+        "Pause or cancel anytime",
+      ],
+      cta: "Check availability",
+    },
+    {
+      name: "Audit & rescue",
+      price: "$600",
+      blurb:
+        "A focused review of an existing Flutter/Laravel codebase — architecture, performance, and a prioritized fix plan.",
+      features: [
+        "Full codebase review",
+        "Written findings report",
+        "Prioritized remediation plan",
+        "Follow-up call included",
+      ],
+      cta: "Book an audit",
+    },
+  ],
+  note:
+    "Every engagement starts with a free scoping call. Figures above are typical starting points — you'll always get a fixed quote before any work begins.",
+};
+
 export const defaultSocials: SocialsContent = {
   github: "https://github.com/ArmanAbir2000",
   facebook: "https://www.facebook.com/armanabir0124",
   email: "armanabir0124@gmail.com",
+  resume: "",
 };
 
 /* ---- Runtime guards (stored data is user-edited; never trust shape) ---- */
@@ -145,7 +289,97 @@ export function asSocials(d: unknown): SocialsContent | null {
     github: urlOrEmpty(o.github),
     facebook: urlOrEmpty(o.facebook),
     email: urlOrEmpty(o.email),
+    resume: urlOrEmpty(o.resume),
   };
+}
+
+export function asAbout(d: unknown): AboutContent | null {
+  if (!d || typeof d !== "object") return null;
+  const o = d as Record<string, unknown>;
+  if (typeof o.body !== "string" || !o.body.trim()) return null;
+  return {
+    heading:
+      typeof o.heading === "string" && o.heading.trim()
+        ? o.heading.trim()
+        : defaultAbout.heading,
+    body: o.body,
+    photoUrl: typeof o.photoUrl === "string" ? o.photoUrl.trim() : "",
+  };
+}
+
+export function asPricing(d: unknown): PricingContent | null {
+  if (!d || typeof d !== "object") return null;
+  const o = d as Record<string, unknown>;
+  if (!Array.isArray(o.plans)) return null;
+  const plans = o.plans
+    .filter(
+      (x): x is PricingPlan =>
+        !!x &&
+        typeof x === "object" &&
+        typeof x.name === "string" &&
+        typeof x.price === "string" &&
+        Array.isArray(x.features),
+    )
+    .map((p) => ({
+      name: p.name.trim(),
+      price: p.price.trim(),
+      blurb: typeof p.blurb === "string" ? p.blurb.trim() : "",
+      features: p.features
+        .filter((f): f is string => typeof f === "string" && f.trim().length > 0)
+        .map((f) => f.trim()),
+      cta: typeof p.cta === "string" ? p.cta.trim() : "",
+    }));
+  if (plans.length === 0) return null;
+  return {
+    plans,
+    note: typeof o.note === "string" ? o.note.trim() : "",
+  };
+}
+
+export function asExperience(d: unknown): ExperienceItem[] | null {
+  if (!Array.isArray(d)) return null;
+  const items = d
+    .filter(
+      (x): x is ExperienceItem =>
+        !!x &&
+        typeof x === "object" &&
+        typeof (x as ExperienceItem).period === "string" &&
+        typeof (x as ExperienceItem).title === "string" &&
+        typeof (x as ExperienceItem).org === "string" &&
+        typeof (x as ExperienceItem).summary === "string",
+    )
+    .map((e) => ({
+      period: e.period.trim(),
+      title: e.title.trim(),
+      org: e.org.trim(),
+      summary: e.summary.trim(),
+      current: e.current === true,
+    }));
+  return items.length > 0 ? items : null;
+}
+
+export function asTestimonials(d: unknown): Testimonial[] | null {
+  if (!Array.isArray(d)) return null;
+  const items = d
+    .filter(
+      (x): x is Testimonial =>
+        !!x &&
+        typeof x === "object" &&
+        typeof (x as Testimonial).quote === "string" &&
+        (x as Testimonial).quote.trim().length > 0 &&
+        typeof (x as Testimonial).company === "string",
+    )
+    .map((t) => ({
+      quote: t.quote,
+      name: typeof t.name === "string" ? t.name.trim() : "",
+      role: typeof t.role === "string" ? t.role.trim() : "",
+      company: t.company.trim(),
+      slug:
+        typeof t.slug === "string" && t.slug.trim()
+          ? t.slug.trim()
+          : undefined,
+    }));
+  return items.length > 0 ? items : null;
 }
 
 export function asInProgress(d: unknown): InProgressContent | null {

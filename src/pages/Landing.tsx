@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Download, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
@@ -11,15 +11,30 @@ import { ContributionMap } from "@/components/contribution-map";
 import { CountUp, Marquee, MaskText, Reveal } from "@/components/motion-primitives";
 import { EASE, fadeUp } from "@/lib/motion";
 import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  useDocumentMeta,
+} from "@/lib/seo";
+import {
   CONTENT_KEYS,
+  asAbout,
   asCapabilities,
+  asExperience,
   asHero,
   asInProgress,
+  asPricing,
   asSkills,
+  asSocials,
+  asTestimonials,
+  defaultAbout,
   defaultCapabilities,
+  defaultExperience,
   defaultHero,
   defaultInProgress,
+  defaultPricing,
   defaultSkills,
+  defaultSocials,
+  defaultTestimonials,
   type ActiveItem,
 } from "@/lib/content";
 
@@ -105,6 +120,8 @@ function buildStats(
 }
 
 export default function Landing() {
+  useDocumentMeta({ title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION });
+
   const projects = useQuery(api.portfolio.listProjects, {});
   const ensureSeeded = useMutation(api.portfolio.ensureSeeded);
   const contentRows = useQuery(api.siteContent.list, {}) as
@@ -153,6 +170,30 @@ export default function Landing() {
     CONTENT_KEYS.capabilities,
     defaultCapabilities,
     asCapabilities,
+  );
+  const socials =
+    asSocials(
+      contentRows?.find((r) => r.key === CONTENT_KEYS.socials)?.data,
+    ) ?? defaultSocials;
+  const about = pick(contentRows, CONTENT_KEYS.about, defaultAbout, asAbout);
+  const pricing = pick(
+    contentRows,
+    CONTENT_KEYS.pricing,
+    defaultPricing,
+    asPricing,
+  );
+  const posts = useQuery(api.siteContent.listPosts, {});
+  const experience = pick(
+    contentRows,
+    CONTENT_KEYS.experience,
+    defaultExperience,
+    asExperience,
+  );
+  const testimonials = pick(
+    contentRows,
+    CONTENT_KEYS.testimonials,
+    defaultTestimonials,
+    asTestimonials,
   );
   const inProgress = pick(
     contentRows,
@@ -220,6 +261,19 @@ export default function Landing() {
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
+          {socials.resume && (
+            <Button
+              asChild
+              size="lg"
+              variant="ghost"
+              className="cursor-pointer text-muted-foreground transition-transform hover:text-foreground active:scale-[0.97]"
+            >
+              <a href={socials.resume} target="_blank" rel="noreferrer noopener">
+                <Download className="size-4" />
+                Résumé
+              </a>
+            </Button>
+          )}
         </motion.div>
 
         {/* Stack marquee */}
@@ -332,6 +386,42 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* About */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            About
+          </Reveal>
+          <div
+            className={
+              "mt-10 " +
+              (about.photoUrl ? "grid gap-12 lg:grid-cols-[1fr_20rem]" : "max-w-2xl")
+            }
+          >
+            <motion.div {...fadeUp}>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                {about.heading}
+              </h2>
+              {about.body.split(/\n{2,}/).map((para, i) => (
+                <p key={i} className="mt-4 text-sm leading-7 text-muted-foreground">
+                  {para.trim()}
+                </p>
+              ))}
+            </motion.div>
+            {about.photoUrl && (
+              <motion.img
+                src={about.photoUrl}
+                alt="Arman Abir"
+                loading="lazy"
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: 0.1 }}
+                className="aspect-[4/5] w-full max-w-xs justify-self-start rounded-xl border border-border/60 object-cover lg:justify-self-end"
+              />
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* Currently building */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
@@ -418,6 +508,186 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
+
+      {/* Experience */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Experience
+          </Reveal>
+          <div className="mt-10">
+            {experience.map((e, i) => (
+              <motion.div
+                key={(e.org || "role") + i}
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: Math.min(i * 0.06, 0.18) }}
+                className="grid gap-2 border-t border-border/60 py-7 first:border-t-0 first:pt-0 sm:grid-cols-[11rem_1fr] sm:gap-10"
+              >
+                <span className="pt-1 font-mono text-xs tabular-nums text-muted-foreground">
+                  {e.period}
+                </span>
+                <div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <h3 className="text-base font-semibold tracking-tight">
+                      {e.title}
+                    </h3>
+                    {e.current && (
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                        <span className="size-1.5 rounded-full bg-emerald-500" />
+                        Current
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{e.org}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                    {e.summary}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Engagement models */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <Reveal className="flex items-baseline justify-between">
+            <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Ways to work together
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+            {pricing.plans.map((plan, i) => (
+              <motion.div
+                key={(plan.name || "plan") + i}
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: Math.min(i * 0.08, 0.24) }}
+                className="flex flex-col rounded-lg border border-border/60 p-7"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <h3 className="text-base font-semibold tracking-tight">{plan.name}</h3>
+                  <span className="font-mono text-sm tabular-nums">{plan.price}</span>
+                </div>
+                {plan.blurb && (
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {plan.blurb}
+                  </p>
+                )}
+                {plan.features.length > 0 && (
+                  <ul className="mt-5 space-y-2.5 border-t border-border/60 pt-5">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex gap-2.5 text-sm leading-6 text-muted-foreground">
+                        <span aria-hidden className="mt-[11px] size-1 shrink-0 rounded-full bg-foreground/50" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="mt-6 w-fit cursor-pointer transition-transform active:scale-[0.97]"
+                >
+                  <Link to="/book">
+                    {plan.cta || "Get in touch"}
+                    <ArrowUpRight className="size-3.5" />
+                  </Link>
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+          {pricing.note && (
+            <Reveal as="p" delay={0.15} className="mt-8 max-w-2xl text-xs leading-5 text-muted-foreground">
+              {pricing.note}
+            </Reveal>
+          )}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            What clients say
+          </Reveal>
+          <div className="mt-10 grid gap-x-10 gap-y-12 lg:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <motion.figure
+                key={(t.company || "quote") + i}
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: Math.min(i * 0.08, 0.24) }}
+                className="border-t border-border pt-8"
+              >
+                <blockquote className="text-[15px] leading-7 tracking-tight">
+                  “{t.quote}”
+                </blockquote>
+                <figcaption className="mt-5">
+                  {t.name && (
+                    <p className="text-sm font-medium tracking-tight">{t.name}</p>
+                  )}
+                  <p className="font-mono text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                    {[t.role, t.company].filter(Boolean).join(" · ")}
+                  </p>
+                  {t.slug && (
+                    <Link
+                      to={"/projects/" + t.slug}
+                      className="group mt-3 inline-flex cursor-pointer items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      View case study
+                      <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </Link>
+                  )}
+                </figcaption>
+              </motion.figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Writing */}
+      {posts !== undefined && posts.length > 0 && (
+        <section className="border-t border-border/60">
+          <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+            <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              Writing
+            </Reveal>
+            <div className="mt-10 max-w-3xl">
+              {posts.slice(0, 3).map((post, i) => (
+                <motion.div
+                  key={post._id}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: Math.min(i * 0.06, 0.18) }}
+                  className="border-t border-border/60 py-5 first:border-t-0 first:pt-0"
+                >
+                  <Link
+                    to={"/blog/" + post.slug}
+                    className="group flex cursor-pointer flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
+                  >
+                    <span className="flex min-w-0 items-baseline gap-4">
+                      <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
+                        {post.publishedAt}
+                      </span>
+                      <span className="truncate text-sm font-medium tracking-tight group-hover:text-muted-foreground">
+                        {post.title}
+                      </span>
+                    </span>
+                    <ArrowUpRight className="hidden size-3.5 shrink-0 self-center text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground sm:block" />
+                  </Link>
+                </motion.div>
+              ))}
+              <Link
+                to="/blog"
+                className="link-sweep mt-6 inline-flex cursor-pointer items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+              >
+                All writing
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="border-t border-border/60">

@@ -6,8 +6,11 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { StoreBadges } from "@/components/store-badges";
+import { ProjectVideo } from "@/components/project-video";
 import { MaskText } from "@/components/motion-primitives";
 import { EASE, fadeUp } from "@/lib/motion";
+import { DEFAULT_TITLE, useDocumentMeta } from "@/lib/seo";
 
 function NotFound() {
   return (
@@ -33,6 +36,13 @@ function NotFound() {
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const project = useQuery(api.portfolio.getProject, slug ? { slug } : "skip");
+
+  // Per-project share card: title + summary + cover as og:image when loaded.
+  useDocumentMeta({
+    title: project ? project.title + " — Case Study" : DEFAULT_TITLE,
+    description: project?.summary,
+    image: project?.cover,
+  });
 
   if (slug && project === undefined) {
     return (
@@ -97,8 +107,19 @@ export default function ProjectDetail() {
                 {project.summary}
               </motion.p>
 
-              {(project.liveUrl || project.repoUrl) && (
-                <div className="mt-8 flex flex-wrap gap-3">
+              {(project.liveUrl ||
+                project.repoUrl ||
+                project.playUrl ||
+                project.appStoreUrl) && (
+                <div className="mt-8 flex flex-wrap items-center gap-3">
+                  <StoreBadges
+                    playUrl={project.playUrl}
+                    appStoreUrl={project.appStoreUrl}
+                  />
+                  {(project.playUrl || project.appStoreUrl) &&
+                    (project.liveUrl || project.repoUrl) && (
+                      <Separator orientation="vertical" className="hidden h-6 sm:block" />
+                    )}
                   {project.liveUrl && (
                     <Button asChild size="sm" className="cursor-pointer">
                       <a href={project.liveUrl} target="_blank" rel="noreferrer">
@@ -124,6 +145,18 @@ export default function ProjectDetail() {
               )}
             </motion.div>
           </section>
+
+          {/* Demo video — click to load, nothing fetched before that */}
+          {project.videoUrl && (
+            <section className="mx-auto w-full max-w-6xl px-6 pt-14">
+              <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Demo
+              </h2>
+              <div className="mt-5">
+                <ProjectVideo url={project.videoUrl} title={project.title} />
+              </div>
+            </section>
+          )}
 
           {/* App UI showcase — cover hero + phone-height screenshot strip */}
           {(project.cover || (project.shots?.length ?? 0) > 0) && (

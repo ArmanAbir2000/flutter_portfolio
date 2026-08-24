@@ -45,6 +45,11 @@ const schema = defineSchema(
       highlights: v.array(v.string()),
       liveUrl: v.optional(v.string()),
       repoUrl: v.optional(v.string()),
+      // Store listings shown as badges on project pages.
+      playUrl: v.optional(v.string()),
+      appStoreUrl: v.optional(v.string()),
+      // YouTube / Vimeo link rendered as an inline click-to-play demo.
+      videoUrl: v.optional(v.string()),
       year: v.number(),
       featured: v.boolean(),
       // App UI showcase. Stored as public file URLs from Convex storage.
@@ -79,6 +84,16 @@ const schema = defineSchema(
       key: v.string(),
       data: v.any(),
     }).index("by_key", ["key"]),
+
+    // Blog posts. Body is plain text; blank lines separate paragraphs.
+    posts: defineTable({
+      slug: v.string(),
+      title: v.string(),
+      excerpt: v.string(),
+      body: v.string(),
+      tags: v.array(v.string()),
+      publishedAt: v.string(), // YYYY-MM-DD
+    }).index("by_slug", ["slug"]),
 
     // Cached GitHub data safe for public display (public repos only).
     githubCache: defineTable({

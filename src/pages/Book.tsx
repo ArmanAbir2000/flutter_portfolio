@@ -13,6 +13,7 @@ import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { MaskText } from "@/components/motion-primitives";
 import { EASE } from "@/lib/motion";
 import { sendViaWeb3Forms } from "@/lib/web3forms";
+import { useDocumentMeta } from "@/lib/seo";
 
 const TIMES = ["09:00", "10:30", "13:00", "15:00", "16:30"] as const;
 
@@ -41,6 +42,12 @@ function formatDay(iso: string) {
 }
 
 export default function Book() {
+  useDocumentMeta({
+    title: "Book a call — Shiki Code Studio",
+    description:
+      "Book time directly on the calendar to talk through your Flutter or Laravel project.",
+  });
+
   const [searchParams] = useSearchParams();
   const projectSlug = searchParams.get("project");
 

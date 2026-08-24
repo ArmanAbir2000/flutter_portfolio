@@ -15,6 +15,7 @@ import { EASE } from "@/lib/motion";
 
 const links = [
   { to: "/projects", label: "Work" },
+  { to: "/blog", label: "Writing" },
   { to: "/book", label: "Book" },
   { to: "/contact", label: "Contact" },
 ];

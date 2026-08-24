@@ -6,9 +6,20 @@ import { Link, useSearchParams } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import {
+  AppStoreGlyph,
+  PlayStoreGlyph,
+} from "@/components/store-badges";
 import { EASE } from "@/lib/motion";
+import { useDocumentMeta } from "@/lib/seo";
 
 export default function Projects() {
+  useDocumentMeta({
+    title: "Work — Shiki Code Studio",
+    description:
+      "Flutter apps shipped end to end — personal products and client platforms built with Laravel APIs and Firebase.",
+  });
+
   const projects = useQuery(api.portfolio.listProjects, {});
   const ensureSeeded = useMutation(api.portfolio.ensureSeeded);
 
@@ -155,12 +166,27 @@ export default function Projects() {
                       <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
                         {p.summary}
                       </p>
-                      <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-6">
-                        {p.stack.slice(0, 3).map((s) => (
-                          <span key={s} className="font-mono text-xs text-muted-foreground">
-                            {s}
+                      <div className="mt-auto flex items-end justify-between gap-3 pt-6">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1">
+                          {p.stack.slice(0, 3).map((s) => (
+                            <span key={s} className="font-mono text-xs text-muted-foreground">
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                        {(p.appStoreUrl || p.playUrl) && (
+                          <span
+                            className="flex shrink-0 items-center gap-1.5 text-muted-foreground"
+                            title={
+                              [p.appStoreUrl ? "App Store" : null, p.playUrl ? "Google Play" : null]
+                                .filter(Boolean)
+                                .join(" · ") + " — on the store"
+                            }
+                          >
+                            {p.appStoreUrl && <AppStoreGlyph className="size-3.5" />}
+                            {p.playUrl && <PlayStoreGlyph className="size-3.5" />}
                           </span>
-                        ))}
+                        )}
                       </div>
                     </Link>
                   </motion.div>

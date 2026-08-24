@@ -23,20 +23,32 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
   CONTENT_KEYS,
+  asAbout,
   asCapabilities,
+  asExperience,
   asHero,
   asInProgress,
+  asPricing,
   asSkills,
   asSocials,
+  asTestimonials,
+  defaultAbout,
   defaultCapabilities,
+  defaultExperience,
   defaultHero,
   defaultInProgress,
+  defaultPricing,
   defaultSkills,
   defaultSocials,
+  defaultTestimonials,
+  type AboutContent,
   type Capability,
+  type ExperienceItem,
   type HeroContent,
   type InProgressContent,
+  type PricingContent,
   type SocialsContent,
+  type Testimonial,
 } from "@/lib/content";
 
 type ContentRow = { key: string; data: unknown };
@@ -470,6 +482,9 @@ type FormState = {
   highlightsText: string;
   liveUrl: string;
   repoUrl: string;
+  playUrl: string;
+  appStoreUrl: string;
+  videoUrl: string;
 };
 
 const emptyForm: FormState = {
@@ -484,6 +499,9 @@ const emptyForm: FormState = {
   highlightsText: "",
   liveUrl: "",
   repoUrl: "",
+  playUrl: "",
+  appStoreUrl: "",
+  videoUrl: "",
 };
 
 const csv = (s: string) =>
@@ -612,6 +630,9 @@ export function ProjectsManager() {
       highlightsText: p.highlights.join("\n"),
       liveUrl: p.liveUrl ?? "",
       repoUrl: p.repoUrl ?? "",
+      playUrl: p.playUrl ?? "",
+      appStoreUrl: p.appStoreUrl ?? "",
+      videoUrl: p.videoUrl ?? "",
     });
 
   const handleSave = async () => {
@@ -634,6 +655,9 @@ export function ProjectsManager() {
         highlights: lines(form.highlightsText),
         liveUrl: form.liveUrl,
         repoUrl: form.repoUrl,
+        playUrl: form.playUrl,
+        appStoreUrl: form.appStoreUrl,
+        videoUrl: form.videoUrl,
         year,
         featured: form.featured,
       });
@@ -876,6 +900,40 @@ export function ProjectsManager() {
               className={inputCls}
             />
           </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-1.5">
+              <Label>Google Play URL</Label>
+              <Input
+                value={form.playUrl}
+                placeholder="https://play.google.com/store/apps/…"
+                onChange={(e) => setForm({ ...form, playUrl: e.target.value })}
+                className={inputCls}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>App Store URL</Label>
+              <Input
+                value={form.appStoreUrl}
+                placeholder="https://apps.apple.com/…"
+                onChange={(e) =>
+                  setForm({ ...form, appStoreUrl: e.target.value })
+                }
+                className={inputCls}
+              />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Demo video URL (YouTube or Vimeo)</Label>
+            <Input
+              value={form.videoUrl}
+              placeholder="https://youtu.be/… or https://vimeo.com/…"
+              onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+              className={inputCls}
+            />
+            <p className="text-xs text-muted-foreground">
+              Shown as a click-to-play embed on the project page.
+            </p>
+          </div>
 
           {form.id && (
             <div className="space-y-3 rounded-md border border-border/60 p-4">
@@ -1106,6 +1164,11 @@ export function SocialsEditor({ rows }: { rows?: ContentRow[] }) {
       label: "Email address",
       ph: "you@example.com",
     },
+    {
+      key: "resume" as const,
+      label: "Résumé / CV URL (PDF) — shows a download button in the hero",
+      ph: "https://…/arman-abir-resume.pdf",
+    },
   ];
 
   return (
@@ -1136,6 +1199,704 @@ export function SocialsEditor({ rows }: { rows?: ContentRow[] }) {
   );
 }
 
+/* ------------------------------- About ------------------------------- */
+
+export function AboutEditor({ rows }: { rows?: ContentRow[] }) {
+  const save = useSectionSaver(CONTENT_KEYS.about);
+  const { draft, update, dirty, resetDirty } = useDraft<AboutContent>(
+    rows,
+    CONTENT_KEYS.about,
+    defaultAbout,
+    asAbout,
+  );
+
+  // Portrait upload via Convex storage (same flow as project covers).
+  const generateUploadUrl = useMutation(api.portfolio.generateUploadUrl);
+  const resolveStorageUrl = useMutation(api.siteContent.resolveStorageUrl);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const uploadPhoto = async (file: File) => {
+    setUploadingPhoto(true);
+    try {
+      const postUrl = await generateUploadUrl({});
+      const res = await fetch(postUrl, {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      });
+      if (!res.ok) throw new Error("Upload failed (" + res.status + ")");
+      const { storageId } = (await res.json()) as { storageId: string };
+      const url = await resolveStorageUrl({
+        storageId: storageId as Id<"_storage">,
+      });
+      if (url) {
+        update({ ...draft, photoUrl: url });
+        toast.success("Portrait uploaded — press Save changes to publish.");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  return (
+    <SectionCard
+      title="About section"
+      description="Human context near the middle of the landing page. Separate paragraphs with a blank line."
+    >
+      <div className="grid gap-1.5">
+        <Label htmlFor="about-heading">Heading</Label>
+        <Input
+          id="about-heading"
+          value={draft.heading}
+          maxLength={90}
+          className={inputCls}
+          onChange={(e) => update({ ...draft, heading: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="about-body">Story</Label>
+        <Textarea
+          id="about-body"
+          rows={6}
+          maxLength={1600}
+          value={draft.body}
+          className={inputCls}
+          onChange={(e) => update({ ...draft, body: e.target.value })}
+        />
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="about-photo">Portrait photo URL</Label>
+        <div className="flex gap-2">
+          <Input
+            id="about-photo"
+            value={draft.photoUrl ?? ""}
+            placeholder="https://… or upload →"
+            className={inputCls}
+            onChange={(e) => update({ ...draft, photoUrl: e.target.value })}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={uploadingPhoto}
+            className="shrink-0 cursor-pointer"
+            onClick={() => photoInputRef.current?.click()}
+          >
+            {uploadingPhoto ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Plus className="size-4" />
+            )}
+            Upload
+          </Button>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) void uploadPhoto(f);
+              e.target.value = "";
+            }}
+          />
+        </div>
+        {draft.photoUrl && (
+          <img
+            src={draft.photoUrl}
+            alt="Portrait preview"
+            className="mt-1 h-24 w-20 rounded-md border border-border/60 object-cover"
+          />
+        )}
+      </div>
+      <SaveButton
+        dirty={dirty}
+        onSave={async () => {
+          if (await save(draft)) resetDirty();
+        }}
+      />
+    </SectionCard>
+  );
+}
+
+/* ------------------------------ Pricing ------------------------------ */
+
+export function PricingEditor({ rows }: { rows?: ContentRow[] }) {
+  const save = useSectionSaver(CONTENT_KEYS.pricing);
+  const { draft, update, dirty, resetDirty } = useDraft<PricingContent>(
+    rows,
+    CONTENT_KEYS.pricing,
+    defaultPricing,
+    asPricing,
+  );
+
+  const setPlan = (i: number, patch: Partial<PricingContent["plans"][number]>) =>
+    update({
+      ...draft,
+      plans: draft.plans.map((p, idx) => (idx === i ? { ...p, ...patch } : p)),
+    });
+
+  return (
+    <SectionCard
+      title="Engagement models / pricing"
+      description="Filters bad-fit leads before they email. Keep figures honest — clients can read."
+    >
+      {draft.plans.map((plan, i) => (
+        <div key={i} className="space-y-3 rounded-md border border-border/60 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <Label>Plan {i + 1}</Label>
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label="Remove plan"
+              className="size-8 shrink-0 cursor-pointer"
+              onClick={() =>
+                update({ ...draft, plans: draft.plans.filter((_, idx) => idx !== i) })
+              }
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-1.5">
+              <Label htmlFor={"p-name-" + i}>Name</Label>
+              <Input
+                id={"p-name-" + i}
+                value={plan.name}
+                placeholder="MVP sprint"
+                maxLength={40}
+                className={inputCls}
+                onChange={(e) => setPlan(i, { name: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={"p-price-" + i}>Price</Label>
+              <Input
+                id={"p-price-" + i}
+                value={plan.price}
+                placeholder="$4,900+"
+                maxLength={30}
+                className={inputCls}
+                onChange={(e) => setPlan(i, { price: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={"p-blurb-" + i}>Blurb</Label>
+            <Textarea
+              id={"p-blurb-" + i}
+              rows={2}
+              maxLength={220}
+              value={plan.blurb}
+              className={inputCls}
+              onChange={(e) => setPlan(i, { blurb: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={"p-feat-" + i}>Features (one per line)</Label>
+            <Textarea
+              id={"p-feat-" + i}
+              rows={4}
+              value={plan.features.join("\n")}
+              className={inputCls}
+              onChange={(e) =>
+                setPlan(i, {
+                  features: e.target.value.split("\n"),
+                })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={"p-cta-" + i}>Button label (optional)</Label>
+            <Input
+              id={"p-cta-" + i}
+              value={plan.cta ?? ""}
+              placeholder="Scope your MVP"
+              maxLength={40}
+              className={inputCls}
+              onChange={(e) => setPlan(i, { cta: e.target.value })}
+            />
+          </div>
+        </div>
+      ))}
+      <Button
+        size="sm"
+        variant="outline"
+        className="cursor-pointer"
+        onClick={() =>
+          update({
+            ...draft,
+            plans: [
+              ...draft.plans,
+              { name: "", price: "", blurb: "", features: [], cta: "" },
+            ],
+          })
+        }
+      >
+        <Plus className="mr-1 size-4" /> Add plan
+      </Button>
+      <div className="grid gap-1.5">
+        <Label htmlFor="pricing-note">Note under the grid (optional)</Label>
+        <Input
+          id="pricing-note"
+          value={draft.note ?? ""}
+          placeholder="Every engagement starts with a free scoping call…"
+          maxLength={200}
+          className={inputCls}
+          onChange={(e) => update({ ...draft, note: e.target.value })}
+        />
+      </div>
+      <SaveButton
+        dirty={dirty}
+        onSave={async () => {
+          if (
+            draft.plans.some((p) => !p.name.trim() || !p.price.trim())
+          ) {
+            toast.error("Every plan needs a name and a price.");
+            return;
+          }
+          if (await save(draft)) resetDirty();
+        }}
+      />
+    </SectionCard>
+  );
+}
+
+/* --------------------------- Experience ------------------------------ */
+
+export function ExperienceEditor({ rows }: { rows?: ContentRow[] }) {
+  const save = useSectionSaver(CONTENT_KEYS.experience);
+  const { draft, update, dirty, resetDirty } = useDraft<ExperienceItem[]>(
+    rows,
+    CONTENT_KEYS.experience,
+    defaultExperience,
+    asExperience,
+  );
+
+  const setItem = (i: number, patch: Partial<ExperienceItem>) =>
+    update(draft.map((e, idx) => (idx === i ? { ...e, ...patch } : e)));
+
+  return (
+    <SectionCard
+      title="Experience timeline"
+      description="Work history shown on the landing page. Newest first — the first row renders at the top."
+    >
+      {draft.map((e, i) => (
+        <div key={i} className="space-y-3 rounded-md border border-border/60 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <Label>Entry {i + 1}</Label>
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label="Remove entry"
+              className="size-8 shrink-0 cursor-pointer"
+              onClick={() => update(draft.filter((_, idx) => idx !== i))}
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor={"e-period-" + i}>Period</Label>
+              <Input
+                id={"e-period-" + i}
+                value={e.period}
+                placeholder="2023 — Now"
+                maxLength={30}
+                className={inputCls}
+                onChange={(ev) => setItem(i, { period: ev.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={"e-title-" + i}>Role / title</Label>
+              <Input
+                id={"e-title-" + i}
+                value={e.title}
+                placeholder="Founder & Flutter Developer"
+                maxLength={70}
+                className={inputCls}
+                onChange={(ev) => setItem(i, { title: ev.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={"e-org-" + i}>Company / context</Label>
+              <Input
+                id={"e-org-" + i}
+                value={e.org}
+                placeholder="Shiki Code Studio"
+                maxLength={70}
+                className={inputCls}
+                onChange={(ev) => setItem(i, { org: ev.target.value })}
+              />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={"e-summary-" + i}>Summary</Label>
+            <Textarea
+              id={"e-summary-" + i}
+              value={e.summary}
+              placeholder="What you owned and shipped in this role."
+              maxLength={300}
+              rows={2}
+              className={inputCls}
+              onChange={(ev) => setItem(i, { summary: ev.target.value })}
+            />
+          </div>
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={e.current === true}
+              onChange={(ev) => setItem(i, { current: ev.target.checked })}
+              className="size-4 accent-current"
+            />
+            Current role
+          </label>
+        </div>
+      ))}
+      <Button
+        size="sm"
+        variant="outline"
+        className="cursor-pointer"
+        onClick={() =>
+          update([
+            ...draft,
+            { period: "", title: "", org: "", summary: "" },
+          ])
+        }
+      >
+        <Plus className="mr-1 size-4" /> Add entry
+      </Button>
+      <SaveButton
+        dirty={dirty}
+        onSave={async () => {
+          if (draft.some((e) => !e.period.trim() || !e.title.trim() || !e.org.trim())) {
+            toast.error("Every entry needs a period, a role, and a company.");
+            return;
+          }
+          if (await save(draft)) resetDirty();
+        }}
+      />
+    </SectionCard>
+  );
+}
+
+/* --------------------------- Testimonials --------------------------- */
+
+export function TestimonialsEditor({ rows }: { rows?: ContentRow[] }) {
+  const save = useSectionSaver(CONTENT_KEYS.testimonials);
+  const { draft, update, dirty, resetDirty } = useDraft<Testimonial[]>(
+    rows,
+    CONTENT_KEYS.testimonials,
+    defaultTestimonials,
+    asTestimonials,
+  );
+
+  const setItem = (i: number, patch: Partial<Testimonial>) =>
+    update(draft.map((t, idx) => (idx === i ? { ...t, ...patch } : t)));
+
+  return (
+    <SectionCard
+      title="Client testimonials"
+      description="Shown on the landing page above the final call-to-action. Link a quote to its case study with the project slug (e.g. parcelfly-delivery-platform)."
+    >
+      {draft.map((t, i) => (
+        <div key={i} className="space-y-3 rounded-md border border-border/60 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <Label>Quote {i + 1}</Label>
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label="Remove testimonial"
+              className="size-8 shrink-0 cursor-pointer"
+              onClick={() => update(draft.filter((_, idx) => idx !== i))}
+            >
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+          <Textarea
+            value={t.quote}
+            placeholder="What did the client get out of working with you?"
+            maxLength={400}
+            rows={3}
+            className={inputCls}
+            onChange={(e) => setItem(i, { quote: e.target.value })}
+          />
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-1.5">
+              <Label htmlFor={"t-name-" + i}>Name (optional)</Label>
+              <Input
+                id={"t-name-" + i}
+                value={t.name ?? ""}
+                placeholder="Jane Doe"
+                maxLength={60}
+                className={inputCls}
+                onChange={(e) => setItem(i, { name: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={"t-role-" + i}>Role</Label>
+              <Input
+                id={"t-role-" + i}
+                value={t.role ?? ""}
+                placeholder="Founder & CEO"
+                maxLength={60}
+                className={inputCls}
+                onChange={(e) => setItem(i, { role: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label htmlFor={"t-company-" + i}>Company</Label>
+              <Input
+                id={"t-company-" + i}
+                value={t.company}
+                placeholder="ParcelFly"
+                maxLength={60}
+                className={inputCls}
+                onChange={(e) => setItem(i, { company: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor={"t-slug-" + i}>Project slug (optional)</Label>
+            <Input
+              id={"t-slug-" + i}
+              value={t.slug ?? ""}
+              placeholder="parcelfly-delivery-platform"
+              maxLength={80}
+              className={inputCls}
+              onChange={(e) => setItem(i, { slug: e.target.value })}
+            />
+          </div>
+        </div>
+      ))}
+      <Button
+        size="sm"
+        variant="outline"
+        className="cursor-pointer"
+        onClick={() =>
+          update([...draft, { quote: "", role: "", company: "" }])
+        }
+      >
+        <Plus className="mr-1 size-4" /> Add testimonial
+      </Button>
+      <SaveButton
+        dirty={dirty}
+        onSave={async () => {
+          if (
+            draft.some((t) => !t.quote.trim() || !t.company.trim())
+          ) {
+            toast.error("Every testimonial needs a quote and a company.");
+            return;
+          }
+          if (await save(draft)) resetDirty();
+        }}
+      />
+    </SectionCard>
+  );
+}
+
+/* ------------------------------- Blog -------------------------------- */
+
+type PostForm = {
+  id?: Doc<"posts">["_id"];
+  title: string;
+  publishedAt: string;
+  tagsCsv: string;
+  excerpt: string;
+  body: string;
+};
+
+const emptyPostForm: PostForm = {
+  title: "",
+  publishedAt: new Date().toISOString().slice(0, 10),
+  tagsCsv: "",
+  excerpt: "",
+  body: "",
+};
+
+export function PostsManager() {
+  const posts = useQuery(api.siteContent.listPosts, {});
+  const savePost = useMutation(api.siteContent.savePost);
+  const deletePostM = useMutation(api.siteContent.deletePost);
+  const [form, setForm] = useState<PostForm | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const handleSave = async () => {
+    if (!form) return;
+    if (!form.title.trim() || !form.body.trim()) {
+      toast.error("A title and a body are required.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await savePost({
+        id: form.id,
+        title: form.title,
+        excerpt: form.excerpt,
+        body: form.body,
+        tags: csv(form.tagsCsv),
+        publishedAt: form.publishedAt,
+      });
+      toast.success(form.id ? "Post updated." : "Post published.");
+      setForm(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not save post.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <SectionCard
+      title="Blog posts"
+      description="Shown on /blog and teased on the landing page. Blank lines in the body become paragraphs."
+    >
+      {!form && (
+        <Button
+          size="sm"
+          className="w-fit cursor-pointer"
+          onClick={() => setForm({ ...emptyPostForm })}
+        >
+          <Plus className="mr-1 size-4" /> New post
+        </Button>
+      )}
+
+      {!form && (
+        <div className="divide-y divide-border/40 rounded-md border border-border/40">
+          {(posts ?? []).map((post) => (
+            <div
+              key={post._id}
+              className="flex items-center justify-between gap-3 px-3 py-2.5"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium tracking-tight">
+                  {post.title}
+                </p>
+                <p className="font-mono text-xs text-muted-foreground">
+                  {post.publishedAt} · /blog/{post.slug}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label={"Edit " + post.title}
+                  className="size-8 cursor-pointer"
+                  onClick={() =>
+                    setForm({
+                      id: post._id,
+                      title: post.title,
+                      publishedAt: post.publishedAt,
+                      tagsCsv: post.tags.join(", "),
+                      excerpt: post.excerpt,
+                      body: post.body,
+                    })
+                  }
+                >
+                  <Pencil className="size-3.5" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  aria-label={"Delete " + post.title}
+                  className="size-8 cursor-pointer"
+                  onClick={async () => {
+                    if (!confirm(`Delete \"${post.title}\"? This cannot be undone.`)) return;
+                    try {
+                      await deletePostM({ id: post._id });
+                      toast.success("Post deleted.");
+                    } catch {
+                      toast.error("Could not delete post.");
+                    }
+                  }}
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          {posts !== undefined && posts.length === 0 && (
+            <p className="px-3 py-4 text-sm text-muted-foreground">
+              No posts yet — write the first one.
+            </p>
+          )}
+        </div>
+      )}
+
+      {form && (
+        <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-[1fr_10rem]">
+            <div className="grid gap-1.5">
+              <Label>Title</Label>
+              <Input
+                value={form.title}
+                placeholder="What GetX, BLoC, and Riverpod taught me"
+                maxLength={90}
+                className={inputCls}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-1.5">
+              <Label>Published</Label>
+              <Input
+                type="date"
+                value={form.publishedAt}
+                className={inputCls}
+                onChange={(e) => setForm({ ...form, publishedAt: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Tags (comma-separated)</Label>
+            <Input
+              value={form.tagsCsv}
+              placeholder="Flutter, Architecture"
+              className={inputCls}
+              onChange={(e) => setForm({ ...form, tagsCsv: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Excerpt (cards & previews)</Label>
+            <Textarea
+              rows={2}
+              maxLength={220}
+              value={form.excerpt}
+              className={inputCls}
+              onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+            />
+          </div>
+          <div className="grid gap-1.5">
+            <Label>Body</Label>
+            <Textarea
+              rows={12}
+              maxLength={20000}
+              value={form.body}
+              placeholder="Write in plain text. Separate paragraphs with a blank line."
+              className={`${inputCls} font-mono`}
+              onChange={(e) => setForm({ ...form, body: e.target.value })}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" disabled={busy} className="cursor-pointer" onClick={handleSave}>
+              {busy && <Loader2 className="mr-1.5 size-3.5 animate-spin" />}
+              Save post
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="cursor-pointer"
+              onClick={() => setForm(null)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+    </SectionCard>
+  );
+}
+
 export function ContentPanels() {
   const rows = useQuery(api.siteContent.list, {}) as
     | ContentRow[]
@@ -1145,8 +1906,13 @@ export function ContentPanels() {
       <HeroEditor rows={rows} />
       <SkillsEditor rows={rows} />
       <CapabilitiesEditor rows={rows} />
+      <AboutEditor rows={rows} />
+      <ExperienceEditor rows={rows} />
       <InProgressEditor rows={rows} />
+      <PricingEditor rows={rows} />
+      <TestimonialsEditor rows={rows} />
       <SocialsEditor rows={rows} />
+      <PostsManager />
     </div>
   );
 }
