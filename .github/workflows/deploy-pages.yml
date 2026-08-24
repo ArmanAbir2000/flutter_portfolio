@@ -25,11 +25,8 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      # Local-only type generation (no credentials needed) so `tsc -b`
-      # can typecheck the client against src/convex/_generated.
-      - name: Generate Convex client types
-        run: npx convex codegen
-
+      # src/convex/_generated is committed; this re-syncs it from the live
+      # deployment whenever a deploy key secret is configured.
       - name: Deploy Convex functions & full typegen
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
