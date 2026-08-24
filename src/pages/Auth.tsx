@@ -86,9 +86,17 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
       navigate(redirect);
     } catch (error) {
-      console.error("OTP verification error:", error);
+      // Surface the REAL server error — masking every failure as "incorrect
+      // code" hides issues like missing env vars behind misleading copy.
+      const raw =
+        error instanceof Error ? error.message : String(error ?? "unknown");
+      console.error("OTP verification error:", raw);
 
-      setError("The verification code you entered is incorrect.");
+      setError(
+        /incorrect|invalid|expired|mismatch/i.test(raw)
+          ? "The verification code you entered is incorrect or expired. Request a fresh code."
+          : raw.slice(0, 240),
+      );
       setIsLoading(false);
 
       setOtp("");
