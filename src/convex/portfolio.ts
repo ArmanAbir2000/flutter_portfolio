@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireOwner } from "./owner";
 
 const seedProjects = [
   {
@@ -186,30 +187,100 @@ export const getProject = query({
   },
 });
 
+/**
+ * One-time bootstrap of the showcase. Guarded by a siteContent flag so
+ * dashboard edits and deletions are never overwritten afterwards.
+ */
 export const ensureSeeded = mutation({
   args: {},
   handler: async (ctx) => {
+    const flag = await ctx.db
+      .query("siteContent")
+      .withIndex("by_key", (q) => q.eq("key", "__seeded"))
+      .first();
+    if (flag) return;
+
     const existing = await ctx.db.query("portfolioProjects").collect();
     const bySlug = new Map(existing.map((p) => [p.slug, p]));
-    const slugs = new Set(seedProjects.map((s) => s.slug));
 
-    // Remove entries no longer part of the showcase.
-    for (const project of existing) {
-      if (!slugs.has(project.slug)) await ctx.db.delete(project._id);
-    }
-
-    // Insert missing entries and refresh ones whose content changed.
     for (const seed of seedProjects) {
-      const current = bySlug.get(seed.slug);
-      if (!current) {
+      if (!bySlug.has(seed.slug)) {
         await ctx.db.insert("portfolioProjects", seed);
-      } else if (
-        current.title !== seed.title ||
-        current.summary !== seed.summary ||
-        current.description !== seed.description
-      ) {
-        await ctx.db.replace(current._id, seed);
       }
     }
+
+    await ctx.db.insert("siteContent", {
+      key: "__seeded",
+      data: { at: Date.now() },
+    });
+  },
+});
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+/** Owner-only create/update of a showcase project. */
+export const saveProject = mutation({
+  args: {
+    id: v.optional(v.id("portfolioProjects")),
+    title: v.string(),
+    summary: v.string(),
+    description: v.string(),
+    category: v.string(),
+    tags: v.array(v.string()),
+    stack: v.array(v.string()),
+    highlights: v.array(v.string()),
+    liveUrl: v.optional(v.string()),
+    repoUrl: v.optional(v.string()),
+    year: v.number(),
+    featured: v.boolean(),
+  },
+  handler: async (ctx, a) => {
+    await requireOwner(ctx);
+
+    const title = a.title.trim();
+    if (!title) throw new Error("Title is required.");
+    const slug = slugify(title);
+
+    const clash = await ctx.db
+      .query("portfolioProjects")
+      .withIndex("by_slug", (q) => q.eq("slug", slug))
+      .first();
+    if (clash && clash._id !== a.id) {
+      throw new Error("Another project already uses this title.");
+    }
+
+    const doc = {
+      slug,
+      title,
+      summary: a.summary.trim(),
+      description: a.description.trim(),
+      category: a.category.trim() || "Project",
+      tags: a.tags,
+      stack: a.stack,
+      highlights: a.highlights,
+      liveUrl: a.liveUrl?.trim() ? a.liveUrl.trim() : undefined,
+      repoUrl: a.repoUrl?.trim() ? a.repoUrl.trim() : undefined,
+      year: a.year,
+      featured: a.featured,
+    };
+
+    if (a.id) {
+      await ctx.db.replace(a.id, doc);
+    } else {
+      await ctx.db.insert("portfolioProjects", doc);
+    }
+  },
+});
+
+/** Owner-only removal of a showcase project. */
+export const deleteProject = mutation({
+  args: { id: v.id("portfolioProjects") },
+  handler: async (ctx, { id }) => {
+    await requireOwner(ctx);
+    await ctx.db.delete(id);
   },
 });

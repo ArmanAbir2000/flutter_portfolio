@@ -40,9 +40,10 @@ jobs:
 
       - name: Build
         env:
-          # The Convex deployment this portfolio talks to. Override with a
-          # repo secret of the same name if you use a production deployment.
-          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL || 'https://academic-parakeet-798.convex.cloud' }}
+          # The Convex deployment this portfolio talks to — arman-abir's own
+          # project (dev/arman-abir → ceaseless-duck-889). Override with a
+          # repo secret of the same name if you migrate deployments.
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL || 'https://ceaseless-duck-889.convex.cloud' }}
           # GitHub Pages project sites are served from a subdirectory.
           VITE_BASE_PATH: /flutter_portfolio/
         run: bun run build

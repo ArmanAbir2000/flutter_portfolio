@@ -70,6 +70,13 @@ const schema = defineSchema(
       handled: v.boolean(),
     }),
 
+    // Editable landing-page sections (CMS). One row per section key:
+    // "hero" | "skills" | "capabilities" | "inProgress" | "__seeded"
+    siteContent: defineTable({
+      key: v.string(),
+      data: v.any(),
+    }).index("by_key", ["key"]),
+
     // Cached GitHub data safe for public display (public repos only).
     githubCache: defineTable({
       username: v.string(),

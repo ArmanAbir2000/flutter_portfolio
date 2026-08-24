@@ -1,19 +1,27 @@
+import { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import {
   CalendarClock,
   Check,
+  Inbox as InboxIcon,
+  LayoutList,
   Loader2,
   LogOut,
   Mail,
   MailOpen,
+  PenLine,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/hooks/use-auth";
 import { Reveal } from "@/components/motion-primitives";
+import {
+  ContentPanels,
+  ProjectsManager,
+} from "@/components/dashboard-editors";
 import { EASE, fadeUp, viewportOnce } from "@/lib/motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,9 +163,18 @@ function MessageRow({
   );
 }
 
+const TABS = [
+  { id: "inbox", label: "Inbox", icon: InboxIcon },
+  { id: "content", label: "Page content", icon: PenLine },
+  { id: "projects", label: "Projects", icon: LayoutList },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [tab, setTab] = useState<TabId>("inbox");
 
   const appointments = useQuery(api.appointments.listAppointments, {});
   const messages = useQuery(api.messages.listMessages, {});
@@ -201,16 +218,38 @@ export default function Dashboard() {
       <Sidebar onSignOut={handleSignOut} />
 
       <main className="flex-1 px-6 py-12 sm:px-12 lg:px-16">
-        <div className="mx-auto w-full max-w-2xl pb-16">
+        <div className="mx-auto w-full max-w-3xl pb-16">
           <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
             Owner console
           </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight">Inbox</h1>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Appointment requests and customer messages, newest first.
-            {user?.email ? " Signed in as " + user.email + "." : ""}
+            {user?.email ? "Signed in as " + user.email + ". ": ""}
+            Manage your inbox and everything shown on the landing page.
           </p>
 
+          {/* Tabs */}
+          <div className="mt-8 flex flex-wrap gap-2">
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setTab(id)}
+                className={
+                  "flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2 text-sm transition-all active:scale-[0.97] " +
+                  (tab === id
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground")
+                }
+              >
+                <Icon className="size-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {tab === "inbox" && (
+          <>
           <Reveal as="section" className="mt-12">
             <div className="mb-6 flex items-baseline justify-between">
               <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
@@ -260,6 +299,30 @@ export default function Dashboard() {
               </ul>
             )}
           </Reveal>
+          </>
+          )}
+
+          {tab === "content" && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="mt-12"
+            >
+              <ContentPanels />
+            </motion.div>
+          )}
+
+          {tab === "projects" && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="mt-12"
+            >
+              <ProjectsManager />
+            </motion.div>
+          )}
         </div>
       </main>
     </motion.div>

@@ -9,45 +9,33 @@ import { Separator } from "@/components/ui/separator";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { ContributionMap } from "@/components/contribution-map";
 import { CountUp, Marquee, MaskText, Reveal } from "@/components/motion-primitives";
-import {
-  currentClientWork,
-  personalProjects,
-  type ActiveProject,
-} from "@/lib/profile";
 import { EASE, fadeUp } from "@/lib/motion";
+import {
+  CONTENT_KEYS,
+  asCapabilities,
+  asHero,
+  asInProgress,
+  asSkills,
+  defaultCapabilities,
+  defaultHero,
+  defaultInProgress,
+  defaultSkills,
+  type ActiveItem,
+} from "@/lib/content";
 
-const stack = [
-  "Flutter",
-  "Dart",
-  "Laravel",
-  "Firebase",
-  "GetX",
-  "BLoC",
-  "Riverpod",
-  "REST APIs",
-  "Cloud Messaging",
-  "Clean architecture",
-];
+type ContentRow = { key: string; data: unknown };
 
-const capabilities = [
-  {
-    n: "01",
-    title: "Cross-platform apps",
-    body: "Production Flutter apps for Android and iOS from a single Dart codebase — state managed with GetX, BLoC, or Riverpod as the project demands, never one-size-fits-all.",
-  },
-  {
-    n: "02",
-    title: "Backends & APIs",
-    body: "RESTful APIs built on Laravel with clean resource architecture, plus Firebase for authentication, Cloud Messaging, and realtime features that keep clients in sync.",
-  },
-  {
-    n: "03",
-    title: "Studio-grade delivery",
-    body: "Shiki Code Studio takes products from design to store release: clean architecture, honest estimates, and handover documentation your own team can own.",
-  },
-];
+function pick<T>(
+  rows: ContentRow[] | undefined,
+  key: string,
+  fallback: T,
+  guard: (d: unknown) => T | null,
+): T {
+  const raw = rows?.find((r) => r.key === key)?.data;
+  return (raw !== undefined ? guard(raw) : null) ?? fallback;
+}
 
-function ActiveProjectRow({ project }: { project: ActiveProject }) {
+function ActiveProjectRow({ project }: { project: ActiveItem }) {
   const body = (
     <>
       <div className="flex items-baseline justify-between gap-4">
@@ -119,6 +107,9 @@ function buildStats(
 export default function Landing() {
   const projects = useQuery(api.portfolio.listProjects, {});
   const ensureSeeded = useMutation(api.portfolio.ensureSeeded);
+  const contentRows = useQuery(api.siteContent.list, {}) as
+    | ContentRow[]
+    | undefined;
   const githubCache = useQuery(api.githubStore.getCache, {});
   const refreshGithub = useAction(api.github.refresh);
   const refreshingGithub = useRef(false);
@@ -149,6 +140,27 @@ export default function Landing() {
 
   const featured = (projects ?? []).filter((p) => p.featured).slice(0, 4);
 
+  // CMS-backed sections with graceful fallback to defaults.
+  const hero = pick(contentRows, CONTENT_KEYS.hero, defaultHero, asHero);
+  const skills = pick(
+    contentRows,
+    CONTENT_KEYS.skills,
+    defaultSkills,
+    asSkills,
+  );
+  const capabilities = pick(
+    contentRows,
+    CONTENT_KEYS.capabilities,
+    defaultCapabilities,
+    asCapabilities,
+  );
+  const inProgress = pick(
+    contentRows,
+    CONTENT_KEYS.inProgress,
+    defaultInProgress,
+    asInProgress,
+  );
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -169,7 +181,7 @@ export default function Landing() {
         </motion.p>
         <MaskText
           as="h1"
-          text="Flutter apps with serious backbones."
+          text={hero.title}
           delay={0.15}
           className="mt-6 block max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl"
         />
@@ -179,11 +191,7 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.55, ease: EASE }}
           className="mt-6 max-w-xl text-base leading-7 text-muted-foreground"
         >
-          I&apos;m Arman Abir, founder of Shiki Code Studio. I build
-          cross-platform apps in Flutter, backed by Laravel RESTful APIs and
-          Firebase — with state management done right using GetX, BLoC, or
-          Riverpod. Browse the work below, then book time directly on my
-          calendar.
+          {hero.subtitle}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -223,7 +231,7 @@ export default function Landing() {
         >
           <Marquee
             duration={36}
-            items={stack.map((s) => (
+            items={skills.map((s) => (
               <span
                 key={s}
                 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
@@ -299,10 +307,10 @@ export default function Landing() {
           </Reveal>
           <div className="mt-10">
             {capabilities.map((c, i) => (
-              <motion.div key={c.n} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
+              <motion.div key={c.title + i} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.08 }}>
                 <div className="grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 py-10 sm:grid-cols-[4rem_16rem_1fr] sm:items-baseline">
                   <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                    {c.n}
+                    {String(i + 1).padStart(2, "0")}
                   </span>
                   <h2 className="text-lg font-semibold tracking-tight">{c.title}</h2>
                   <p className="col-span-2 max-w-xl text-sm leading-6 text-muted-foreground sm:col-span-1">
@@ -328,7 +336,7 @@ export default function Landing() {
                 Client &amp; contract work
               </h2>
               <Separator className="mt-4" />
-              {currentClientWork.map((p) => (
+              {inProgress.client.map((p) => (
                 <ActiveProjectRow key={p.name} project={p} />
               ))}
             </motion.div>
@@ -337,7 +345,7 @@ export default function Landing() {
                 Personal &amp; open source
               </h2>
               <Separator className="mt-4" />
-              {personalProjects.map((p) => (
+              {inProgress.personal.map((p) => (
                 <ActiveProjectRow key={p.name} project={p} />
               ))}
             </motion.div>
