@@ -32,9 +32,9 @@ jobs:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: |
           if [ -z "$CONVEX_DEPLOY_KEY" ]; then
-            echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy (types stay stubbed)"
+            echo "CONVEX_DEPLOY_KEY not set - skipping backend deploy"
           else
-            npx convex dev --once
+            npx convex deploy --prod
           fi
 
       - name: Build
