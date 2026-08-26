@@ -549,6 +549,123 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Flutter Insights */}
+      <section className="border-t border-border/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
+          <Reveal as="p" className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            Flutter Insights
+          </Reveal>
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {/* Card 1: Why Flutter */}
+            <motion.div
+              {...fadeUp}
+              className="group rounded-lg border border-border/60 p-7"
+            >
+              <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                01
+              </span>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">
+                Why Flutter?
+              </h3>
+              <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+                <p>
+                  Flutter doesn't just share code across platforms — it shares the <em>rendering engine</em>. Every pixel is drawn by Skia/Impeller, not delegated to native widgets. That means a button looks identical on a Pixel 9, an iPhone 16, and a Chrome tab.
+                </p>
+                <p>
+                  In 2025, <strong className="text-foreground">68.8% of developers chose Flutter</strong> as their preferred cross-platform SDK (Stack Overflow Developer Survey). Google, BMW, Toyota, Nubank (90M+ users), and Alibaba ship production Flutter apps — not prototypes, not side projects.
+                </p>
+                <p>
+                  The real unlock is <strong className="text-foreground">Impeller</strong> — Flutter's new rendering backend. It eliminates shader-compilation jank entirely. First-frame times dropped 50%+ on iOS, and the memory footprint shrank. Scroll animations that used to stutter on mid-range Androids now hit a locked 60fps.
+                </p>
+                <p>
+                  And with <strong className="text-foreground">Dart 3.12</strong> bringing pattern matching, records, and sealed classes, the language itself has caught up with modern expectations. Null-safety was the floor; exhaustive switch expressions are the ceiling.
+                </p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {"Impeller · Dart 3 · Single Codebase · 68.8% Developer Preference".split(" · ").map((t) => (
+                  <span key={t} className="rounded-md border border-border/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Card 2: Mobile to Web to Desktop */}
+            <motion.div
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.08 }}
+              className="group rounded-lg border border-border/60 p-7"
+            >
+              <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                02
+              </span>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">
+                One codebase, every screen
+              </h3>
+              <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+                <p>
+                  Flutter started as a mobile framework. In 2026 it's a <strong className="text-foreground">full-stack UI toolkit</strong>. The same Dart codebase compiles to iOS, Android, web (via WASM), Windows, macOS, and Linux — with native binary output, not a webview wrapper.
+                </p>
+                <p>
+                  Flutter Web now compiles Dart directly to <strong className="text-foreground">WebAssembly</strong>. Near-native execution speeds in Chrome and Edge. The WASM renderer delivers 60fps animations on complex dashboards — a leap from the CanvasKit days.
+                </p>
+                <p>
+                  Desktop support has matured too. Windows apps use Win32 and UWP APIs natively. macOS apps get Apple Silicon optimization and menu-bar integration. Linux support includes GTK compatibility. The <strong className="text-foreground">widget tree adapts automatically</strong> — a <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">LayoutBuilder</code> that returns a phone UI on a 6" screen returns a sidebar layout on a 27" monitor.
+                </p>
+                <p>
+                  This isn't "responsive web" bolted on. It's a rendering engine that targets each platform's compositor directly, with platform channels for native API access when you need it.
+                </p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {"WASM · Native Binaries · Platform Channels · Adaptive Layouts".split(" · ").map((t) => (
+                  <span key={t} className="rounded-md border border-border/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Card 3: Flutter vs React Native — a practitioner's take */}
+            <motion.div
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: 0.16 }}
+              className="group rounded-lg border border-border/60 p-7"
+            >
+              <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                03
+              </span>
+              <h3 className="mt-4 text-lg font-semibold tracking-tight">
+                Flutter vs React Native — the honest take
+              </h3>
+              <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+                <p>
+                  React Native is great if your team already knows React and you need to hit existing native modules fast. But the comparison isn't apples-to-apples.
+                </p>
+                <p>
+                  RN bridges JavaScript to native widgets through a serialization layer. Every UI update crosses the bridge. Flutter paints pixels directly — <strong className="text-foreground">no bridge, no serialization tax</strong>. On benchmark suites, Flutter consistently outperforms RN in frame consistency and memory usage.
+                </p>
+                <p>
+                  The <strong className="text-foreground">widget-based architecture</strong> also plays better with AI-assisted development. Tools can "see" the UI as a structured tree of composable widgets. Fullestop's 2026 benchmarks show Flutter's widget model enables AI UI generation with 40% fewer iteration cycles compared to RN's component model.
+                </p>
+                <p>
+                  Where RN wins: the JavaScript ecosystem is massive, and Expo's tooling is excellent. But Flutter's ecosystem has caught up — <strong className="text-foreground">46% of cross-platform developers use Flutter</strong> (2023 developer survey, confirmed trending upward), and packages like Riverpod, GoRouter, and Flame cover the full stack.
+                </p>
+                <p>
+                  The bottom line: choose Flutter when design consistency, animation fidelity, and multi-platform reach matter more than JavaScript ecosystem breadth.
+                </p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {"Zero-Bridge · Pixel-Perfect · AI-Friendly · 46% Market Share".split(" · ").map((t) => (
+                  <span key={t} className="rounded-md border border-border/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Engagement models */}
       <section className="border-t border-border/60">
         <div className="mx-auto w-full max-w-6xl px-6 py-20 sm:py-28">
