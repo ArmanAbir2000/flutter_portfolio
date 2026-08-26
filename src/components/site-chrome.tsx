@@ -10,7 +10,6 @@ import {
 import { Link, NavLink } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { ThemeSettingsTrigger } from "@/components/theme-settings";
 import { CONTENT_KEYS, asSocials, defaultSocials } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 
@@ -115,7 +114,6 @@ export function SiteHeader() {
               </NavLink>
             ))}
           </div>
-          <ThemeSettingsTrigger />
           <Button asChild size="sm" className="ml-2 cursor-pointer transition-transform active:scale-[0.97]">
             <Link to="/book">
               Book a call

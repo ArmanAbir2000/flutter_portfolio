@@ -1,30 +1,49 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { EASE, fadeUp, maskLine, staggerParent, fadeUpFrom, staggerParentFrom, maskLineFrom } from "@/lib/motion";
-import { useThemeSettings } from "@/hooks/use-theme-settings";
-import { getAnimationPreset } from "@/lib/animations";
 
 /**
- * Small set of reusable motion primitives so every page animates with the
- * same timing and easing. See src/lib/motion.ts for the shared tokens.
- * When ThemeSettingsProvider is available, they use the active animation preset.
+ * Reusable motion primitives that read animation parameters from CSS custom
+ * properties (--anim-ease, --anim-duration, --anim-distance, --anim-stagger)
+ * set by the active animation preset class on <html>. This makes them
+ * reactive to preset changes without requiring component remounts.
  */
 
-/** Hook to get the current motion values from context. */
-function useMotionValues() {
-  try {
-    const { animationId } = useThemeSettings();
-    const preset = getAnimationPreset(animationId);
-    return {
-      fadeUp: fadeUpFrom(preset),
-      staggerParent: staggerParentFrom(preset),
-      maskLine: maskLineFrom(preset),
-      preset,
-    };
-  } catch {
-    return { fadeUp, staggerParent, maskLine, preset: null };
+/** Read a CSS custom property from <html> and parse it. */
+function readCSSVar(name: string): string {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** Parse a CSS cubic-bezier() string into a tuple, or return default. */
+function parseEasing(raw: string): [number, number, number, number] {
+  const m = raw.match(/cubic-bezier\(([^)]+)\)/);
+  if (m) {
+    const parts = m[1].split(",").map((s) => parseFloat(s.trim()));
+    if (parts.length === 4 && parts.every((n) => !Number.isNaN(n))) {
+      return parts as [number, number, number, number];
+    }
   }
+  return [0.22, 1, 0.36, 1];
+}
+
+/** Parse a CSS time/length value to a number, or return default. */
+function parseDuration(raw: string, fallback: number): number {
+  const n = parseFloat(raw);
+  return Number.isNaN(n) ? fallback : n;
+}
+
+function parseDistance(raw: string, fallback: number): number {
+  const n = parseFloat(raw);
+  return Number.isNaN(n) ? fallback : n;
+}
+
+/** Read the current animation parameters from CSS variables. */
+function readAnimParams() {
+  const ease = parseEasing(readCSSVar("--anim-ease"));
+  const duration = parseDuration(readCSSVar("--anim-duration"), 0.85);
+  const distance = parseDistance(readCSSVar("--anim-distance"), 24);
+  const stagger = parseDuration(readCSSVar("--anim-stagger"), 0.1);
+  return { ease, duration, distance, stagger };
 }
 
 /** Scroll-triggered rise + fade wrapper for any block. */
@@ -40,11 +59,25 @@ export function Reveal({
   as?: "div" | "p" | "span" | "li" | "h2" | "h3" | "section";
 }) {
   const Comp = motion[as];
-  const { fadeUp: fu } = useMotionValues();
+  const ref = useRef<HTMLDivElement>(null);
+  const [params, setParams] = useState(readAnimParams);
+
+  // Re-read CSS vars when animation preset class changes on <html>.
+  useEffect(() => {
+    const obs = new MutationObserver(() => setParams(readAnimParams()));
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <Comp
-      {...fu}
-      transition={{ ...fu.transition, delay }}
+      initial={{ opacity: 0, y: params.distance }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: params.duration, ease: params.ease, delay }}
       className={className}
     >
       {children}
@@ -65,19 +98,26 @@ export function MaskText({
   text: string;
   className?: string;
   delay?: number;
-  /** Element to render the container as. */
   as?: "span" | "h1" | "h2" | "h3" | "p";
 }) {
   const Tag = motion[as];
   const words = text.split(" ");
-  const { staggerParent: sp, maskLine: ml } = useMotionValues();
+  const [params, setParams] = useState(readAnimParams);
+
+  useEffect(() => {
+    const obs = new MutationObserver(() => setParams(readAnimParams()));
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <Tag
-      variants={sp}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true }}
-      transition={{ staggerChildren: 0.045, delayChildren: delay }}
       className={cn("inline-block", className)}
     >
       {words.map((word, i) => (
@@ -85,7 +125,17 @@ export function MaskText({
           key={i}
           className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
         >
-          <motion.span variants={ml} className="inline-block">
+          <motion.span
+            initial={{ y: "110%" }}
+            whileInView={{ y: "0%" }}
+            viewport={{ once: true }}
+            transition={{
+              duration: params.duration * 0.9,
+              ease: params.ease,
+              delay: delay + i * params.stagger,
+            }}
+            className="inline-block"
+          >
             {word}
             {i < words.length - 1 ? "\u00A0" : ""}
           </motion.span>
@@ -117,9 +167,10 @@ export function CountUp({
 
   useEffect(() => {
     if (!inView || Number.isNaN(target)) return;
+    const ease = parseEasing(readCSSVar("--anim-ease"));
     const controls = animate(0, target, {
       duration,
-      ease: EASE,
+      ease,
       onUpdate: (v) =>
         setDisplay(prefix + Math.round(v).toLocaleString() + suffix),
     });
