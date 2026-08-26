@@ -24,7 +24,6 @@ import {
   ProjectsManager,
 } from "@/components/dashboard-editors";
 import { AppearancePanel } from "@/components/theme-picker";
-import { DashboardThemePanel } from "@/components/dashboard-theme-panel";
 import { EASE, fadeUp, viewportOnce } from "@/lib/motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -357,7 +356,6 @@ export default function Dashboard() {
               className="mt-12 space-y-8"
             >
               <AppearancePanel />
-              <DashboardThemePanel />
             </motion.div>
           )}
         </div>
