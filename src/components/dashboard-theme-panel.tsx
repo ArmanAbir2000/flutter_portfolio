@@ -2,8 +2,7 @@ import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { animationPresets } from "@/lib/animations";
-import { palettes } from "@/lib/palettes";
-import { useThemeSettings } from "@/hooks/use-theme-settings";
+import { useThemeSettings, PALETTE_META } from "@/hooks/use-theme-settings";
 import { EASE } from "@/lib/motion";
 
 const cardCls =
@@ -70,10 +69,10 @@ export function DashboardThemePanel() {
       {/* Palettes */}
       <Section title="Color Palette">
         <p className="text-xs text-muted-foreground">
-          Accent colors layered on top of the active theme.
+          Full color scheme overrides layered on top of the active site theme.
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {palettes.map((p) => {
+          {PALETTE_META.map((p) => {
             const active = p.id === paletteId;
             return (
               <button

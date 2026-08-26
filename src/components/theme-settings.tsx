@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Palette, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { animationPresets } from "@/lib/animations";
-import { palettes } from "@/lib/palettes";
-import { useThemeSettings } from "@/hooks/use-theme-settings";
+import { useThemeSettings, PALETTE_META } from "@/hooks/use-theme-settings";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -74,7 +73,7 @@ function PaletteGrid() {
   const { paletteId, setPaletteId } = useThemeSettings();
   return (
     <div className="grid grid-cols-2 gap-2">
-      {palettes.map((p) => {
+      {PALETTE_META.map((p) => {
         const active = p.id === paletteId;
         return (
           <button
@@ -99,9 +98,6 @@ function PaletteGrid() {
             </div>
             <div className="text-center">
               <span className="text-xs font-medium">{p.icon} {p.name}</span>
-              <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground">
-                {p.description}
-              </p>
             </div>
             {active && (
               <motion.span
@@ -142,7 +138,6 @@ export function ThemeSettingsTrigger() {
           </SheetTitle>
         </SheetHeader>
 
-        {/* Tabs */}
         <div className="mt-4 flex gap-1 rounded-lg bg-muted p-1">
           {tabs.map((t) => (
             <button
@@ -162,7 +157,6 @@ export function ThemeSettingsTrigger() {
           ))}
         </div>
 
-        {/* Content */}
         <div className="mt-4 max-h-[calc(100vh-12rem)] overflow-y-auto pr-1">
           <AnimatePresence mode="wait">
             <motion.div
