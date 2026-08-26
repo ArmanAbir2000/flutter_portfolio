@@ -23,106 +23,71 @@ const ThemeSettingsContext = createContext<ThemeSettingsContextValue | null>(
 
 type PaletteVars = Record<string, string>;
 
+/**
+ * Accent-only palette overrides. Background, foreground, card, border,
+ * and muted colors are controlled by the site theme — palettes only
+ * change the accent color family (primary, accent, ring, charts).
+ */
 const PALETTE_MAP: Record<string, PaletteVars> = {
   "golden-hour": {
-    "--background": "oklch(0.14 0.01 50)",
-    "--foreground": "oklch(0.92 0.01 70)",
-    "--card": "oklch(0.18 0.012 50)",
-    "--card-foreground": "oklch(0.92 0.01 70)",
-    "--popover": "oklch(0.18 0.012 50)",
-    "--popover-foreground": "oklch(0.92 0.01 70)",
     "--primary": "oklch(0.72 0.14 55)",
-    "--primary-foreground": "oklch(0.12 0.02 50)",
-    "--secondary": "oklch(0.24 0.018 50)",
-    "--secondary-foreground": "oklch(0.92 0.01 70)",
-    "--muted": "oklch(0.22 0.015 50)",
-    "--muted-foreground": "oklch(0.55 0.02 60)",
+    "--primary-foreground": "oklch(0.98 0.01 55)",
     "--accent": "oklch(0.75 0.16 65)",
-    "--accent-foreground": "oklch(0.12 0.02 50)",
-    "--destructive": "oklch(0.6 0.2 25)",
-    "--border": "oklch(0.28 0.018 50 / 60%)",
-    "--input": "oklch(0.28 0.018 50 / 70%)",
+    "--accent-foreground": "oklch(0.15 0.02 55)",
     "--ring": "oklch(0.72 0.14 55)",
+    "--chart-1": "oklch(0.72 0.14 55)",
+    "--chart-2": "oklch(0.75 0.16 65)",
+    "--chart-3": "oklch(0.6 0.12 45)",
+    "--chart-4": "oklch(0.8 0.1 70)",
+    "--chart-5": "oklch(0.5 0.1 55)",
   },
   "deep-ocean": {
-    "--background": "oklch(0.12 0.02 230)",
-    "--foreground": "oklch(0.9 0.01 230)",
-    "--card": "oklch(0.16 0.025 230)",
-    "--card-foreground": "oklch(0.9 0.01 230)",
-    "--popover": "oklch(0.16 0.025 230)",
-    "--popover-foreground": "oklch(0.9 0.01 230)",
     "--primary": "oklch(0.65 0.12 220)",
-    "--primary-foreground": "oklch(0.1 0.02 230)",
-    "--secondary": "oklch(0.22 0.025 230)",
-    "--secondary-foreground": "oklch(0.9 0.01 230)",
-    "--muted": "oklch(0.2 0.02 230)",
-    "--muted-foreground": "oklch(0.5 0.03 230)",
+    "--primary-foreground": "oklch(0.98 0.01 220)",
     "--accent": "oklch(0.78 0.14 175)",
-    "--accent-foreground": "oklch(0.1 0.02 230)",
-    "--destructive": "oklch(0.6 0.2 25)",
-    "--border": "oklch(0.26 0.03 230 / 50%)",
-    "--input": "oklch(0.26 0.03 230 / 60%)",
+    "--accent-foreground": "oklch(0.12 0.02 220)",
     "--ring": "oklch(0.65 0.12 220)",
+    "--chart-1": "oklch(0.65 0.12 220)",
+    "--chart-2": "oklch(0.78 0.14 175)",
+    "--chart-3": "oklch(0.5 0.1 240)",
+    "--chart-4": "oklch(0.7 0.1 200)",
+    "--chart-5": "oklch(0.55 0.08 210)",
   },
   "berry-crush": {
-    "--background": "oklch(0.14 0.02 330)",
-    "--foreground": "oklch(0.9 0.015 330)",
-    "--card": "oklch(0.18 0.025 330)",
-    "--card-foreground": "oklch(0.9 0.015 330)",
-    "--popover": "oklch(0.18 0.025 330)",
-    "--popover-foreground": "oklch(0.9 0.015 330)",
     "--primary": "oklch(0.72 0.22 320)",
-    "--primary-foreground": "oklch(0.1 0.02 330)",
-    "--secondary": "oklch(0.22 0.025 330)",
-    "--secondary-foreground": "oklch(0.9 0.015 330)",
-    "--muted": "oklch(0.2 0.02 330)",
-    "--muted-foreground": "oklch(0.5 0.03 330)",
+    "--primary-foreground": "oklch(0.98 0.01 320)",
     "--accent": "oklch(0.78 0.24 340)",
-    "--accent-foreground": "oklch(0.1 0.02 330)",
-    "--destructive": "oklch(0.6 0.2 25)",
-    "--border": "oklch(0.26 0.03 330 / 50%)",
-    "--input": "oklch(0.26 0.03 330 / 60%)",
+    "--accent-foreground": "oklch(0.12 0.02 320)",
     "--ring": "oklch(0.72 0.22 320)",
+    "--chart-1": "oklch(0.72 0.22 320)",
+    "--chart-2": "oklch(0.78 0.24 340)",
+    "--chart-3": "oklch(0.6 0.18 300)",
+    "--chart-4": "oklch(0.8 0.2 350)",
+    "--chart-5": "oklch(0.55 0.15 330)",
   },
   "forest-floor": {
-    "--background": "oklch(0.13 0.015 145)",
-    "--foreground": "oklch(0.88 0.015 145)",
-    "--card": "oklch(0.17 0.02 145)",
-    "--card-foreground": "oklch(0.88 0.015 145)",
-    "--popover": "oklch(0.17 0.02 145)",
-    "--popover-foreground": "oklch(0.88 0.015 145)",
     "--primary": "oklch(0.68 0.12 150)",
-    "--primary-foreground": "oklch(0.1 0.02 145)",
-    "--secondary": "oklch(0.22 0.02 145)",
-    "--secondary-foreground": "oklch(0.88 0.015 145)",
-    "--muted": "oklch(0.2 0.018 145)",
-    "--muted-foreground": "oklch(0.5 0.025 145)",
+    "--primary-foreground": "oklch(0.98 0.01 150)",
     "--accent": "oklch(0.78 0.16 130)",
-    "--accent-foreground": "oklch(0.1 0.02 145)",
-    "--destructive": "oklch(0.6 0.2 25)",
-    "--border": "oklch(0.25 0.02 145 / 50%)",
-    "--input": "oklch(0.25 0.02 145 / 60%)",
+    "--accent-foreground": "oklch(0.12 0.02 150)",
     "--ring": "oklch(0.68 0.12 150)",
+    "--chart-1": "oklch(0.68 0.12 150)",
+    "--chart-2": "oklch(0.78 0.16 130)",
+    "--chart-3": "oklch(0.55 0.1 160)",
+    "--chart-4": "oklch(0.7 0.1 140)",
+    "--chart-5": "oklch(0.6 0.08 155)",
   },
   "electric-dreams": {
-    "--background": "oklch(0.08 0.015 250)",
-    "--foreground": "oklch(0.88 0.01 250)",
-    "--card": "oklch(0.12 0.02 250)",
-    "--card-foreground": "oklch(0.88 0.01 250)",
-    "--popover": "oklch(0.12 0.02 250)",
-    "--popover-foreground": "oklch(0.88 0.01 250)",
     "--primary": "oklch(0.78 0.2 210)",
-    "--primary-foreground": "oklch(0.06 0.01 250)",
-    "--secondary": "oklch(0.18 0.02 250)",
-    "--secondary-foreground": "oklch(0.88 0.01 250)",
-    "--muted": "oklch(0.16 0.018 250)",
-    "--muted-foreground": "oklch(0.48 0.02 250)",
+    "--primary-foreground": "oklch(0.98 0.01 210)",
     "--accent": "oklch(0.82 0.2 250)",
-    "--accent-foreground": "oklch(0.06 0.01 250)",
-    "--destructive": "oklch(0.6 0.2 25)",
-    "--border": "oklch(0.22 0.025 250 / 50%)",
-    "--input": "oklch(0.22 0.025 250 / 60%)",
+    "--accent-foreground": "oklch(0.12 0.02 250)",
     "--ring": "oklch(0.78 0.2 210)",
+    "--chart-1": "oklch(0.78 0.2 210)",
+    "--chart-2": "oklch(0.82 0.2 250)",
+    "--chart-3": "oklch(0.65 0.18 230)",
+    "--chart-4": "oklch(0.85 0.15 200)",
+    "--chart-5": "oklch(0.7 0.16 260)",
   },
 };
 
@@ -202,15 +167,22 @@ export function useActiveAnimation() {
 }
 
 /** Apply palette variables directly as inline styles on <html>. */
+/** Keys that palette overrides — used to clear previous palette vars
+ *  without touching animation vars set by applyAnimVars. */
+const PALETTE_KEYS = new Set([
+  "--primary", "--primary-foreground",
+  "--accent", "--accent-foreground",
+  "--ring",
+  "--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5",
+]);
+
 export function applyPaletteVars(paletteId: string) {
   const el = document.documentElement;
   const vars = paletteId === "default" ? null : PALETTE_MAP[paletteId];
 
-  // Remove all palette CSS variables from inline style
-  for (const key of Object.keys(el.style)) {
-    if (key.startsWith("--")) {
-      el.style.removeProperty(key);
-    }
+  // Clear previous palette variables (keep animation vars intact)
+  for (const key of PALETTE_KEYS) {
+    el.style.removeProperty(key);
   }
 
   // Apply new palette variables (inline style = highest specificity)
