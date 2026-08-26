@@ -670,3 +670,188 @@ html[data-theme="bento"] * {
     transition: none;
   }
 }
+
+/* ================================================================== */
+/* PALETTES — accent-only overrides layered on the active site theme    */
+/* ================================================================== */
+
+.palette-golden-hour {
+  --primary: oklch(0.72 0.14 55);
+  --primary-foreground: oklch(0.15 0.02 50);
+  --accent: oklch(0.75 0.16 65);
+  --accent-foreground: oklch(0.15 0.02 50);
+  --ring: oklch(0.72 0.14 55);
+  --chart-1: oklch(0.72 0.14 55);
+  --chart-2: oklch(0.75 0.16 65);
+  --chart-3: oklch(0.6 0.12 45);
+  --chart-4: oklch(0.8 0.1 70);
+  --chart-5: oklch(0.5 0.1 55);
+}
+
+.palette-deep-ocean {
+  --primary: oklch(0.65 0.12 220);
+  --primary-foreground: oklch(0.12 0.02 220);
+  --accent: oklch(0.78 0.14 175);
+  --accent-foreground: oklch(0.12 0.02 220);
+  --ring: oklch(0.65 0.12 220);
+  --chart-1: oklch(0.65 0.12 220);
+  --chart-2: oklch(0.78 0.14 175);
+  --chart-3: oklch(0.5 0.1 240);
+  --chart-4: oklch(0.7 0.1 200);
+  --chart-5: oklch(0.55 0.08 210);
+}
+
+.palette-berry-crush {
+  --primary: oklch(0.72 0.22 320);
+  --primary-foreground: oklch(0.12 0.02 320);
+  --accent: oklch(0.78 0.24 340);
+  --accent-foreground: oklch(0.12 0.02 320);
+  --ring: oklch(0.72 0.22 320);
+  --chart-1: oklch(0.72 0.22 320);
+  --chart-2: oklch(0.78 0.24 340);
+  --chart-3: oklch(0.6 0.18 300);
+  --chart-4: oklch(0.8 0.2 350);
+  --chart-5: oklch(0.55 0.15 330);
+}
+
+.palette-forest-floor {
+  --primary: oklch(0.68 0.12 150);
+  --primary-foreground: oklch(0.12 0.02 150);
+  --accent: oklch(0.78 0.16 130);
+  --accent-foreground: oklch(0.12 0.02 150);
+  --ring: oklch(0.68 0.12 150);
+  --chart-1: oklch(0.68 0.12 150);
+  --chart-2: oklch(0.78 0.16 130);
+  --chart-3: oklch(0.55 0.1 160);
+  --chart-4: oklch(0.7 0.1 140);
+  --chart-5: oklch(0.6 0.08 155);
+}
+
+.palette-electric-dreams {
+  --primary: oklch(0.78 0.2 210);
+  --primary-foreground: oklch(0.08 0.01 250);
+  --accent: oklch(0.82 0.2 250);
+  --accent-foreground: oklch(0.08 0.01 250);
+  --ring: oklch(0.78 0.2 210);
+  --chart-1: oklch(0.78 0.2 210);
+  --chart-2: oklch(0.82 0.2 250);
+  --chart-3: oklch(0.65 0.18 230);
+  --chart-4: oklch(0.85 0.15 200);
+  --chart-5: oklch(0.7 0.16 260);
+}
+
+/* ================================================================== */
+/* ANIMATION PRESETS — CSS variable overrides for motion timing         */
+/* ================================================================== */
+
+:root {
+  --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --anim-duration: 0.85s;
+  --anim-distance: 24px;
+  --anim-stagger: 0.1s;
+  --anim-hover-scale: 1.02;
+}
+
+.anim-cinematic {
+  --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --anim-duration: 0.85s;
+  --anim-distance: 24px;
+  --anim-stagger: 0.1s;
+  --anim-hover-scale: 1.02;
+}
+
+.anim-snappy {
+  --anim-ease: cubic-bezier(0.36, 0, 0.66, -0.56);
+  --anim-duration: 0.35s;
+  --anim-distance: 12px;
+  --anim-stagger: 0.04s;
+  --anim-hover-scale: 1.03;
+}
+
+.anim-liquid {
+  --anim-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --anim-duration: 0.7s;
+  --anim-distance: 20px;
+  --anim-stagger: 0.08s;
+  --anim-hover-scale: 1.025;
+}
+
+.anim-kinetic {
+  --anim-ease: cubic-bezier(0.19, 1, 0.22, 1);
+  --anim-duration: 0.8s;
+  --anim-distance: 30px;
+  --anim-stagger: 0.06s;
+  --anim-hover-scale: 1.04;
+}
+
+.anim-gentle {
+  --anim-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --anim-duration: 0.5s;
+  --anim-distance: 8px;
+  --anim-stagger: 0.05s;
+  --anim-hover-scale: 1.01;
+}
+
+.anim-playful {
+  --anim-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --anim-duration: 0.6s;
+  --anim-distance: 18px;
+  --anim-stagger: 0.07s;
+  --anim-hover-scale: 1.05;
+}
+
+/* ================================================================== */
+/* UTILITY CLASSES for additional animations                            */
+/* ================================================================== */
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, currentColor 0%, var(--primary) 50%, currentColor 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--primary); }
+  50% { box-shadow: 0 0 20px 4px var(--primary); }
+}
+.animate-glow {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in var(--anim-duration) var(--anim-ease) both;
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(calc(var(--anim-distance) * -1)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(var(--anim-distance)); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-left {
+  animation: slide-in-left var(--anim-duration) var(--anim-ease) both;
+}
+.animate-slide-right {
+  animation: slide-in-right var(--anim-duration) var(--anim-ease) both;
+}

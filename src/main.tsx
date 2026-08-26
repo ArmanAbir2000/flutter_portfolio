@@ -8,6 +8,7 @@ import { MotionConfig } from "framer-motion";
 import React, { StrictMode, useEffect, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { ThemeSettingsProvider, useThemeSettings } from "@/hooks/use-theme-settings";
 import "./index.css";
 import { initAnalytics, trackPageview } from "@/lib/analytics";
 import { SiteThemeProvider } from "@/hooks/use-site-theme";
@@ -98,6 +99,31 @@ const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 // Theme bootstrapping (data-theme + .dark) happens pre-paint in index.html;
 // <SiteThemeProvider> keeps it in sync with the owner's published choice.
 
+/**
+ * Syncs theme / palette / animation classes onto <html> so CSS custom
+ * properties update reactively when the user changes settings.
+ */
+function ThemeApplier() {
+  const { htmlClasses } = useThemeSettings();
+  useEffect(() => {
+    const el = document.documentElement;
+    // Remove any previous palette-* / anim-* classes (themes use data-theme attr)
+    for (const cls of [...el.classList]) {
+      if (
+        cls.startsWith("palette-") ||
+        cls.startsWith("anim-")
+      ) {
+        el.classList.remove(cls);
+      }
+    }
+    // Add the new set (always keep dark)
+    for (const cls of htmlClasses.split(" ")) {
+      if (cls) el.classList.add(cls);
+    }
+  }, [htmlClasses]);
+  return null;
+}
+
 const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
 
 /** Visible notice instead of a blank screen when the app is built without a
@@ -152,6 +178,8 @@ function App() {
   return (
     <ConvexAuthProvider client={convex}>
       <SiteThemeProvider>
+        <ThemeSettingsProvider>
+          <ThemeApplier />
         <MotionConfig reducedMotion="user">
           <RouteSyncer />
           <Suspense fallback={<RouteLoading />}>
@@ -179,8 +207,9 @@ function App() {
           </Routes>
           </Suspense>
         </MotionConfig>
-      </SiteThemeProvider>
-      <Toaster />
+          </ThemeSettingsProvider>
+        </SiteThemeProvider>
+        <Toaster />
     </ConvexAuthProvider>
   );
 }

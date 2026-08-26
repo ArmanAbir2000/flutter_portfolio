@@ -1,12 +1,31 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { EASE, fadeUp, maskLine, staggerParent } from "@/lib/motion";
+import { EASE, fadeUp, maskLine, staggerParent, fadeUpFrom, staggerParentFrom, maskLineFrom } from "@/lib/motion";
+import { useThemeSettings } from "@/hooks/use-theme-settings";
+import { getAnimationPreset } from "@/lib/animations";
 
 /**
  * Small set of reusable motion primitives so every page animates with the
  * same timing and easing. See src/lib/motion.ts for the shared tokens.
+ * When ThemeSettingsProvider is available, they use the active animation preset.
  */
+
+/** Hook to get the current motion values from context. */
+function useMotionValues() {
+  try {
+    const { animationId } = useThemeSettings();
+    const preset = getAnimationPreset(animationId);
+    return {
+      fadeUp: fadeUpFrom(preset),
+      staggerParent: staggerParentFrom(preset),
+      maskLine: maskLineFrom(preset),
+      preset,
+    };
+  } catch {
+    return { fadeUp, staggerParent, maskLine, preset: null };
+  }
+}
 
 /** Scroll-triggered rise + fade wrapper for any block. */
 export function Reveal({
@@ -21,10 +40,11 @@ export function Reveal({
   as?: "div" | "p" | "span" | "li" | "h2" | "h3" | "section";
 }) {
   const Comp = motion[as];
+  const { fadeUp: fu } = useMotionValues();
   return (
     <Comp
-      {...fadeUp}
-      transition={{ ...fadeUp.transition, delay }}
+      {...fu}
+      transition={{ ...fu.transition, delay }}
       className={className}
     >
       {children}
@@ -50,9 +70,10 @@ export function MaskText({
 }) {
   const Tag = motion[as];
   const words = text.split(" ");
+  const { staggerParent: sp, maskLine: ml } = useMotionValues();
   return (
     <Tag
-      variants={staggerParent}
+      variants={sp}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true }}
@@ -64,7 +85,7 @@ export function MaskText({
           key={i}
           className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
         >
-          <motion.span variants={maskLine} className="inline-block">
+          <motion.span variants={ml} className="inline-block">
             {word}
             {i < words.length - 1 ? "\u00A0" : ""}
           </motion.span>
