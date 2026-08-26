@@ -821,49 +821,49 @@ html[data-theme="bento"] * {
 
 .anim-cinematic {
   --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --anim-duration: 0.85s;
-  --anim-distance: 24px;
-  --anim-stagger: 0.1s;
-  --anim-hover-scale: 1.02;
-}
-
-.anim-snappy {
-  --anim-ease: cubic-bezier(0.36, 0, 0.66, -0.56);
-  --anim-duration: 0.35s;
-  --anim-distance: 12px;
-  --anim-stagger: 0.04s;
-  --anim-hover-scale: 1.03;
-}
-
-.anim-liquid {
-  --anim-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --anim-duration: 0.7s;
+  --anim-duration: 0.9s;
   --anim-distance: 20px;
   --anim-stagger: 0.08s;
-  --anim-hover-scale: 1.025;
+  --anim-hover-scale: 1.02;
 }
 
 .anim-kinetic {
   --anim-ease: cubic-bezier(0.19, 1, 0.22, 1);
-  --anim-duration: 0.8s;
+  --anim-duration: 0.65s;
   --anim-distance: 30px;
   --anim-stagger: 0.06s;
   --anim-hover-scale: 1.04;
 }
 
-.anim-gentle {
+.anim-liquid {
+  --anim-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --anim-duration: 0.75s;
+  --anim-distance: 18px;
+  --anim-stagger: 0.07s;
+  --anim-hover-scale: 1.025;
+}
+
+.anim-glitch {
+  --anim-ease: cubic-bezier(0.36, 0, 0.66, -0.56);
+  --anim-duration: 0.4s;
+  --anim-distance: 12px;
+  --anim-stagger: 0.03s;
+  --anim-hover-scale: 1.03;
+}
+
+.anim-editorial {
   --anim-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
-  --anim-duration: 0.5s;
-  --anim-distance: 8px;
-  --anim-stagger: 0.05s;
+  --anim-duration: 0.8s;
+  --anim-distance: 0px;
+  --anim-stagger: 0.04s;
   --anim-hover-scale: 1.01;
 }
 
 .anim-playful {
   --anim-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
   --anim-duration: 0.6s;
-  --anim-distance: 18px;
-  --anim-stagger: 0.07s;
+  --anim-distance: 22px;
+  --anim-stagger: 0.05s;
   --anim-hover-scale: 1.05;
 }
 
@@ -921,4 +921,123 @@ html[data-theme="bento"] * {
 }
 .animate-slide-right {
   animation: slide-in-right var(--anim-duration) var(--anim-ease) both;
+}
+
+/* ================================================================== */
+/* ANIMATION STYLE EFFECTS — unique visual treatments per preset        */
+/* ================================================================== */
+
+/* ── Cinematic: dramatic scale reveals ─────────────────────────────── */
+.anim-cinematic .reveal-target {
+  transform-origin: center center;
+}
+.anim-cinematic .reveal-target:hover {
+  transform: scale(1.02);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Kinetic: bold rotation entrance ───────────────────────────────── */
+.anim-kinetic .reveal-target {
+  transform-origin: bottom center;
+}
+
+/* ── Liquid: smooth morph transitions ──────────────────────────────── */
+.anim-liquid .reveal-target {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Glitch: digital distortion effects ────────────────────────────── */
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-2deg); }
+  40% { transform: skew(0.5deg); }
+  60% { transform: skew(-0.3deg); }
+  80% { transform: skew(1deg); }
+  100% { transform: skew(0deg); }
+}
+
+@keyframes glitch-shift {
+  0% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+  10% { clip-path: inset(40% 0 30% 0); transform: translateX(-4px); }
+  20% { clip-path: inset(80% 0 5% 0); transform: translateX(4px); }
+  30% { clip-path: inset(10% 0 70% 0); transform: translateX(-2px); }
+  40% { clip-path: inset(60% 0 20% 0); transform: translateX(2px); }
+  50% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+  100% { clip-path: inset(0 0 95% 0); transform: translateX(0); }
+}
+
+.anim-glitch .glitch-text {
+  position: relative;
+}
+.anim-glitch .glitch-text::before,
+.anim-glitch .glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.anim-glitch .glitch-text::before {
+  color: oklch(0.7 0.25 180);
+  animation: glitch-shift 3s infinite linear;
+  mix-blend-mode: screen;
+}
+.anim-glitch .glitch-text::after {
+  color: oklch(0.7 0.25 320);
+  animation: glitch-shift 3s infinite linear reverse;
+  animation-delay: -1.5s;
+  mix-blend-mode: screen;
+}
+
+/* Glitch scanline overlay */
+.anim-glitch::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    oklch(0 0 0 / 3%) 2px,
+    oklch(0 0 0 / 3%) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* ── Editorial: clean mask + wipe reveals ──────────────────────────── */
+@keyframes wipe-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0% 0 0); }
+}
+
+.anim-editorial .wipe-reveal {
+  animation: wipe-reveal 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+/* ── Playful: wobble + bounce ──────────────────────────────────────── */
+@keyframes wobble {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(-5deg); }
+  30% { transform: rotate(3deg); }
+  45% { transform: rotate(-3deg); }
+  60% { transform: rotate(2deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.anim-playful .wobble-on-hover:hover {
+  animation: wobble 0.6s ease-in-out;
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.08); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.anim-playful .bounce-in {
+  animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }

@@ -109,6 +109,15 @@ function ThemeApplier() {
   useEffect(() => {
     applyPaletteVars(paletteId);
     applyAnimVars(animationId);
+
+    // Apply animation CSS class for visual effects (glitch scanlines, wobble, etc.)
+    const el = document.documentElement;
+    const animClasses = [
+      "anim-cinematic", "anim-kinetic", "anim-liquid",
+      "anim-glitch", "anim-editorial", "anim-playful",
+    ];
+    for (const c of animClasses) el.classList.remove(c);
+    el.classList.add(`anim-${animationId}`);
   }, [paletteId, animationId]);
   return null;
 }

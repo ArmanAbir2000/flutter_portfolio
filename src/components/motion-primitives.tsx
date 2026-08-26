@@ -1,52 +1,150 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { animate, motion, useInView } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getAnimationPreset, type AnimationPreset } from "@/lib/animations";
 
 /**
- * Reusable motion primitives that read animation parameters from CSS custom
- * properties (--anim-ease, --anim-duration, --anim-distance, --anim-stagger)
- * set by the active animation preset class on <html>. This makes them
- * reactive to preset changes without requiring component remounts.
+ * Motion primitives with truly distinct behaviors per animation style.
+ * Each style has a unique entrance: scale, rotation, spring, glitch, wipe, bounce.
  */
 
-/** Read a CSS custom property from <html> and parse it. */
-function readCSSVar(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
+/** Read the active animation preset from the <html> class. */
+const PRESET_IDS = ["cinematic", "kinetic", "liquid", "glitch", "editorial", "playful"] as const;
 
-/** Parse a CSS cubic-bezier() string into a tuple, or return default. */
-function parseEasing(raw: string): [number, number, number, number] {
-  const m = raw.match(/cubic-bezier\(([^)]+)\)/);
-  if (m) {
-    const parts = m[1].split(",").map((s) => parseFloat(s.trim()));
-    if (parts.length === 4 && parts.every((n) => !Number.isNaN(n))) {
-      return parts as [number, number, number, number];
-    }
+function readActivePreset(): AnimationPreset {
+  const cls = document.documentElement.className;
+  for (const id of PRESET_IDS) {
+    if (cls.includes(`anim-${id}`)) return getAnimationPreset(id);
   }
-  return [0.22, 1, 0.36, 1];
+  return getAnimationPreset("cinematic");
 }
 
-/** Parse a CSS time/length value to a number, or return default. */
-function parseDuration(raw: string, fallback: number): number {
-  const n = parseFloat(raw);
-  return Number.isNaN(n) ? fallback : n;
+/** Compute distinct entrance props per animation style. */
+function entranceFor(preset: AnimationPreset) {
+  switch (preset.id) {
+    case "cinematic":
+      return {
+        initial: { opacity: 0, scale: 0.85, y: 16 },
+        whileInView: { opacity: 1, scale: 1, y: 0 },
+        transition: { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    case "kinetic":
+      return {
+        initial: { opacity: 0, scale: 0.9, rotate: -6, y: 20 },
+        whileInView: { opacity: 1, scale: 1, rotate: 0, y: 0 },
+        transition: { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    case "liquid":
+      return {
+        initial: { opacity: 0, y: preset.distance },
+        whileInView: { opacity: 1, y: 0 },
+        transition: preset.springStiffness
+          ? { type: "spring" as const, stiffness: preset.springStiffness, damping: preset.springDamping ?? 20 }
+          : { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    case "glitch":
+      return {
+        initial: { opacity: 0, x: -8, skewX: -3 },
+        whileInView: { opacity: 1, x: 0, skewX: 0 },
+        transition: { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    case "editorial":
+      return {
+        initial: { opacity: 0, y: 32 },
+        whileInView: { opacity: 1, y: 0 },
+        transition: { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    case "playful":
+      return {
+        initial: { opacity: 0, scale: 0.3, y: 20 },
+        whileInView: { opacity: 1, scale: 1, y: 0 },
+        transition: preset.springStiffness
+          ? { type: "spring" as const, stiffness: preset.springStiffness, damping: preset.springDamping ?? 10 }
+          : { duration: preset.duration, ease: preset.ease as [number, number, number, number] },
+      };
+    default:
+      return {
+        initial: { opacity: 0, y: 16 },
+        whileInView: { opacity: 1, y: 0 },
+        transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+      };
+  }
 }
 
-function parseDistance(raw: string, fallback: number): number {
-  const n = parseFloat(raw);
-  return Number.isNaN(n) ? fallback : n;
+/** Compute distinct mask-line entrance per animation style. */
+function maskEntranceFor(preset: AnimationPreset) {
+  switch (preset.id) {
+    case "cinematic":
+      return {
+        initial: { y: "110%", opacity: 0 },
+        whileInView: { y: "0%", opacity: 1 },
+        transition: { duration: preset.duration * 0.9, ease: preset.ease },
+      };
+    case "kinetic":
+      return {
+        initial: { y: "100%", rotateX: -80 },
+        whileInView: { y: "0%", rotateX: 0 },
+        transition: { duration: preset.duration, ease: preset.ease },
+      };
+    case "liquid":
+      return {
+        initial: { y: "110%" },
+        whileInView: { y: "0%" },
+        transition: preset.springStiffness
+          ? { type: "spring" as const, stiffness: preset.springStiffness, damping: preset.springDamping ?? 20 }
+          : { duration: preset.duration * 0.9, ease: preset.ease },
+      };
+    case "glitch":
+      return {
+        initial: { y: "100%", opacity: 0 },
+        whileInView: { y: "0%", opacity: 1 },
+        transition: { duration: preset.duration * 0.5, ease: preset.ease },
+      };
+    case "editorial":
+      return {
+        initial: { clipPath: "inset(0 100% 0 0)" },
+        whileInView: { clipPath: "inset(0 0% 0 0)" },
+        transition: { duration: preset.duration, ease: preset.ease },
+      };
+    case "playful":
+      return {
+        initial: { y: "100%", scale: 0.8 },
+        whileInView: { y: "0%", scale: 1 },
+        transition: preset.springStiffness
+          ? { type: "spring" as const, stiffness: preset.springStiffness, damping: preset.springDamping ?? 10 }
+          : { duration: preset.duration, ease: preset.ease },
+      };
+    default:
+      return {
+        initial: { y: "110%" },
+        whileInView: { y: "0%" },
+        transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+      };
+  }
 }
 
-/** Read the current animation parameters from CSS variables. */
-function readAnimParams() {
-  const ease = parseEasing(readCSSVar("--anim-ease"));
-  const duration = parseDuration(readCSSVar("--anim-duration"), 0.85);
-  const distance = parseDistance(readCSSVar("--anim-distance"), 24);
-  const stagger = parseDuration(readCSSVar("--anim-stagger"), 0.1);
-  return { ease, duration, distance, stagger };
+/** Hook: get current entrance props, reactive to style changes. */
+function useEntrance() {
+  const [preset, setPreset] = useState(readActivePreset);
+
+  useEffect(() => {
+    const obs = new MutationObserver(() => setPreset(readActivePreset()));
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => obs.disconnect();
+  }, []);
+
+  return {
+    reveal: entranceFor(preset),
+    mask: maskEntranceFor(preset),
+    preset,
+  };
 }
 
-/** Scroll-triggered rise + fade wrapper for any block. */
+/* ── Reveal ─────────────────────────────────────────────────────────── */
+
 export function Reveal({
   children,
   className,
@@ -59,25 +157,13 @@ export function Reveal({
   as?: "div" | "p" | "span" | "li" | "h2" | "h3" | "section";
 }) {
   const Comp = motion[as];
-  const ref = useRef<HTMLDivElement>(null);
-  const [params, setParams] = useState(readAnimParams);
-
-  // Re-read CSS vars when animation preset class changes on <html>.
-  useEffect(() => {
-    const obs = new MutationObserver(() => setParams(readAnimParams()));
-    obs.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => obs.disconnect();
-  }, []);
+  const { reveal } = useEntrance();
 
   return (
     <Comp
-      initial={{ opacity: 0, y: params.distance }}
-      whileInView={{ opacity: 1, y: 0 }}
+      {...reveal}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: params.duration, ease: params.ease, delay }}
+      transition={{ ...reveal.transition, delay }}
       className={className}
     >
       {children}
@@ -85,10 +171,8 @@ export function Reveal({
   );
 }
 
-/**
- * Kinetic typography: splits a heading into words and reveals each through an
- * overflow mask, staggered left to right. The signature editorial reveal.
- */
+/* ── MaskText ───────────────────────────────────────────────────────── */
+
 export function MaskText({
   text,
   className,
@@ -102,16 +186,7 @@ export function MaskText({
 }) {
   const Tag = motion[as];
   const words = text.split(" ");
-  const [params, setParams] = useState(readAnimParams);
-
-  useEffect(() => {
-    const obs = new MutationObserver(() => setParams(readAnimParams()));
-    obs.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => obs.disconnect();
-  }, []);
+  const { mask, preset } = useEntrance();
 
   return (
     <Tag
@@ -126,13 +201,10 @@ export function MaskText({
           className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em] align-bottom"
         >
           <motion.span
-            initial={{ y: "110%" }}
-            whileInView={{ y: "0%" }}
-            viewport={{ once: true }}
+            {...mask}
             transition={{
-              duration: params.duration * 0.9,
-              ease: params.ease,
-              delay: delay + i * params.stagger,
+          ...(mask.transition as Record<string, unknown>),
+          delay: delay + i * preset.stagger,
             }}
             className="inline-block"
           >
@@ -145,7 +217,8 @@ export function MaskText({
   );
 }
 
-/** Animated count-up for stat numbers like "500+", "4 yrs", "12". */
+/* ── CountUp ────────────────────────────────────────────────────────── */
+
 export function CountUp({
   value,
   className,
@@ -167,10 +240,10 @@ export function CountUp({
 
   useEffect(() => {
     if (!inView || Number.isNaN(target)) return;
-    const ease = parseEasing(readCSSVar("--anim-ease"));
+    const preset = readActivePreset();
     const controls = animate(0, target, {
       duration,
-      ease,
+      ease: preset.ease,
       onUpdate: (v) =>
         setDisplay(prefix + Math.round(v).toLocaleString() + suffix),
     });
@@ -184,10 +257,8 @@ export function CountUp({
   );
 }
 
-/**
- * Infinite horizontal marquee. Content is duplicated once; the CSS animation
- * translates exactly -50% so the loop is seamless. Pauses on hover.
- */
+/* ── Marquee ────────────────────────────────────────────────────────── */
+
 export function Marquee({
   items,
   className,
@@ -195,7 +266,6 @@ export function Marquee({
 }: {
   items: ReactNode[];
   className?: string;
-  /** Seconds per full loop. */
   duration?: number;
 }) {
   const Row = ({ hidden = false }: { hidden?: boolean }) => (

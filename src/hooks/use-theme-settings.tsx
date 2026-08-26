@@ -202,5 +202,4 @@ export function applyAnimVars(animationId: string) {
   el.style.setProperty("--anim-duration", `${preset.duration}s`);
   el.style.setProperty("--anim-distance", `${preset.distance}px`);
   el.style.setProperty("--anim-stagger", `${preset.stagger}s`);
-  el.style.setProperty("--anim-hover-scale", String(preset.hoverScale));
 }
