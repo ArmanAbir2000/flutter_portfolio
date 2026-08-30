@@ -2,16 +2,61 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Check, Loader2, Palette } from "lucide-react";
 import { useSiteTheme } from "@/hooks/use-site-theme";
-import { THEMES, type ThemeDef } from "@/lib/themes";
+import { THEMES, type ThemeDef, type ThemeId } from "@/lib/themes";
 
 /**
  * Mini mockup rendered with a theme's own fixed swatch colors — deliberately
  * NOT driven by CSS tokens, so every card keeps showing its own style no
  * matter which theme is currently live.
  */
+
+const PREVIEW_FONT: Partial<Record<ThemeId, string>> = {
+  editorial: "'Fraunces', Georgia, serif",
+  terminal: "'JetBrains Mono', monospace",
+  swiss: "'Inter Tight', sans-serif",
+  aurora: "'Space Grotesk', sans-serif",
+  cyberpunk: "'Chakra Petch', sans-serif",
+  clay: "'Nunito', sans-serif",
+  popart: "'Bungee', sans-serif",
+  y2k: "'Michroma', sans-serif",
+  retro: "'DM Serif Display', Georgia, serif",
+  bohemian: "'Cormorant Garamond', Georgia, serif",
+  handwritten: "'Caveat', cursive",
+  pixel: "'Press Start 2P', monospace",
+};
+
+const PREVIEW_RADIUS: Partial<Record<ThemeId, number>> = {
+  brutal: 2,
+  terminal: 2,
+  editorial: 3,
+  swiss: 0,
+  cyberpunk: 2,
+  pixel: 0,
+  popart: 6,
+  handwritten: 10,
+  aurora: 12,
+  clay: 18,
+  y2k: 18,
+  bohemian: 16,
+  retro: 14,
+};
+
+const PREVIEW_SHADOW: Partial<Record<ThemeId, string>> = {
+  brutal: "3px 3px 0 0 #111110",
+  popart: "4px 4px 0 0 #111111",
+  pixel: "4px 4px 0 0 rgba(0,0,0,.85)",
+  bento: "0 8px 22px -14px rgba(0,0,0,.35)",
+  clay: "0 10px 20px -10px rgba(97,79,197,.45)",
+  y2k: "0 10px 24px -12px rgba(124,58,237,.45)",
+  bohemian: "0 8px 20px -12px rgba(63,53,41,.3)",
+  handwritten: "0 4px 10px rgba(43,43,43,.14)",
+  retro: "4px 4px 0 0 rgba(74,47,29,.18)",
+};
+
 function ThemePreview({ def }: { def: ThemeDef }) {
   const s = def.swatch;
-  const radius = def.id === "brutal" || def.id === "terminal" ? 2 : def.id === "editorial" ? 3 : 12;
+  const radius = PREVIEW_RADIUS[def.id] ?? 12;
+  const font = PREVIEW_FONT[def.id] ?? "'Space Grotesk', sans-serif";
   return (
     <div
       aria-hidden
@@ -27,15 +72,7 @@ function ThemePreview({ def }: { def: ThemeDef }) {
           />
           <span
             className="text-[9px] font-semibold"
-            style={{
-              color: s.text,
-              fontFamily:
-                def.id === "editorial"
-                  ? "'Fraunces', Georgia, serif"
-                  : def.id === "terminal"
-                    ? "'JetBrains Mono', monospace"
-                    : "'Space Grotesk', sans-serif",
-            }}
+            style={{ color: s.text, fontFamily: font }}
           >
             studio
           </span>
@@ -57,24 +94,14 @@ function ThemePreview({ def }: { def: ThemeDef }) {
           background: s.surface,
           border: `1px solid ${s.border}`,
           borderRadius: radius,
-          boxShadow:
-            def.id === "brutal"
-              ? `3px 3px 0 0 ${s.text}`
-              : def.id === "bento"
-                ? "0 8px 22px -14px rgba(0,0,0,.35)"
-                : undefined,
+          boxShadow: PREVIEW_SHADOW[def.id],
         }}
       >
         <p
           className="truncate text-[11px] font-bold leading-tight"
           style={{
             color: s.text,
-            fontFamily:
-              def.id === "editorial"
-                ? "'Fraunces', Georgia, serif"
-                : def.id === "terminal"
-                  ? "'JetBrains Mono', monospace"
-                  : "'Space Grotesk', sans-serif",
+            fontFamily: font,
             letterSpacing: def.id === "editorial" ? 0 : "-0.02em",
           }}
         >
@@ -85,10 +112,9 @@ function ThemePreview({ def }: { def: ThemeDef }) {
             className="px-2 py-1 text-[8px] font-semibold"
             style={{
               background: s.accent,
-              color: def.id === "glass" ? "#fff" : s.bg,
+              color: def.id === "glass" || def.id === "terminal" || def.id === "cyberpunk" || def.id === "pixel" || def.id === "swiss" ? "#fff" : s.bg,
               borderRadius: radius > 6 ? 999 : Math.max(2, radius - 1),
-              boxShadow:
-                def.id === "brutal" ? `2px 2px 0 0 ${s.text}` : undefined,
+              boxShadow: PREVIEW_SHADOW[def.id],
             }}
           >
             Book a call
