@@ -1721,6 +1721,161 @@ html[data-theme="pixel"] * {
   scrollbar-color: var(--primary) var(--background);
 }
 
+/* ---- Structure — per-theme layout signatures ----------------------------
+   Layout, not just paint: each theme re-composes the page skeleton —
+   section divider rhythm, card geometry (tilt, tile mosaic, pills,
+   bevels, tape), and structural outlines — so switching themes visibly
+   rearranges the page, not only recolors it.                              */
+
+/* Neo Brutalist: heavy ink rules + paper-collage card tilts. */
+html[data-theme="brutal"] section[class*="border-t"] {
+  border-top-width: 2px;
+  border-top-color: var(--border);
+}
+html[data-theme="brutal"] [data-slot="card"]:nth-child(odd) {
+  transform: rotate(-0.5deg);
+}
+html[data-theme="brutal"] [data-slot="card"]:nth-child(even) {
+  transform: rotate(0.4deg);
+}
+
+/* Phosphor Terminal: dashed CRT rules + double-line phosphor boxes. */
+html[data-theme="terminal"] section[class*="border-t"] {
+  border-top-style: dashed;
+  border-top-color: var(--border);
+}
+html[data-theme="terminal"] [data-slot="card"] {
+  outline: 1px solid var(--border);
+  outline-offset: 2px;
+}
+
+/* Editorial Serif: scotch rules (double hairlines) between sections. */
+html[data-theme="editorial"] section[class*="border-t"] {
+  border-top-width: 3px;
+  border-top-style: double;
+  border-top-color: var(--border);
+}
+
+/* Bento Pop: true tile mosaic — cycling tile radii + springy lift. */
+html[data-theme="bento"] [data-slot="card"] {
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
+}
+html[data-theme="bento"] [data-slot="card"]:hover {
+  transform: translateY(-4px);
+}
+html[data-theme="bento"] [data-slot="card"]:nth-child(4n + 1) {
+  border-radius: 1.5rem;
+}
+html[data-theme="bento"] [data-slot="card"]:nth-child(4n + 2) {
+  border-radius: 0.75rem;
+}
+html[data-theme="bento"] [data-slot="card"]:nth-child(4n + 3) {
+  border-radius: 2.25rem;
+}
+html[data-theme="bento"] [data-slot="card"]:nth-child(4n) {
+  border-radius: 1rem;
+}
+
+/* Swiss International: strict black rules between sections. */
+html[data-theme="swiss"] section[class*="border-t"] {
+  border-top-width: 2px;
+  border-top-color: var(--foreground);
+}
+
+/* Aurora Gradient: faint indigo light rules. */
+html[data-theme="aurora"] section[class*="border-t"] {
+  border-top-color: color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
+/* Cyberpunk: dashed neon rules + beveled card corners. */
+html[data-theme="cyberpunk"] section[class*="border-t"] {
+  border-top-style: dashed;
+  border-top-color: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+html[data-theme="cyberpunk"] [data-slot="card"] {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* Pop Art: thick ink rules + comic collage tilts. */
+html[data-theme="popart"] section[class*="border-t"] {
+  border-top-width: 3px;
+  border-top-color: var(--border);
+}
+html[data-theme="popart"] [data-slot="card"]:nth-child(odd) {
+  transform: rotate(-0.8deg);
+}
+html[data-theme="popart"] [data-slot="card"]:nth-child(even) {
+  transform: rotate(0.7deg);
+}
+
+/* Y2K: full pill cards + pastel light rules. */
+html[data-theme="y2k"] [data-slot="card"] {
+  border-radius: 2.25rem;
+}
+html[data-theme="y2k"] section[class*="border-t"] {
+  border-top-color: color-mix(in oklab, var(--chart-2) 55%, white);
+}
+
+/* Retro: warm ink rules. */
+html[data-theme="retro"] section[class*="border-t"] {
+  border-top-width: 2px;
+  border-top-color: var(--foreground);
+}
+
+/* Bohemian: stitched dashed rules. */
+html[data-theme="bohemian"] section[class*="border-t"] {
+  border-top-style: dashed;
+  border-top-color: var(--input);
+}
+
+/* Handwritten: dashed pencil rules + taped-in tilted notes. */
+html[data-theme="handwritten"] section[class*="border-t"] {
+  border-top-style: dashed;
+  border-top-color: var(--input);
+}
+html[data-theme="handwritten"] [data-slot="card"] {
+  position: relative;
+}
+html[data-theme="handwritten"] [data-slot="card"]:nth-child(odd) {
+  transform: rotate(-0.6deg);
+}
+html[data-theme="handwritten"] [data-slot="card"]:nth-child(even) {
+  transform: rotate(0.5deg);
+}
+html[data-theme="handwritten"] [data-slot="card"]::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 88px;
+  height: 20px;
+  translate: -50% 0;
+  rotate: -2deg;
+  background: color-mix(in oklab, var(--accent) 45%, transparent);
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Pixel Art: chunky black rules. */
+html[data-theme="pixel"] section[class*="border-t"] {
+  border-top-width: 4px;
+  border-top-color: var(--border);
+}
+
+/* Glass / Glassmorphism: whisper-light aurora rules. */
+html[data-theme="glass"] section[class*="border-t"] {
+  border-top-color: color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
 /* Theme-driven ambient animations also respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="glass"] body::before,
