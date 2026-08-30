@@ -1876,6 +1876,179 @@ html[data-theme="glass"] section[class*="border-t"] {
   border-top-color: color-mix(in oklab, var(--primary) 25%, transparent);
 }
 
+/* ---- Layout — per-theme page metrics ------------------------------------
+   Full layout control: every theme sets its own page skeleton — container
+   width, section vertical rhythm, page gutters, hero scale — via layout
+   vars, applied by the shared rules below. Pages keep their utility
+   classes; themes retune them at a higher cascade layer.                  */
+
+html[data-theme="brutal"] {
+  --page-container: 76rem;
+  --sec-pad: 4.5rem;
+  --sec-pad-lg: 6rem;
+  --page-gutter: 2rem;
+}
+html[data-theme="glass"] {
+  --page-container: 80rem;
+  --sec-pad: 6rem;
+  --sec-pad-lg: 8rem;
+  --page-gutter: 2rem;
+  --hero-pt: 8rem;
+  --hero-pt-lg: 12rem;
+}
+html[data-theme="terminal"] {
+  --page-container: 60rem;
+  --sec-pad: 3.5rem;
+  --sec-pad-lg: 5rem;
+  --page-gutter: 2.5rem;
+  --hero-pt: 6rem;
+  --hero-pt-lg: 8rem;
+}
+html[data-theme="editorial"] {
+  --page-container: 70rem;
+  --sec-pad: 6.5rem;
+  --sec-pad-lg: 8.5rem;
+  --page-gutter: 2rem;
+  --hero-pt: 8rem;
+  --hero-pt-lg: 11rem;
+}
+html[data-theme="bento"] {
+  --page-container: 76rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 1.75rem;
+}
+html[data-theme="swiss"] {
+  --page-container: 84rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 2.5rem;
+}
+html[data-theme="aurora"] {
+  --page-container: 80rem;
+  --sec-pad: 6rem;
+  --sec-pad-lg: 8rem;
+  --page-gutter: 2rem;
+  --hero-pt: 8rem;
+  --hero-pt-lg: 12rem;
+}
+html[data-theme="cyberpunk"] {
+  --page-container: 74rem;
+  --sec-pad: 4.5rem;
+  --sec-pad-lg: 6rem;
+  --page-gutter: 2rem;
+  --hero-pt: 6.5rem;
+  --hero-pt-lg: 9rem;
+}
+html[data-theme="clay"] {
+  --page-container: 74rem;
+  --sec-pad: 5.5rem;
+  --sec-pad-lg: 7.5rem;
+  --page-gutter: 1.75rem;
+}
+html[data-theme="popart"] {
+  --page-container: 72rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 2rem;
+}
+html[data-theme="y2k"] {
+  --page-container: 74rem;
+  --sec-pad: 5.5rem;
+  --sec-pad-lg: 7.5rem;
+  --page-gutter: 2rem;
+}
+html[data-theme="retro"] {
+  --page-container: 70rem;
+  --sec-pad: 5.5rem;
+  --sec-pad-lg: 7.5rem;
+  --page-gutter: 2rem;
+}
+html[data-theme="bohemian"] {
+  --page-container: 68rem;
+  --sec-pad: 6rem;
+  --sec-pad-lg: 8rem;
+  --page-gutter: 2rem;
+}
+html[data-theme="handwritten"] {
+  --page-container: 64rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 6.5rem;
+  --page-gutter: 2.25rem;
+  --hero-pt: 7rem;
+  --hero-pt-lg: 9rem;
+}
+html[data-theme="pixel"] {
+  --page-container: 64rem;
+  --sec-pad: 4rem;
+  --sec-pad-lg: 5.5rem;
+  --page-gutter: 2rem;
+}
+
+/* Shared appliers — retune the page utilities per theme. */
+html[data-theme] [class*="max-w-6xl"] {
+  max-width: var(--page-container, 72rem);
+}
+html[data-theme] [class*="py-20"] {
+  padding-top: var(--sec-pad, 5rem);
+  padding-bottom: var(--sec-pad, 5rem);
+}
+@media (min-width: 40rem) {
+  html[data-theme] [class*="py-28"] {
+    padding-top: var(--sec-pad-lg, 7rem);
+    padding-bottom: var(--sec-pad-lg, 7rem);
+  }
+}
+html[data-theme] :is(section[class*="px-6"], section > div[class*="px-6"]) {
+  padding-left: var(--page-gutter, 1.5rem);
+  padding-right: var(--page-gutter, 1.5rem);
+}
+html[data-theme] section[class*="pt-28"] {
+  padding-top: var(--hero-pt, 7rem);
+}
+@media (min-width: 40rem) {
+  html[data-theme] section[class*="pt-40"] {
+    padding-top: var(--hero-pt-lg, 10rem);
+  }
+}
+
+/* Hero display scale per theme — headlines set the layout mood. */
+html[data-theme="swiss"] h1 {
+  font-size: clamp(2.75rem, 7.5vw, 5.75rem);
+  letter-spacing: -0.045em;
+}
+html[data-theme="editorial"] h1 {
+  font-size: clamp(2.5rem, 6.5vw, 5rem);
+  line-height: 1.05;
+}
+html[data-theme="terminal"] h1 {
+  font-size: clamp(1.9rem, 4.5vw, 3.25rem);
+}
+html[data-theme="handwritten"] h1 {
+  font-size: clamp(2.75rem, 7vw, 5rem);
+  line-height: 1.1;
+}
+html[data-theme="glass"] h1,
+html[data-theme="aurora"] h1 {
+  font-size: clamp(2.5rem, 6.5vw, 4.75rem);
+}
+
+/* Alternating full-bleed section bands for print-stock themes. */
+html[data-theme="swiss"] section:nth-of-type(even)[class*="border-t"] {
+  background: var(--secondary);
+}
+html[data-theme="editorial"]
+  section:nth-of-type(even)[class*="border-t"] {
+  background: color-mix(in oklab, var(--secondary) 55%, transparent);
+}
+html[data-theme="retro"] section:nth-of-type(even)[class*="border-t"] {
+  background: color-mix(in oklab, var(--secondary) 45%, transparent);
+}
+html[data-theme="handwritten"]
+  section:nth-of-type(even)[class*="border-t"] {
+  background: color-mix(in oklab, var(--secondary) 60%, transparent);
+}
+
 /* Theme-driven ambient animations also respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
   html[data-theme="glass"] body::before,
