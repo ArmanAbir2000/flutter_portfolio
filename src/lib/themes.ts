@@ -381,24 +381,47 @@ export function readStoredTheme(): ThemeId | null {
 export function applyTheme(id: ThemeId) {
   const def = byId.get(id);
   if (!def) return;
-  const root = document.documentElement;
-  root.dataset.theme = def.id;
-  root.classList.toggle("dark", def.mode === "dark");
-  root.style.colorScheme = def.mode;
 
-  let meta = document.querySelector<HTMLMetaElement>(
-    'meta[name="theme-color"]',
-  );
-  if (!meta) {
-    meta = document.createElement("meta");
-    meta.name = "theme-color";
-    document.head.appendChild(meta);
-  }
-  meta.content = def.metaColor;
+  const update = () => {
+    const root = document.documentElement;
+    root.dataset.theme = def.id;
+    root.classList.toggle("dark", def.mode === "dark");
+    root.style.colorScheme = def.mode;
 
-  try {
-    localStorage.setItem(STORAGE_KEY, def.id);
-  } catch {
-    /* private mode — non-fatal */
+    let meta = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    );
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.name = "theme-color";
+      document.head.appendChild(meta);
+    }
+    meta.content = def.metaColor;
+
+    try {
+      localStorage.setItem(STORAGE_KEY, def.id);
+    } catch {
+      /* private mode — non-fatal */
+    }
+  };
+
+  // Cross-fade the restyle when the browser supports view transitions.
+  // Skipped on first load, where index.html already applied this theme pre-paint.
+  type WithViewTransition = Document & {
+    startViewTransition?: (callback: () => void) => void;
+  };
+  const reduceMotion = window.matchMedia?.(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  const doc = document as WithViewTransition;
+  const alreadyActive = document.documentElement.dataset.theme === def.id;
+  if (
+    !alreadyActive &&
+    !reduceMotion &&
+    typeof doc.startViewTransition === "function"
+  ) {
+    doc.startViewTransition(update);
+  } else {
+    update();
   }
 }

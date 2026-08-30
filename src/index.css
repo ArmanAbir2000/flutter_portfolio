@@ -254,11 +254,53 @@ h4 {
 /* ---- Studio Dark (default) — quiet confidence ------------------------- */
 
 html[data-theme="studio"] {
+  color-scheme: dark;
+  --radius: 0.25rem;
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
   --app-font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --app-font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --display-tracking: -0.02em;
   --marquee-speed: 28s;
   --pulse-speed: 2s;
+}
+
+html[data-theme="studio"] ::selection {
+  background: oklch(0.922 0 0 / 25%);
+}
+
+html[data-theme="studio"],
+html[data-theme="studio"] * {
+  scrollbar-color: oklch(0.44 0 0) oklch(0.145 0 0);
 }
 
 /* ---- Neo Brutalist — tactile brutalism -------------------------------- */
@@ -339,6 +381,12 @@ html[data-theme="brutal"] [data-slot="button"]:active:not(:disabled) {
   box-shadow: 2px 2px 0 0 var(--foreground);
 }
 
+/* Framed cards with the same hard offset as buttons and fields. */
+html[data-theme="brutal"] [data-slot="card"] {
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0 0 var(--border);
+}
+
 /* Chunky framed form fields. */
 html[data-theme="brutal"] [data-slot="input"],
 html[data-theme="brutal"] [data-slot="textarea"] {
@@ -348,13 +396,13 @@ html[data-theme="brutal"] [data-slot="textarea"] {
 }
 
 html[data-theme="brutal"] ::selection {
-  background: #c8f04b;
-  color: #171507;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 html[data-theme="brutal"],
 html[data-theme="brutal"] * {
-  scrollbar-color: #14130f #eae3d2;
+  scrollbar-color: var(--border) var(--muted);
 }
 
 /* ---- Aurora Glass — frosted depth -------------------------------------- */
@@ -400,7 +448,8 @@ html[data-theme="glass"] {
   --pulse-speed: 2.6s;
 }
 
-/* Drifting aurora field behind everything. */
+/* Drifting aurora field behind everything. Hues derive from the theme's
+   primary and chart tokens so palette overrides recolor the whole scene. */
 html[data-theme="glass"] body::before {
   content: "";
   position: fixed;
@@ -408,9 +457,9 @@ html[data-theme="glass"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(38% 42% at 18% 12%, oklch(0.55 0.2 295 / 45%), transparent 70%),
-    radial-gradient(34% 40% at 84% 24%, oklch(0.7 0.13 220 / 32%), transparent 70%),
-    radial-gradient(40% 44% at 62% 88%, oklch(0.62 0.19 340 / 30%), transparent 70%);
+    radial-gradient(38% 42% at 18% 12%, color-mix(in oklab, var(--primary) 45%, transparent), transparent 70%),
+    radial-gradient(34% 40% at 84% 24%, color-mix(in oklab, var(--chart-1) 32%, transparent), transparent 70%),
+    radial-gradient(40% 44% at 62% 88%, color-mix(in oklab, var(--chart-3) 30%, transparent), transparent 70%);
   animation: theme-aurora-drift 26s ease-in-out infinite;
 }
 
@@ -436,11 +485,11 @@ html[data-theme="glass"] a:hover {
   box-shadow: 0 0 28px -8px color-mix(in oklab, var(--primary) 75%, transparent);
 }
 html[data-theme="glass"] ::selection {
-  background: oklch(0.68 0.17 293 / 40%);
+  background: color-mix(in oklab, var(--primary) 40%, transparent);
 }
 html[data-theme="glass"],
 html[data-theme="glass"] * {
-  scrollbar-color: oklch(0.5 0.1 293) transparent;
+  scrollbar-color: color-mix(in oklab, var(--primary) 60%, transparent) transparent;
 }
 
 /* ---- Phosphor Terminal — CRT retro-tech -------------------------------- */
@@ -494,8 +543,8 @@ html[data-theme="terminal"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(oklch(0.75 0.2 150 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.75 0.2 150 / 4%) 1px, transparent 1px);
+    linear-gradient(color-mix(in oklab, var(--primary) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--primary) 4%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 html[data-theme="terminal"] body::after {
@@ -515,19 +564,19 @@ html[data-theme="terminal"] h2,
 html[data-theme="terminal"] h3,
 html[data-theme="terminal"] h4,
 html[data-theme="terminal"] a {
-  text-shadow: 0 0 10px rgb(74 222 128 / 35%);
+  text-shadow: 0 0 10px color-mix(in oklab, var(--primary) 35%, transparent);
 }
 html[data-theme="terminal"] input,
 html[data-theme="terminal"] textarea {
-  caret-color: #4ade80;
+  caret-color: var(--primary);
 }
 html[data-theme="terminal"] ::selection {
-  background: #4ade80;
-  color: #04140a;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 html[data-theme="terminal"],
 html[data-theme="terminal"] * {
-  scrollbar-color: #1d3320 #050805;
+  scrollbar-color: var(--border) var(--background);
 }
 
 /* ---- Editorial Serif — print magazine ----------------------------------- */
@@ -606,12 +655,11 @@ html[data-theme="editorial"] .drop-cap::first-letter {
   color: var(--ring);
 }
 html[data-theme="editorial"] ::selection {
-  background: #f3d9a4;
-  color: #1c1917;
+  background: color-mix(in oklab, var(--ring) 32%, white);
 }
 html[data-theme="editorial"],
 html[data-theme="editorial"] * {
-  scrollbar-color: #c9bfa8 #faf7f0;
+  scrollbar-color: var(--border) var(--background);
 }
 
 /* ---- Bento Pop — playful grid ------------------------------------------- */
@@ -664,13 +712,16 @@ html[data-theme="bento"] body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: radial-gradient(#211f1c12 1.2px, transparent 1.2px);
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--foreground) 7%, transparent) 1.2px,
+    transparent 1.2px
+  );
   background-size: 26px 26px;
 }
 
 /* Diffuse soft shadows + gentle lift instead of hard edges. */
 html[data-theme="bento"] [data-slot="card"] {
-  box-shadow: 0 10px 34px -18px rgb(33 31 28 / 22%);
+  box-shadow: 0 10px 34px -18px color-mix(in oklab, var(--foreground) 22%, transparent);
 }
 html[data-theme="bento"] [data-slot="button"][data-variant="default"],
 html[data-theme="bento"] [data-slot="button"][data-variant="outline"],
@@ -690,12 +741,12 @@ html[data-theme="bento"] [data-slot="button"][data-variant="secondary"]:hover:no
   transform: translateY(-2px);
 }
 html[data-theme="bento"] ::selection {
-  background: #ffd8cd;
-  color: #211f1c;
+  background: color-mix(in oklab, var(--primary) 25%, white);
+  color: var(--foreground);
 }
 html[data-theme="bento"],
 html[data-theme="bento"] * {
-  scrollbar-color: #d9d4cb #f7f6f3;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Swiss International — grid & signal red ---------------------------- */
@@ -754,12 +805,35 @@ html[data-theme="swiss"] [data-slot="button"]:active:not(:disabled) {
   color: #ffffff;
 }
 html[data-theme="swiss"] ::selection {
-  background: #e30613;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 html[data-theme="swiss"],
 html[data-theme="swiss"] * {
-  scrollbar-color: #111111 #ffffff;
+  scrollbar-color: var(--foreground) var(--background);
+}
+
+/* Swiss structure: faint layout grid + hairline typographic rules. */
+html[data-theme="swiss"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+html[data-theme="swiss"] h1,
+html[data-theme="swiss"] h2 {
+  border-bottom: 2px solid var(--foreground);
+  padding-bottom: 0.3em;
+}
+html[data-theme="swiss"] blockquote {
+  border-top: 1px solid var(--foreground);
+  border-bottom: 1px solid var(--foreground);
+  padding: 1rem 0;
 }
 
 /* ---- Aurora Gradient — dev-tool light show ------------------------------ */
@@ -805,7 +879,8 @@ html[data-theme="aurora"] {
   --pulse-speed: 2.2s;
 }
 
-/* Slow mesh-gradient field: indigo, fuchsia and cyan light sources. */
+/* Slow mesh-gradient field: primary, fuchsia and cyan light sources,
+   all derived from chart tokens so palettes recolor the light show. */
 html[data-theme="aurora"] body::before {
   content: "";
   position: fixed;
@@ -813,34 +888,39 @@ html[data-theme="aurora"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(36% 40% at 16% 18%, rgb(99 102 241 / 26%), transparent 70%),
-    radial-gradient(30% 36% at 86% 22%, rgb(217 70 239 / 16%), transparent 70%),
-    radial-gradient(38% 42% at 60% 92%, rgb(34 211 238 / 14%), transparent 70%);
+    radial-gradient(36% 40% at 16% 18%, color-mix(in oklab, var(--chart-1) 26%, transparent), transparent 70%),
+    radial-gradient(30% 36% at 86% 22%, color-mix(in oklab, var(--chart-2) 16%, transparent), transparent 70%),
+    radial-gradient(38% 42% at 60% 92%, color-mix(in oklab, var(--chart-3) 14%, transparent), transparent 70%);
   animation: theme-aurora-drift 30s ease-in-out infinite;
 }
 
 /* Primary buttons carry the gradient with a soft glow. */
 html[data-theme="aurora"] [data-slot="button"][data-variant="default"] {
-  background-image: linear-gradient(135deg, #6366f1, #8b5cf6 55%, #d946ef);
-  box-shadow: 0 8px 26px -10px rgb(99 102 241 / 65%);
+  background-image: linear-gradient(
+    135deg,
+    var(--chart-1),
+    color-mix(in oklab, var(--chart-1) 55%, var(--chart-2)) 55%,
+    var(--chart-2)
+  );
+  box-shadow: 0 8px 26px -10px color-mix(in oklab, var(--primary) 65%, transparent);
 }
 html[data-theme="aurora"] [data-slot="card"] {
   transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
 html[data-theme="aurora"] [data-slot="card"]:hover {
-  border-color: #3b4470;
-  box-shadow: 0 14px 40px -18px rgb(99 102 241 / 45%);
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
+  box-shadow: 0 14px 40px -18px color-mix(in oklab, var(--primary) 45%, transparent);
 }
 html[data-theme="aurora"] h1,
 html[data-theme="aurora"] h2 {
-  text-shadow: 0 0 34px rgb(99 102 241 / 30%);
+  text-shadow: 0 0 34px color-mix(in oklab, var(--primary) 30%, transparent);
 }
 html[data-theme="aurora"] ::selection {
-  background: rgb(99 102 241 / 45%);
+  background: color-mix(in oklab, var(--primary) 45%, transparent);
 }
 html[data-theme="aurora"],
 html[data-theme="aurora"] * {
-  scrollbar-color: #263054 #05060f;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Cyberpunk — neon dystopia ------------------------------------------ */
@@ -894,8 +974,8 @@ html[data-theme="cyberpunk"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(rgb(34 211 238 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(34 211 238 / 4%) 1px, transparent 1px);
+    linear-gradient(color-mix(in oklab, var(--primary) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--primary) 4%, transparent) 1px, transparent 1px);
   background-size: 42px 42px;
 }
 html[data-theme="cyberpunk"] body::after {
@@ -918,24 +998,24 @@ html[data-theme="cyberpunk"] [data-slot="button"][data-variant="destructive"] {
   border-width: 1px;
 }
 html[data-theme="cyberpunk"] [data-slot="button"]:hover:not(:disabled) {
-  box-shadow: 0 0 16px -2px rgb(34 211 238 / 55%);
+  box-shadow: 0 0 16px -2px color-mix(in oklab, var(--primary) 55%, transparent);
 }
 html[data-theme="cyberpunk"] h1,
 html[data-theme="cyberpunk"] h2,
 html[data-theme="cyberpunk"] h3 {
-  text-shadow: 0 0 14px rgb(34 211 238 / 35%);
+  text-shadow: 0 0 14px color-mix(in oklab, var(--primary) 35%, transparent);
 }
 html[data-theme="cyberpunk"] input,
 html[data-theme="cyberpunk"] textarea {
-  caret-color: #22d3ee;
+  caret-color: var(--primary);
 }
 html[data-theme="cyberpunk"] ::selection {
-  background: #22d3ee;
-  color: #050810;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 html[data-theme="cyberpunk"],
 html[data-theme="cyberpunk"] * {
-  scrollbar-color: #2a2a45 #0a0a12;
+  scrollbar-color: var(--border) var(--background);
 }
 
 /* ---- Claymorphism — inflated pastel 3D ----------------------------------- */
@@ -989,23 +1069,23 @@ html[data-theme="clay"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(30% 34% at 20% 20%, rgb(139 92 246 / 16%), transparent 70%),
-    radial-gradient(28% 32% at 82% 30%, rgb(244 114 182 / 14%), transparent 70%),
-    radial-gradient(32% 34% at 55% 90%, rgb(56 189 248 / 12%), transparent 70%);
+    radial-gradient(30% 34% at 20% 20%, color-mix(in oklab, var(--chart-1) 16%, transparent), transparent 70%),
+    radial-gradient(28% 32% at 82% 30%, color-mix(in oklab, var(--chart-2) 14%, transparent), transparent 70%),
+    radial-gradient(32% 34% at 55% 90%, color-mix(in oklab, var(--chart-3) 12%, transparent), transparent 70%);
   animation: theme-blob-drift 24s ease-in-out infinite;
 }
 
 /* Signature clay physics: soft drop shadow + inflating inner highlights. */
 html[data-theme="clay"] [data-slot="card"] {
   box-shadow:
-    0 18px 36px -18px rgb(97 79 197 / 30%),
-    inset 0 -10px 18px rgb(139 92 246 / 7%),
+    0 18px 36px -18px color-mix(in oklab, var(--primary) 30%, transparent),
+    inset 0 -10px 18px color-mix(in oklab, var(--primary) 7%, transparent),
     inset 0 2px 4px rgb(255 255 255 / 90%);
 }
 html[data-theme="clay"] [data-slot="button"][data-variant="default"],
 html[data-theme="clay"] [data-slot="button"][data-variant="secondary"] {
   box-shadow:
-    0 10px 22px -8px rgb(97 79 197 / 45%),
+    0 10px 22px -8px color-mix(in oklab, var(--primary) 45%, transparent),
     inset 0 -6px 12px rgb(0 0 0 / 12%),
     inset 0 4px 8px rgb(255 255 255 / 35%);
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
@@ -1014,22 +1094,22 @@ html[data-theme="clay"] [data-slot="button"][data-variant="default"]:hover:not(:
 html[data-theme="clay"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow:
-    0 14px 30px -10px rgb(97 79 197 / 55%),
+    0 14px 30px -10px color-mix(in oklab, var(--primary) 55%, transparent),
     inset 0 -6px 12px rgb(0 0 0 / 12%),
     inset 0 4px 8px rgb(255 255 255 / 35%);
 }
 /* Fields read as pressed into the clay. */
 html[data-theme="clay"] [data-slot="input"],
 html[data-theme="clay"] [data-slot="textarea"] {
-  box-shadow: inset 0 2px 6px rgb(97 79 197 / 14%);
+  box-shadow: inset 0 2px 6px color-mix(in oklab, var(--primary) 14%, transparent);
 }
 html[data-theme="clay"] ::selection {
-  background: #ddd1fe;
-  color: #2a2440;
+  background: color-mix(in oklab, var(--primary) 28%, white);
+  color: var(--foreground);
 }
 html[data-theme="clay"],
 html[data-theme="clay"] * {
-  scrollbar-color: #d9d0f2 #f3efff;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Pop Art — comic maximalism ------------------------------------------ */
@@ -1082,7 +1162,10 @@ html[data-theme="popart"] body::before {
   inset: 0;
   z-index: 70;
   pointer-events: none;
-  background-image: radial-gradient(#1111111f 1.5px, transparent 1.5px);
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--foreground) 12%, transparent) 1.5px,
+    transparent 1.5px
+  );
   background-size: 14px 14px;
 }
 
@@ -1091,8 +1174,8 @@ html[data-theme="popart"] [data-slot="button"][data-variant="default"],
 html[data-theme="popart"] [data-slot="button"][data-variant="outline"],
 html[data-theme="popart"] [data-slot="button"][data-variant="secondary"],
 html[data-theme="popart"] [data-slot="button"][data-variant="destructive"] {
-  border: 3px solid #111111;
-  box-shadow: 5px 5px 0 0 #111111;
+  border: 3px solid var(--border);
+  box-shadow: 5px 5px 0 0 var(--border);
   transition:
     transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.15s ease,
@@ -1103,29 +1186,44 @@ html[data-theme="popart"] [data-slot="button"][data-variant="outline"]:hover:not
 html[data-theme="popart"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled),
 html[data-theme="popart"] [data-slot="button"][data-variant="destructive"]:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 0 #111111;
+  box-shadow: 7px 7px 0 0 var(--border);
 }
 html[data-theme="popart"] [data-slot="button"]:active:not(:disabled) {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 0 #111111;
+  box-shadow: 2px 2px 0 0 var(--border);
 }
 html[data-theme="popart"] [data-slot="card"] {
-  border: 3px solid #111111;
-  box-shadow: 6px 6px 0 0 #111111;
+  border: 3px solid var(--border);
+  box-shadow: 6px 6px 0 0 var(--border);
 }
 html[data-theme="popart"] [data-slot="input"],
 html[data-theme="popart"] [data-slot="textarea"] {
   border-width: 3px;
-  border-color: #111111;
-  box-shadow: 3px 3px 0 0 #111111;
+  border-color: var(--border);
+  box-shadow: 3px 3px 0 0 var(--border);
 }
 html[data-theme="popart"] ::selection {
-  background: #ffd400;
-  color: #111111;
+  background: var(--secondary);
+  color: var(--foreground);
 }
 html[data-theme="popart"],
 html[data-theme="popart"] * {
-  scrollbar-color: #111111 #fff9e6;
+  scrollbar-color: var(--border) var(--background);
+}
+
+/* Bungee is wide — cap display sizes so headlines stay punchy, not broken. */
+html[data-theme="popart"] h1 {
+  font-size: clamp(1.6rem, 3.8vw, 2.8rem);
+  line-height: 1.15;
+}
+html[data-theme="popart"] h2 {
+  font-size: clamp(1.2rem, 2.6vw, 1.9rem);
+  line-height: 1.25;
+}
+html[data-theme="popart"] h3,
+html[data-theme="popart"] h4 {
+  font-size: 1.1rem;
+  line-height: 1.35;
 }
 
 /* ---- Y2K — chrome & iridescence ------------------------------------------ */
@@ -1179,28 +1277,43 @@ html[data-theme="y2k"] body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(30% 36% at 18% 22%, rgb(167 139 250 / 30%), transparent 70%),
-    radial-gradient(28% 32% at 84% 26%, rgb(103 232 249 / 28%), transparent 70%),
-    radial-gradient(34% 38% at 58% 92%, rgb(249 168 212 / 26%), transparent 70%);
+    radial-gradient(30% 36% at 18% 22%, color-mix(in oklab, var(--chart-1) 30%, transparent), transparent 70%),
+    radial-gradient(28% 32% at 84% 26%, color-mix(in oklab, var(--chart-2) 28%, transparent), transparent 70%),
+    radial-gradient(34% 38% at 58% 92%, color-mix(in oklab, var(--chart-3) 26%, transparent), transparent 70%);
   animation: theme-aurora-drift 22s ease-in-out infinite;
 }
 
 /* Iridescent pill buttons; chrome-edged cards with a floating glow. */
 html[data-theme="y2k"] [data-slot="button"][data-variant="default"] {
-  background-image: linear-gradient(120deg, #a78bfa, #67e8f9 55%, #f9a8d4);
-  color: #1b1740;
-  box-shadow: 0 10px 26px -10px rgb(124 58 237 / 45%), inset 0 1px 0 rgb(255 255 255 / 70%);
+  background-image: linear-gradient(120deg, var(--chart-1), var(--chart-2) 55%, var(--chart-3));
+  color: var(--foreground);
+  box-shadow: 0 10px 26px -10px color-mix(in oklab, var(--primary) 45%, transparent), inset 0 1px 0 rgb(255 255 255 / 70%);
 }
 html[data-theme="y2k"] [data-slot="card"] {
-  box-shadow: 0 18px 44px -20px rgb(124 58 237 / 40%), inset 0 1px 0 rgb(255 255 255 / 90%);
+  box-shadow: 0 18px 44px -20px color-mix(in oklab, var(--primary) 40%, transparent), inset 0 1px 0 rgb(255 255 255 / 90%);
 }
 html[data-theme="y2k"] ::selection {
-  background: #f9a8d4;
-  color: #1b1740;
+  background: var(--chart-3);
+  color: var(--foreground);
 }
 html[data-theme="y2k"],
 html[data-theme="y2k"] * {
-  scrollbar-color: #c9bfee #e9e6ff;
+  scrollbar-color: var(--input) var(--background);
+}
+
+/* Michroma is very wide — cap display sizes so headlines stay composed. */
+html[data-theme="y2k"] h1 {
+  font-size: clamp(1.5rem, 3.2vw, 2.4rem);
+  line-height: 1.3;
+}
+html[data-theme="y2k"] h2 {
+  font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+  line-height: 1.4;
+}
+html[data-theme="y2k"] h3,
+html[data-theme="y2k"] h4 {
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
 
 /* ---- Retro — 70s print warmth -------------------------------------------- */
@@ -1246,34 +1359,75 @@ html[data-theme="retro"] {
   --pulse-speed: 2.6s;
 }
 
-/* Sun-bleached paper grain. */
+/* Sun-bleached paper grain, with a warm sun glow rising on the horizon. */
 html[data-theme="retro"] body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 70;
   pointer-events: none;
-  background-image: radial-gradient(#4a2f1d0a 1px, transparent 1px);
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--foreground) 4%, transparent) 1px,
+    transparent 1px
+  );
   background-size: 18px 18px;
 }
+html[data-theme="retro"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    64% 42% at 50% 0%,
+    color-mix(in oklab, var(--chart-2) 20%, transparent),
+    transparent 70%
+  );
+}
 
+/* Framed cards, framed fields, framed buttons — one print-stock system. */
 html[data-theme="retro"] [data-slot="card"] {
   border-width: 2px;
-  border-color: #4a2f1d;
-  box-shadow: 5px 5px 0 0 rgb(74 47 29 / 16%);
+  border-color: var(--foreground);
+  box-shadow: 5px 5px 0 0 color-mix(in oklab, var(--foreground) 16%, transparent);
 }
 html[data-theme="retro"] [data-slot="input"],
 html[data-theme="retro"] [data-slot="textarea"] {
   border-width: 2px;
-  border-color: #4a2f1d;
+  border-color: var(--foreground);
+}
+html[data-theme="retro"] [data-slot="button"][data-variant="default"],
+html[data-theme="retro"] [data-slot="button"][data-variant="outline"],
+html[data-theme="retro"] [data-slot="button"][data-variant="secondary"] {
+  border: 2px solid var(--foreground);
+  box-shadow: 3px 3px 0 0 color-mix(in oklab, var(--foreground) 18%, transparent);
+  transition:
+    transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+html[data-theme="retro"] [data-slot="button"][data-variant="default"]:hover:not(:disabled),
+html[data-theme="retro"] [data-slot="button"][data-variant="outline"]:hover:not(:disabled),
+html[data-theme="retro"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 color-mix(in oklab, var(--foreground) 22%, transparent);
+}
+html[data-theme="retro"] [data-slot="button"]:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 0 color-mix(in oklab, var(--foreground) 16%, transparent);
+}
+/* Serif display italics for emphasized words, like 70s posters. */
+html[data-theme="retro"] h1 em,
+html[data-theme="retro"] h2 em {
+  font-style: italic;
 }
 html[data-theme="retro"] ::selection {
-  background: #e0a526;
-  color: #4a2f1d;
+  background: var(--chart-2);
+  color: var(--foreground);
 }
 html[data-theme="retro"],
 html[data-theme="retro"] * {
-  scrollbar-color: #c9b28c #f6ead2;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Bohemian — earthy artisan calm --------------------------------------- */
@@ -1332,16 +1486,28 @@ html[data-theme="bohemian"] body::before {
   background-size: 6px 6px;
 }
 
+/* Artisan touches: arch-topped cards, pill buttons in the display serif,
+   and stitched (dashed) fields like hand-sewn linen. */
 html[data-theme="bohemian"] [data-slot="card"] {
-  box-shadow: 0 10px 28px -14px rgb(63 53 41 / 18%);
+  border-radius: 2rem 2rem 1.25rem 1.25rem;
+  box-shadow: 0 10px 28px -14px color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+html[data-theme="bohemian"] [data-slot="button"] {
+  border-radius: 9999px;
+  font-family: var(--app-font-display);
+  letter-spacing: 0.02em;
+}
+html[data-theme="bohemian"] [data-slot="input"],
+html[data-theme="bohemian"] [data-slot="textarea"] {
+  border-style: dashed;
 }
 html[data-theme="bohemian"] ::selection {
-  background: #d6dfc4;
-  color: #3f3529;
+  background: color-mix(in oklab, var(--ring) 30%, white);
+  color: var(--foreground);
 }
 html[data-theme="bohemian"],
 html[data-theme="bohemian"] * {
-  scrollbar-color: #d8ccb4 #f5efe3;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Handwritten — sketchbook notes ---------------------------------------- */
@@ -1394,7 +1560,11 @@ html[data-theme="handwritten"] body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent 0 30px, #2f6fde12 30px 31px);
+  background: linear-gradient(
+    to bottom,
+    transparent 0 30px,
+    color-mix(in oklab, var(--primary) 7%, transparent) 30px 31px
+  );
   background-size: 100% 31px;
 }
 
@@ -1403,9 +1573,9 @@ html[data-theme="handwritten"] [data-slot="button"][data-variant="default"],
 html[data-theme="handwritten"] [data-slot="button"][data-variant="outline"],
 html[data-theme="handwritten"] [data-slot="button"][data-variant="secondary"],
 html[data-theme="handwritten"] [data-slot="button"][data-variant="destructive"] {
-  border: 2px solid #2b2b2b;
+  border: 2px solid var(--foreground);
   border-radius: 12px 14px 13px 15px / 14px 12px 15px 13px;
-  box-shadow: 2px 3px 0 0 rgb(43 43 43 / 22%);
+  box-shadow: 2px 3px 0 0 color-mix(in oklab, var(--foreground) 22%, transparent);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 html[data-theme="handwritten"] [data-slot="button"][data-variant="default"]:hover:not(:disabled),
@@ -1413,23 +1583,23 @@ html[data-theme="handwritten"] [data-slot="button"][data-variant="outline"]:hove
 html[data-theme="handwritten"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled),
 html[data-theme="handwritten"] [data-slot="button"][data-variant="destructive"]:hover:not(:disabled) {
   transform: rotate(-1deg);
-  box-shadow: 3px 4px 0 0 rgb(43 43 43 / 28%);
+  box-shadow: 3px 4px 0 0 color-mix(in oklab, var(--foreground) 28%, transparent);
 }
 /* Cards read as taped-in notes. */
 html[data-theme="handwritten"] [data-slot="card"] {
-  box-shadow: 0 6px 16px rgb(43 43 43 / 10%);
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--foreground) 10%, transparent);
 }
 html[data-theme="handwritten"] [data-slot="input"],
 html[data-theme="handwritten"] [data-slot="textarea"] {
-  border: 2px dashed #b9b4a6;
+  border: 2px dashed var(--input);
 }
 html[data-theme="handwritten"] ::selection {
-  background: #ffe14d;
-  color: #2b2b2b;
+  background: var(--accent);
+  color: var(--foreground);
 }
 html[data-theme="handwritten"],
 html[data-theme="handwritten"] * {
-  scrollbar-color: #d9d4c5 #fdfbf4;
+  scrollbar-color: var(--input) var(--background);
 }
 
 /* ---- Pixel Art — 8-bit precision ------------------------------------------- */
@@ -1512,8 +1682,8 @@ html[data-theme="pixel"] [data-slot="button"][data-variant="default"],
 html[data-theme="pixel"] [data-slot="button"][data-variant="outline"],
 html[data-theme="pixel"] [data-slot="button"][data-variant="secondary"],
 html[data-theme="pixel"] [data-slot="button"][data-variant="destructive"] {
-  border: 4px solid #000000;
-  box-shadow: 4px 4px 0 0 #000000;
+  border: 4px solid var(--border);
+  box-shadow: 4px 4px 0 0 var(--border);
   transition:
     transform 0.12s steps(2),
     box-shadow 0.12s steps(2);
@@ -1523,32 +1693,32 @@ html[data-theme="pixel"] [data-slot="button"][data-variant="outline"]:hover:not(
 html[data-theme="pixel"] [data-slot="button"][data-variant="secondary"]:hover:not(:disabled),
 html[data-theme="pixel"] [data-slot="button"][data-variant="destructive"]:hover:not(:disabled) {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 0 #000000;
+  box-shadow: 6px 6px 0 0 var(--border);
 }
 html[data-theme="pixel"] [data-slot="button"]:active:not(:disabled) {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 0 #000000;
+  box-shadow: 2px 2px 0 0 var(--border);
 }
 html[data-theme="pixel"] [data-slot="card"] {
-  border: 4px solid #000000;
-  box-shadow: 6px 6px 0 0 rgb(0 0 0 / 85%);
+  border: 4px solid var(--border);
+  box-shadow: 6px 6px 0 0 color-mix(in oklab, var(--border) 85%, transparent);
 }
 html[data-theme="pixel"] [data-slot="input"],
 html[data-theme="pixel"] [data-slot="textarea"] {
   border-width: 4px;
-  border-color: #000000;
+  border-color: var(--border);
 }
 html[data-theme="pixel"] input,
 html[data-theme="pixel"] textarea {
-  caret-color: #3ddc84;
+  caret-color: var(--primary);
 }
 html[data-theme="pixel"] ::selection {
-  background: #3ddc84;
-  color: #06130b;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 html[data-theme="pixel"],
 html[data-theme="pixel"] * {
-  scrollbar-color: #3ddc84 #0f0f1b;
+  scrollbar-color: var(--primary) var(--background);
 }
 
 /* Theme-driven ambient animations also respect reduced-motion. */
@@ -1565,140 +1735,12 @@ html[data-theme="pixel"] * {
 }
 
 /* ================================================================== */
-/* PALETTES — full color scheme overrides layered on the active theme   */
-/* Each palette sets background, foreground, card, accent, border, and   */
-/* chart colors so switching is immediately visible across the site.     */
+/* PALETTES are applied at runtime by use-theme-settings.tsx as         */
+/* accent-only inline vars on <html> (--primary, --accent, --ring,      */
+/* charts), which override every theme block. Theme styles therefore    */
+/* must derive decorative colors from those tokens (never hardcode      */
+/* hues) so palette switches stay visible across the whole UI.          */
 /* ================================================================== */
-
-.palette-golden-hour {
-  --background: oklch(0.14 0.01 50);
-  --foreground: oklch(0.92 0.01 70);
-  --card: oklch(0.18 0.012 50);
-  --card-foreground: oklch(0.92 0.01 70);
-  --popover: oklch(0.18 0.012 50);
-  --popover-foreground: oklch(0.92 0.01 70);
-  --primary: oklch(0.72 0.14 55);
-  --primary-foreground: oklch(0.12 0.02 50);
-  --secondary: oklch(0.24 0.018 50);
-  --secondary-foreground: oklch(0.92 0.01 70);
-  --muted: oklch(0.22 0.015 50);
-  --muted-foreground: oklch(0.55 0.02 60);
-  --accent: oklch(0.75 0.16 65);
-  --accent-foreground: oklch(0.12 0.02 50);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.28 0.018 50 / 60%);
-  --input: oklch(0.28 0.018 50 / 70%);
-  --ring: oklch(0.72 0.14 55);
-  --chart-1: oklch(0.72 0.14 55);
-  --chart-2: oklch(0.75 0.16 65);
-  --chart-3: oklch(0.6 0.12 45);
-  --chart-4: oklch(0.8 0.1 70);
-  --chart-5: oklch(0.5 0.1 55);
-}
-
-.palette-deep-ocean {
-  --background: oklch(0.12 0.02 230);
-  --foreground: oklch(0.9 0.01 230);
-  --card: oklch(0.16 0.025 230);
-  --card-foreground: oklch(0.9 0.01 230);
-  --popover: oklch(0.16 0.025 230);
-  --popover-foreground: oklch(0.9 0.01 230);
-  --primary: oklch(0.65 0.12 220);
-  --primary-foreground: oklch(0.1 0.02 230);
-  --secondary: oklch(0.22 0.025 230);
-  --secondary-foreground: oklch(0.9 0.01 230);
-  --muted: oklch(0.2 0.02 230);
-  --muted-foreground: oklch(0.5 0.03 230);
-  --accent: oklch(0.78 0.14 175);
-  --accent-foreground: oklch(0.1 0.02 230);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.26 0.03 230 / 50%);
-  --input: oklch(0.26 0.03 230 / 60%);
-  --ring: oklch(0.65 0.12 220);
-  --chart-1: oklch(0.65 0.12 220);
-  --chart-2: oklch(0.78 0.14 175);
-  --chart-3: oklch(0.5 0.1 240);
-  --chart-4: oklch(0.7 0.1 200);
-  --chart-5: oklch(0.55 0.08 210);
-}
-
-.palette-berry-crush {
-  --background: oklch(0.14 0.02 330);
-  --foreground: oklch(0.9 0.015 330);
-  --card: oklch(0.18 0.025 330);
-  --card-foreground: oklch(0.9 0.015 330);
-  --popover: oklch(0.18 0.025 330);
-  --popover-foreground: oklch(0.9 0.015 330);
-  --primary: oklch(0.72 0.22 320);
-  --primary-foreground: oklch(0.1 0.02 330);
-  --secondary: oklch(0.22 0.025 330);
-  --secondary-foreground: oklch(0.9 0.015 330);
-  --muted: oklch(0.2 0.02 330);
-  --muted-foreground: oklch(0.5 0.03 330);
-  --accent: oklch(0.78 0.24 340);
-  --accent-foreground: oklch(0.1 0.02 330);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.26 0.03 330 / 50%);
-  --input: oklch(0.26 0.03 330 / 60%);
-  --ring: oklch(0.72 0.22 320);
-  --chart-1: oklch(0.72 0.22 320);
-  --chart-2: oklch(0.78 0.24 340);
-  --chart-3: oklch(0.6 0.18 300);
-  --chart-4: oklch(0.8 0.2 350);
-  --chart-5: oklch(0.55 0.15 330);
-}
-
-.palette-forest-floor {
-  --background: oklch(0.13 0.015 145);
-  --foreground: oklch(0.88 0.015 145);
-  --card: oklch(0.17 0.02 145);
-  --card-foreground: oklch(0.88 0.015 145);
-  --popover: oklch(0.17 0.02 145);
-  --popover-foreground: oklch(0.88 0.015 145);
-  --primary: oklch(0.68 0.12 150);
-  --primary-foreground: oklch(0.1 0.02 145);
-  --secondary: oklch(0.22 0.02 145);
-  --secondary-foreground: oklch(0.88 0.015 145);
-  --muted: oklch(0.2 0.018 145);
-  --muted-foreground: oklch(0.5 0.025 145);
-  --accent: oklch(0.78 0.16 130);
-  --accent-foreground: oklch(0.1 0.02 145);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.25 0.02 145 / 50%);
-  --input: oklch(0.25 0.02 145 / 60%);
-  --ring: oklch(0.68 0.12 150);
-  --chart-1: oklch(0.68 0.12 150);
-  --chart-2: oklch(0.78 0.16 130);
-  --chart-3: oklch(0.55 0.1 160);
-  --chart-4: oklch(0.7 0.1 140);
-  --chart-5: oklch(0.6 0.08 155);
-}
-
-.palette-electric-dreams {
-  --background: oklch(0.08 0.015 250);
-  --foreground: oklch(0.88 0.01 250);
-  --card: oklch(0.12 0.02 250);
-  --card-foreground: oklch(0.88 0.01 250);
-  --popover: oklch(0.12 0.02 250);
-  --popover-foreground: oklch(0.88 0.01 250);
-  --primary: oklch(0.78 0.2 210);
-  --primary-foreground: oklch(0.06 0.01 250);
-  --secondary: oklch(0.18 0.02 250);
-  --secondary-foreground: oklch(0.88 0.01 250);
-  --muted: oklch(0.16 0.018 250);
-  --muted-foreground: oklch(0.48 0.02 250);
-  --accent: oklch(0.82 0.2 250);
-  --accent-foreground: oklch(0.06 0.01 250);
-  --destructive: oklch(0.6 0.2 25);
-  --border: oklch(0.22 0.025 250 / 50%);
-  --input: oklch(0.22 0.025 250 / 60%);
-  --ring: oklch(0.78 0.2 210);
-  --chart-1: oklch(0.78 0.2 210);
-  --chart-2: oklch(0.82 0.2 250);
-  --chart-3: oklch(0.65 0.18 230);
-  --chart-4: oklch(0.85 0.15 200);
-  --chart-5: oklch(0.7 0.16 260);
-}
 
 /* ================================================================== */
 /* ANIMATION PRESETS — CSS variable overrides for motion timing         */
