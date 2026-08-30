@@ -4,9 +4,9 @@ import { useEffect } from "react";
  * Canonical site origin + base path. MUST stay in sync with the static
  * tags in index.html — crawlers read those, this constant keeps
  * browser-side updates consistent. The repo deploys as a GitHub Pages
- * PROJECT site, so the /flutter_portfolio/ subpath is part of every URL.
+ * PROJECT site, so the /Shiki_Code_Studio/ subpath is part of every URL.
  */
-export const SITE_URL = "https://armanabir2000.github.io/flutter_portfolio";
+export const SITE_URL = "https://armanabir2000.github.io/Shiki_Code_Studio";
 
 export const DEFAULT_OG_IMAGE = "/og/og-default.png";
 export const DEFAULT_TITLE =

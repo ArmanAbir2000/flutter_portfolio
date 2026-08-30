@@ -45,8 +45,9 @@ jobs:
           # project. Override with a repo secret of the same name if you
           # migrate deployments.
           VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL || 'https://ceaseless-duck-889.convex.cloud' }}
-          # GitHub Pages project sites are served from a subdirectory.
-          VITE_BASE_PATH: /flutter_portfolio/
+          # GitHub Pages project sites are served from a subdirectory named
+          # after the repo. Keep in sync with SITE_URL in src/lib/seo.ts.
+          VITE_BASE_PATH: /Shiki_Code_Studio/
         run: bun run build
 
       - name: SPA fallback for client-side routes
