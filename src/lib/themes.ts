@@ -4,7 +4,8 @@
  * A theme is a complete restyle — palette, typography, radii, borders,
  * shadows, textures and motion personality — defined as CSS under
  * `html[data-theme="<id>"]` in src/index.css. The active theme id lives on
- * <html data-theme>, the `.dark` class follows each theme's mode, and the
+ * <html data-theme> alongside its layout archetype (<html data-layout>),
+ * the `.dark` class follows each theme's mode, and the
  * owner's choice is persisted in Convex (`siteContent` key "theme") so every
  * visitor sees the same style.
  */
@@ -31,6 +32,22 @@ export const THEME_IDS = [
 export type ThemeId = (typeof THEME_IDS)[number];
 export type ThemeMode = "dark" | "light";
 
+/**
+ * Layout archetypes. Each theme composes its page skeleton from one of
+ * these (rendered as <html data-layout>), so 15 themes share 5 metric
+ * sets instead of restating their own; CSS keeps only sparse exceptions.
+ */
+export const LAYOUT_IDS = [
+  "classic",
+  "cinematic",
+  "print",
+  "console",
+  "playful",
+  "swiss",
+] as const;
+
+export type ThemeLayout = (typeof LAYOUT_IDS)[number];
+
 export type ThemeDef = {
   id: ThemeId;
   name: string;
@@ -38,6 +55,8 @@ export type ThemeDef = {
   /** Longer line shown on the dashboard card. */
   description: string;
   mode: ThemeMode;
+  /** Layout archetype driving the page skeleton (see LAYOUT_IDS). */
+  layout: ThemeLayout;
   /** Signature type pairing shown on the dashboard card. */
   fontLabel: string;
   /** Browser chrome color while the theme is active. */
@@ -61,6 +80,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Near-black canvas, hairline borders, one quiet accent — the work speaks first.",
     mode: "dark",
+    layout: "classic",
     fontLabel: "Inter · neutral sans",
     metaColor: "#0a0a0a",
     swatch: {
@@ -79,6 +99,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Paper background, raw black borders, hard offset shadows and an electric lime accent.",
     mode: "light",
+    layout: "playful",
     fontLabel: "Space Grotesk · chunky display",
     metaColor: "#f2ede3",
     swatch: {
@@ -97,6 +118,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Drifting aurora gradients behind frosted translucent surfaces with specular edges.",
     mode: "dark",
+    layout: "cinematic",
     fontLabel: "Space Grotesk · airy display",
     metaColor: "#0b0b1c",
     swatch: {
@@ -115,6 +137,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Green-on-black phosphor glow, all-mono type, scanlines and a blueprint grid.",
     mode: "dark",
+    layout: "console",
     fontLabel: "JetBrains Mono · everything",
     metaColor: "#050805",
     swatch: {
@@ -133,6 +156,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Warm paper, serif display headlines, hairline rules and generous whitespace.",
     mode: "light",
+    layout: "print",
     fontLabel: "Fraunces serif · Inter body",
     metaColor: "#faf7f0",
     swatch: {
@@ -151,6 +175,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Soft daylight canvas, big rounded tiles, candy chart colors and springy motion.",
     mode: "light",
+    layout: "playful",
     fontLabel: "Space Grotesk · rounded sans",
     metaColor: "#f7f6f3",
     swatch: {
@@ -169,6 +194,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "White ground, black rules, squared corners and a single signal-red accent — pure International Style order.",
     mode: "light",
+    layout: "swiss",
     fontLabel: "Inter Tight · grotesk display",
     metaColor: "#ffffff",
     swatch: {
@@ -187,6 +213,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Near-black canvas lit by drifting indigo, fuchsia and cyan meshes with glowing gradient buttons.",
     mode: "dark",
+    layout: "cinematic",
     fontLabel: "Space Grotesk · gradient display",
     metaColor: "#05060f",
     swatch: {
@@ -205,6 +232,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Deep-space dark with cyan glow, magenta accents, scanlines and an all-mono blueprint grid.",
     mode: "dark",
+    layout: "playful",
     fontLabel: "Chakra Petch + JetBrains Mono",
     metaColor: "#0a0a12",
     swatch: {
@@ -223,6 +251,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Pale lilac day, puffy white tiles with inflating inner shadows and rounded pastel blobs.",
     mode: "light",
+    layout: "playful",
     fontLabel: "Nunito · rounded sans",
     metaColor: "#f3efff",
     swatch: {
@@ -241,6 +270,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Paper canvas under Ben-Day dots, thick comic ink strokes, hard offset shadows and candy primaries.",
     mode: "light",
+    layout: "classic",
     fontLabel: "Bungee · comic display",
     metaColor: "#fff9e6",
     swatch: {
@@ -259,6 +289,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Ice-lilac ground with iridescent lavender-aqua-pink light, chrome-edged bubbles and pill shapes.",
     mode: "light",
+    layout: "playful",
     fontLabel: "Michroma · wide techno",
     metaColor: "#e9e6ff",
     swatch: {
@@ -277,6 +308,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Cream paper, burnt orange and mustard, serif display and sun-bleached grain.",
     mode: "light",
+    layout: "print",
     fontLabel: "DM Serif Display · Inter body",
     metaColor: "#f6ead2",
     swatch: {
@@ -295,6 +327,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Sandy linen textures, terracotta and sage, airy serif headlines and soft rounded cards.",
     mode: "light",
+    layout: "print",
     fontLabel: "Cormorant Garamond · Inter body",
     metaColor: "#f5efe3",
     swatch: {
@@ -313,6 +346,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Ruled notebook lines, marker-yellow highlights, tilted ink-stroke buttons — with a readable sans body.",
     mode: "light",
+    layout: "console",
     fontLabel: "Caveat · Inter body",
     metaColor: "#fdfbf4",
     swatch: {
@@ -331,6 +365,7 @@ export const THEMES: ThemeDef[] = [
     description:
       "Navy-black canvas, hard black borders, stepped shadows, CRT vignette and snapped 8px rhythm.",
     mode: "dark",
+    layout: "console",
     fontLabel: "Press Start 2P + VT323",
     metaColor: "#0f0f1b",
     swatch: {
@@ -385,6 +420,7 @@ export function applyTheme(id: ThemeId) {
   const update = () => {
     const root = document.documentElement;
     root.dataset.theme = def.id;
+    root.dataset.layout = def.layout;
     root.classList.toggle("dark", def.mode === "dark");
     root.style.colorScheme = def.mode;
 

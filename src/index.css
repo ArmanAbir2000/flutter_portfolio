@@ -1876,19 +1876,32 @@ html[data-theme="glass"] section[class*="border-t"] {
   border-top-color: color-mix(in oklab, var(--primary) 25%, transparent);
 }
 
-/* ---- Layout — per-theme page metrics ------------------------------------
-   Full layout control: every theme sets its own page skeleton — container
-   width, section vertical rhythm, page gutters, hero scale — via layout
-   vars, applied by the shared rules below. Pages keep their utility
-   classes; themes retune them at a higher cascade layer.                  */
+/* ---- Layout — archetype hierarchy ---------------------------------------
+   The page skeleton is a four-tier cascade, from broadest to narrowest:
 
-html[data-theme="brutal"] {
-  --page-container: 76rem;
-  --sec-pad: 4.5rem;
-  --sec-pad-lg: 6rem;
-  --page-gutter: 2rem;
+     1. :root            — "classic" defaults every theme inherits
+     2. [data-layout]    — 5 archetype metric sets (cinematic/print/
+                           console/playful/swiss), driven by
+                           ThemeDef.layout in themes.ts
+     3. [data-theme]     — sparse per-theme exceptions ONLY where a theme
+                           genuinely deviates from its archetype
+     4. page utilities   — max-w-6xl / py-20 / px-6 … remapped by the
+                           shared appliers further below
+
+   Themes therefore never restate full metric blocks; they either match
+   their archetype or override single vars.                          */
+
+:root {
+  --page-container: 72rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 1.5rem;
+  --hero-pt: 7rem;
+  --hero-pt-lg: 10rem;
 }
-html[data-theme="glass"] {
+
+/* Cinematic — full-bleed light shows (glass, aurora). */
+[data-layout="cinematic"] {
   --page-container: 80rem;
   --sec-pad: 6rem;
   --sec-pad-lg: 8rem;
@@ -1896,6 +1909,58 @@ html[data-theme="glass"] {
   --hero-pt: 8rem;
   --hero-pt-lg: 12rem;
 }
+
+/* Print — airy editorial measure (editorial, retro, bohemian). */
+[data-layout="print"] {
+  --page-container: 70rem;
+  --sec-pad: 6rem;
+  --sec-pad-lg: 8rem;
+  --page-gutter: 2rem;
+  --hero-pt: 8rem;
+  --hero-pt-lg: 11rem;
+}
+
+/* Console — boxed, compact, centered (terminal, handwritten, pixel). */
+[data-layout="console"] {
+  --page-container: 64rem;
+  --sec-pad: 4rem;
+  --sec-pad-lg: 5.5rem;
+  --page-gutter: 2rem;
+}
+
+/* Playful — roomy mid-width grids (brutal, bento, cyberpunk, clay, y2k). */
+[data-layout="playful"] {
+  --page-container: 74rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 1.75rem;
+}
+
+/* Swiss — strict wide grid with generous strict margins. */
+[data-layout="swiss"] {
+  --page-container: 84rem;
+  --sec-pad: 5rem;
+  --sec-pad-lg: 7rem;
+  --page-gutter: 2.5rem;
+}
+
+/* Theme exceptions — single-var deviations from the archetype above. */
+
+/* Cyberpunk: denser rhythm, its own neon hero scale. */
+html[data-theme="cyberpunk"] {
+  --sec-pad: 4.5rem;
+  --sec-pad-lg: 6rem;
+  --hero-pt: 6.5rem;
+  --hero-pt-lg: 9rem;
+}
+
+/* Brutal: punchier rhythm than the playful grid. */
+html[data-theme="brutal"] {
+  --sec-pad: 4.5rem;
+  --sec-pad-lg: 6rem;
+}
+
+/* Terminal: the tightest console — boxed and centered. */
 html[data-theme="terminal"] {
   --page-container: 60rem;
   --sec-pad: 3.5rem;
@@ -1904,88 +1969,17 @@ html[data-theme="terminal"] {
   --hero-pt: 6rem;
   --hero-pt-lg: 8rem;
 }
-html[data-theme="editorial"] {
-  --page-container: 70rem;
-  --sec-pad: 6.5rem;
-  --sec-pad-lg: 8.5rem;
-  --page-gutter: 2rem;
-  --hero-pt: 8rem;
-  --hero-pt-lg: 11rem;
-}
-html[data-theme="bento"] {
-  --page-container: 76rem;
-  --sec-pad: 5rem;
-  --sec-pad-lg: 7rem;
-  --page-gutter: 1.75rem;
-}
-html[data-theme="swiss"] {
-  --page-container: 84rem;
-  --sec-pad: 5rem;
-  --sec-pad-lg: 7rem;
-  --page-gutter: 2.5rem;
-}
-html[data-theme="aurora"] {
-  --page-container: 80rem;
-  --sec-pad: 6rem;
-  --sec-pad-lg: 8rem;
-  --page-gutter: 2rem;
-  --hero-pt: 8rem;
-  --hero-pt-lg: 12rem;
-}
-html[data-theme="cyberpunk"] {
-  --page-container: 74rem;
-  --sec-pad: 4.5rem;
-  --sec-pad-lg: 6rem;
-  --page-gutter: 2rem;
-  --hero-pt: 6.5rem;
-  --hero-pt-lg: 9rem;
-}
-html[data-theme="clay"] {
-  --page-container: 74rem;
-  --sec-pad: 5.5rem;
-  --sec-pad-lg: 7.5rem;
-  --page-gutter: 1.75rem;
-}
-html[data-theme="popart"] {
-  --page-container: 72rem;
-  --sec-pad: 5rem;
-  --sec-pad-lg: 7rem;
-  --page-gutter: 2rem;
-}
-html[data-theme="y2k"] {
-  --page-container: 74rem;
-  --sec-pad: 5.5rem;
-  --sec-pad-lg: 7.5rem;
-  --page-gutter: 2rem;
-}
-html[data-theme="retro"] {
-  --page-container: 70rem;
-  --sec-pad: 5.5rem;
-  --sec-pad-lg: 7.5rem;
-  --page-gutter: 2rem;
-}
-html[data-theme="bohemian"] {
-  --page-container: 68rem;
-  --sec-pad: 6rem;
-  --sec-pad-lg: 8rem;
-  --page-gutter: 2rem;
-}
+
+/* Handwritten: notebook breathing room for the Caveat display face. */
 html[data-theme="handwritten"] {
-  --page-container: 64rem;
   --sec-pad: 5rem;
   --sec-pad-lg: 6.5rem;
   --page-gutter: 2.25rem;
   --hero-pt: 7rem;
   --hero-pt-lg: 9rem;
 }
-html[data-theme="pixel"] {
-  --page-container: 64rem;
-  --sec-pad: 4rem;
-  --sec-pad-lg: 5.5rem;
-  --page-gutter: 2rem;
-}
 
-/* Shared appliers — retune the page utilities per theme. */
+/* Shared appliers — remap the page utilities to the active archetype. */
 html[data-theme] [class*="max-w-6xl"] {
   max-width: var(--page-container, 72rem);
 }
