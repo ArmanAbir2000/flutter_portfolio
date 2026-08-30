@@ -8,8 +8,8 @@
     (function () {
       try {
         var t = localStorage.getItem("shiki-site-theme");
-        var valid = ["studio", "brutal", "glass", "terminal", "editorial", "bento"];
-        var light = { brutal: 1, editorial: 1, bento: 1 };
+        var valid = ["studio", "brutal", "glass", "terminal", "editorial", "bento", "swiss", "aurora", "cyberpunk", "clay", "popart", "y2k", "retro", "bohemian", "handwritten", "pixel"];
+        var light = { brutal: 1, editorial: 1, bento: 1, swiss: 1, clay: 1, popart: 1, y2k: 1, retro: 1, bohemian: 1, handwritten: 1 };
         var id = valid.indexOf(t) !== -1 ? t : "studio";
         document.documentElement.dataset.theme = id;
         if (light[id]) {
@@ -25,13 +25,13 @@
       }
     })();
   </script>
-  <!-- Theme typography: Inter (Studio), Space Grotesk (Brutalist/Glass/Bento),
-       JetBrains Mono (Terminal), Fraunces (Editorial). -->
+  <!-- Theme typography: Inter (Studio/Pop/Handwritten), Space Grotesk (Brutalist/Glass/Bento/Aurora),
+       JetBrains Mono (Terminal/Cyberpunk), Fraunces (Editorial), plus per-theme display faces. -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Inter+Tight:wght@400;500;600;700&family=Chakra+Petch:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Bungee&family=Michroma&family=DM+Serif+Display&family=Cormorant+Garamond:wght@500;600;700&family=Caveat:wght@500;600;700&family=Press+Start+2P&family=VT323&display=swap"
   />
   <link rel="icon" type="image/svg+xml" href="/flutter_portfolio/logo.svg" />
   <link rel="manifest" href="/flutter_portfolio/manifest.webmanifest" />
@@ -124,11 +124,11 @@
     ]
   }
   </script>
-  <script type="module" crossorigin src="/flutter_portfolio/assets/index-B6Iwhujj.js"></script>
+  <script type="module" crossorigin src="/flutter_portfolio/assets/index-Cq_kz9-9.js"></script>
   <link rel="modulepreload" crossorigin href="/flutter_portfolio/assets/react-vendor-fj4TkgEY.js">
   <link rel="modulepreload" crossorigin href="/flutter_portfolio/assets/framer-motion-DWEAiogH.js">
   <link rel="modulepreload" crossorigin href="/flutter_portfolio/assets/radix-ui-CbdshiJo.js">
-  <link rel="stylesheet" crossorigin href="/flutter_portfolio/assets/index-p0iEwpks.css">
+  <link rel="stylesheet" crossorigin href="/flutter_portfolio/assets/index-D2g1lqTl.css">
 </head>
 
 
