@@ -10,8 +10,10 @@
         var t = localStorage.getItem("shiki-site-theme");
         var valid = ["studio", "brutal", "glass", "terminal", "editorial", "bento", "swiss", "aurora", "cyberpunk", "clay", "popart", "y2k", "retro", "bohemian", "handwritten", "pixel"];
         var light = { brutal: 1, editorial: 1, bento: 1, swiss: 1, clay: 1, popart: 1, y2k: 1, retro: 1, bohemian: 1, handwritten: 1 };
+        var layout = { studio: "classic", popart: "classic", glass: "cinematic", aurora: "cinematic", editorial: "print", retro: "print", bohemian: "print", terminal: "console", handwritten: "console", pixel: "console", brutal: "playful", bento: "playful", cyberpunk: "playful", clay: "playful", y2k: "playful", swiss: "swiss" };
         var id = valid.indexOf(t) !== -1 ? t : "studio";
         document.documentElement.dataset.theme = id;
+        document.documentElement.dataset.layout = layout[id] || "classic";
         if (light[id]) {
           document.documentElement.classList.remove("dark");
           document.documentElement.style.colorScheme = "light";
@@ -22,6 +24,7 @@
       } catch (e) {
         document.documentElement.classList.add("dark");
         document.documentElement.dataset.theme = "studio";
+        document.documentElement.dataset.layout = "classic";
       }
     })();
   </script>
@@ -124,11 +127,11 @@
     ]
   }
   </script>
-  <script type="module" crossorigin src="/Shiki_Code_Studio/assets/index-CW67bG1x.js"></script>
+  <script type="module" crossorigin src="/Shiki_Code_Studio/assets/index-CHnDUMyh.js"></script>
   <link rel="modulepreload" crossorigin href="/Shiki_Code_Studio/assets/react-vendor-fj4TkgEY.js">
   <link rel="modulepreload" crossorigin href="/Shiki_Code_Studio/assets/framer-motion-DWEAiogH.js">
   <link rel="modulepreload" crossorigin href="/Shiki_Code_Studio/assets/radix-ui-CbdshiJo.js">
-  <link rel="stylesheet" crossorigin href="/Shiki_Code_Studio/assets/index-whxMDiiF.css">
+  <link rel="stylesheet" crossorigin href="/Shiki_Code_Studio/assets/index-Bz9sTgWm.css">
 </head>
 
 
